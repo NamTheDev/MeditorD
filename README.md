@@ -11,6 +11,7 @@ Minimalist local markdown document workspace running on the Bun runtime.
 
 📁 Project Structure
 
+```
 meditord/
 ├── 📁 database/
 │   ├── 📄 documents.ts       # Document read, write, and directory management
@@ -37,6 +38,7 @@ meditord/
 ├── 📄 index.ts               # Bun HTTP server and static asset router
 ├── 📄 package.json           # Runtime dependencies and metadata
 └── 📄 tsconfig.json          # TypeScript compiler options
+```
 
 ⚙️ Installation & Configuration
 
