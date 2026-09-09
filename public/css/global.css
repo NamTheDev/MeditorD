@@ -1,0 +1,109 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Press+Start+2P&family=Silkscreen:wght@400;700&display=swap");
+
+:root {
+    color-scheme: dark;
+
+    --ctp-rosewater: #f5e0dc;
+    --ctp-flamingo: #f2cdcd;
+    --ctp-pink: #f5c2e7;
+    --ctp-mauve: #cba6f7;
+    --ctp-red: #f38ba8;
+    --ctp-maroon: #eba0ac;
+    --ctp-peach: #fab387;
+    --ctp-yellow: #f9e2af;
+    --ctp-green: #a6e3a1;
+    --ctp-teal: #94e2d5;
+    --ctp-sky: #89dceb;
+    --ctp-sapphire: #74c7ec;
+    --ctp-blue: #89b4fa;
+    --ctp-lavender: #b4befe;
+    --ctp-text: #cdd6f4;
+    --ctp-subtext1: #bac2de;
+    --ctp-subtext0: #a6adc8;
+    --ctp-overlay2: #9399b2;
+    --ctp-overlay1: #7f849c;
+    --ctp-overlay0: #6c7086;
+    --ctp-surface2: #585b70;
+    --ctp-surface1: #45475a;
+    --ctp-surface0: #313244;
+    --ctp-base: #1e1e2e;
+    --ctp-mantle: #181825;
+    --ctp-crust: #11111b;
+
+    --bg: var(--ctp-base);
+    --bg-mantle: var(--ctp-mantle);
+    --bg-crust: var(--ctp-crust);
+    --surface0: var(--ctp-surface0);
+    --surface1: var(--ctp-surface1);
+    --surface2: var(--ctp-surface2);
+    --overlay0: var(--ctp-overlay0);
+    --overlay1: var(--ctp-overlay1);
+
+    --fg: var(--ctp-text);
+    --fg-sub: var(--ctp-subtext0);
+    --fg-muted: var(--ctp-overlay0);
+
+    --accent: var(--ctp-lavender);
+    --title: var(--ctp-lavender);
+
+    --border: var(--surface0);
+    --border-focus: var(--accent);
+
+    --selection-bg: var(--ctp-text);
+    --selection-fg: var(--ctp-base);
+
+    --color-green: var(--ctp-green);
+    --color-red: var(--ctp-red);
+    --color-peach: var(--ctp-peach);
+    --color-yellow: var(--ctp-yellow);
+
+    --toolbar-height: 52px;
+    --sidebar-width: 260px;
+    --line-numbers-width: 52px;
+
+    --font-ui: "Montserrat", sans-serif;
+    --font-editor: "JetBrains Mono", monospace;
+    --font-title: "Montserrat", sans-serif;
+
+    --editor-font-size: 0.9rem;
+    --editor-line-height: 1.6;
+    --editor-padding: 20px;
+    --preview-padding: 24px;
+
+    --radius-sm: 4px;
+    --radius-md: 6px;
+    --radius-lg: 8px;
+
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.25);
+    --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.45);
+    --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.65);
+
+    --transition-fast: 0.15s ease;
+    --transition-normal: 0.2s ease;
+
+    --unsaved-dot-unselected: var(--ctp-text);
+    --unsaved-dot-selected: var(--ctp-base);
+}
+
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+::selection {
+    background-color: var(--selection-bg);
+    color: var(--selection-fg);
+}
+
+html,
+body {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    background-color: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-ui);
+}

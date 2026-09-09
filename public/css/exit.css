@@ -1,0 +1,53 @@
+.exit-wrapper {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background: url("/grass.webp") no-repeat center center / 100% 100%;
+}
+
+.exit-title {
+  position: absolute;
+  top: 11.2%;
+  left: 5.6%;
+  font-family: "Silkscreen", monospace;
+  font-weight: 700;
+  font-size: clamp(2.5rem, 5vw, 6rem);
+  color: #11F10E;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  user-select: none;
+  -webkit-text-stroke: 10px #000000;
+  paint-order: stroke fill;
+  text-shadow: 
+    2px 2px 0 #000000,
+    4px 4px 0 #000000,
+    6px 6px 0 #000000,
+    8px 8px 0 #000000,
+    10px 10px 0 #000000,
+    12px 12px 0 #000000,
+    14px 14px 18px rgba(0, 0, 0, 0.8);
+}
+
+.return-btn-exit {
+  position: absolute;
+  right: 5.7%;
+  bottom: 11%;
+  width: clamp(200px, 30.2vw, 580px);
+  display: inline-block;
+  text-decoration: none;
+  transition: transform 0.2s ease, filter 0.2s ease;
+  cursor: pointer;
+}
+
+.return-btn-exit img {
+  width: 100%;
+  height: auto;
+  display: block;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4));
+}
+
+.return-btn-exit:hover {
+  transform: translateX(8px);
+  filter: brightness(1.1);
+}

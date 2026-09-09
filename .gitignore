@@ -1,0 +1,67 @@
+# ─── Bun (Standard) ────────────────
+# dependencies
+node_modules
+
+# output
+out
+dist
+*.tgz
+
+# code coverage
+coverage
+*.lcov
+
+# logs
+logs
+*.log
+_.log
+report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
+
+# dotenv environment variable files
+.env
+.env.development.local
+.env.test.local
+.env.production.local
+.env.local
+
+# caches
+.eslintcache
+.cache
+*.tsbuildinfo
+
+# IntelliJ based IDEs
+.idea
+
+# Finder (MacOS) folder config
+.DS_Store
+
+
+# ─── Project-Specific Additions ──────────────────────────
+
+# Database files (SQLite)
+*.sqlite
+*.sqlite3
+*.db
+
+# Build folders
+build/
+
+# OS junk (Windows)
+Thumbs.db
+
+# Editor backup / swap files
+.vscode/
+*.swp
+*.swo
+*~
+
+# Additional test coverage tools
+.nyc_output/
+
+# Temporary / runtime folders
+tmp/
+temp/
+
+# User-uploaded files (if any)
+uploads/
+media/
