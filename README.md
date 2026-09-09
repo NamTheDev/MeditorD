@@ -1,15 +1,15 @@
-MeditorD 📝
+# MeditorD 📝
 
-🤖 AI Disclaimer
+## 🤖 AI Disclaimer
 
-Created with human ideas and design using Google AI Studio's Gemini Flash,
+> Created with human ideas and design using Google AI Studio's Gemini Flash,
 DeepSeek, and GitHub Copilot tools for coding assistance.
 
-📄 Summary
+## 📄 Summary
 
-Minimalist local markdown document workspace running on the Bun runtime.
+> Minimalist local markdown document workspace running on the Bun runtime.
 
-📁 Project Structure
+## 📁 Project Structure
 
 ```
 meditord/
@@ -40,7 +40,7 @@ meditord/
 └── 📄 tsconfig.json          # TypeScript compiler options
 ```
 
-⚙️ Installation & Configuration
+## ⚙️ Installation & Configuration
 
 1. Prerequisites
 
