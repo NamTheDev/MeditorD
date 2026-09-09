@@ -44,24 +44,29 @@ meditord/
 
 1. Prerequisites
 
-Ensure Bun (v1.0 or newer) is installed on your system.
+- Ensure Bun (v1.0 or newer) is installed on your system.
 
 2. Install Dependencies
 
+```
 bun install
+```
 
 3. Configure Environment
 
-Create a .env file in the project root to override default settings (optional):
+- Create a .env file in the project root to override default settings (optional):
 
+```
 PORT=3000
 HOST=0.0.0.0
 ROOT=./public
-
+```
 4. Run the Server
 
-Start the local server:
+- Start the local server:
 
+```
 bun run index.ts
+```
 
-Open your browser at http://localhost:3000.
+- Open your browser at http://localhost:3000.
