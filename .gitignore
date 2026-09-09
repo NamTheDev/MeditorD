@@ -38,6 +38,9 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 
 # ─── Project-Specific Additions ──────────────────────────
 
+# Local database directory
+/database/
+
 # Database files (SQLite)
 *.sqlite
 *.sqlite3
