@@ -83,6 +83,9 @@
 
     --unsaved-dot-unselected: var(--ctp-text);
     --unsaved-dot-selected: var(--ctp-base);
+
+    --media-grass-background: url("/media/grass-background.webp");
+    --media-home-background: url("/media/home-background.webp");
 }
 
 *,
