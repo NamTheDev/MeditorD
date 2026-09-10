@@ -1,91 +1,101 @@
 .home-wrapper {
-  height: 100vh;
-  width: 100vw;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  position: relative;
-  overflow: hidden;
-  background-color: var(--bg);
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    background: var(--media-home-background) center / cover no-repeat;
 }
 
 .main-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: clamp(16px, 3.5vw, 55px);
-  width: 100%;
-  max-width: 1500px;
-  padding: 0 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(16px, 3.5vw, 55px);
+    width: 100%;
+    max-width: 1500px;
+    padding: 0 30px;
 }
 
 .brand-title {
-  font-family: 'Press Start 2P', monospace;
-  font-size: clamp(2rem, 4.4vw, 5rem);
-  color: #c8d2f7;
-  letter-spacing: -0.02em;
-  line-height: 1;
-  user-select: none;
-  text-align: center;
+    font-family: "Press Start 2P", monospace;
+    font-size: clamp(2rem, 4.4vw, 5rem);
+    color: #c8d2f7;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    user-select: none;
+    text-align: center;
 }
 
 .accent-letter {
-  color: var(--accent);
+    color: var(--accent);
 }
 
 .arrow-btn {
-  display: block;
-  text-decoration: none;
-  width: clamp(140px, 18vw, 290px);
-  flex-shrink: 0;
-  transition: transform 0.2s ease, filter 0.2s ease;
-  cursor: pointer;
+    display: block;
+    text-decoration: none;
+    width: clamp(140px, 18vw, 290px);
+    flex-shrink: 0;
+    transition:
+        transform 0.2s ease,
+        filter 0.2s ease;
+    cursor: pointer;
 }
 
 .arrow-btn:hover {
-  filter: brightness(1.15);
+    filter: brightness(1.15);
 }
 
 .arrow-btn.left:hover {
-  transform: translateX(-8px);
+    transform: translateX(-8px);
 }
 
 .arrow-btn.right:hover {
-  transform: translateX(8px);
+    transform: translateX(8px);
 }
 
 .arrow-svg {
-  width: 100%;
-  height: auto;
-  display: block;
+    width: 100%;
+    height: auto;
+    display: block;
 }
 
 .arrow-shape {
-  fill: #c8d2f7;
+    fill: #c8d2f7;
 }
 
 .label-exit {
-  font-family: 'Montserrat', sans-serif;
-  font-size: 38px;
-  font-weight: 800;
-  fill: var(--color-red);
+    font-family: "Montserrat", sans-serif;
+    font-size: 38px;
+    font-weight: 800;
+    fill: var(--color-red);
 }
 
 .label-edit {
-  font-family: 'Montserrat', sans-serif;
-  font-size: 38px;
-  font-weight: 800;
-  fill: var(--color-green);
+    font-family: "Montserrat", sans-serif;
+    font-size: 38px;
+    font-weight: 800;
+    fill: var(--color-green);
 }
 
 .footer-note {
-  position: absolute;
-  bottom: 8%;
-  color: var(--fg);
-  font-size: clamp(0.9rem, 1.2vw, 1.35rem);
-  font-weight: 700;
-  letter-spacing: -0.01em;
-  opacity: 0.9;
-  user-select: none;
+    position: absolute;
+    bottom: 8%;
+    color: var(--fg);
+    font-size: clamp(0.9rem, 1.2vw, 1.35rem);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    opacity: 0.9;
+    user-select: none;
+}
+
+.green {
+    color: var(--color-green);
+}
+
+.red {
+    color: var(--color-red);
 }
