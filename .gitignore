@@ -64,7 +64,3 @@ Thumbs.db
 # Temporary / runtime folders
 tmp/
 temp/
-
-# User-uploaded files (if any)
-uploads/
-media/
