@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "namtion",
+      "name": "meditord",
       "devDependencies": {
         "@types/bun": "latest",
       },
