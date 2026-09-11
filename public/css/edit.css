@@ -1,0 +1,488 @@
+body {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: var(--win98-surface);
+    color: var(--win98-text);
+    font-family: "IBM Plex Sans", "Tahoma", "MS Sans Serif", sans-serif;
+    font-size: var(--font-base);
+    line-height: 1.4;
+    -webkit-font-smoothing: none;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+::-webkit-scrollbar {
+    width: 16px;
+    height: 16px;
+    background: var(--ctp-mantle);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--win98-surface);
+    box-shadow:
+        inset -1px -1px 0 var(--win98-border-darkest),
+        inset 1px 1px 0 var(--win98-border-lightest),
+        inset -2px -2px 0 var(--win98-border-dark),
+        inset 2px 2px 0 var(--win98-border-light);
+}
+
+::-webkit-scrollbar-thumb:active {
+    box-shadow:
+        inset -1px -1px 0 var(--win98-border-lightest),
+        inset 1px 1px 0 var(--win98-border-darkest),
+        inset -2px -2px 0 var(--win98-border-light),
+        inset 2px 2px 0 var(--win98-border-dark);
+}
+
+nav {
+    background: var(--win98-surface);
+    z-index: 10;
+    height: var(--nav-height);
+    display: flex;
+    align-items: center;
+    width: 100%;
+    flex-shrink: 0;
+    border: 2px solid var(--win98-border-darkest);
+    border-top-color: var(--win98-border-lightest);
+    border-left-color: var(--win98-border-lightest);
+    box-shadow:
+        inset 1px 1px 0 var(--win98-border-light),
+        inset -1px -1px 0 var(--win98-border-dark);
+}
+
+.compartment {
+    flex: 1;
+    height: 100%;
+    border-right: 1px solid var(--win98-border-dark);
+    box-shadow: 1px 0 0 var(--win98-border-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    color: var(--win98-text);
+    padding: 0 clamp(4px, 1vw, 16px);
+}
+
+.compartment:last-child {
+    border-right: none;
+    box-shadow: none;
+}
+
+.arrow-compartment {
+    cursor: pointer;
+    color: var(--win98-text);
+}
+
+.pixel-icon {
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+    shape-rendering: crispEdges;
+}
+
+.arrow-icon {
+    width: var(--icon-size);
+    height: var(--icon-size);
+}
+
+.arrow-compartment:hover,
+.action-btn:hover,
+.settings-btn:hover,
+.upload-btn:hover {
+    color: var(--win98-accent);
+}
+
+.arrow-compartment:active,
+.settings-btn:active {
+    transform: translate(1px, 1px);
+}
+
+.action-btn {
+    background: var(--win98-surface);
+    color: var(--win98-text);
+    border: none;
+    font-family: inherit;
+    font-size: var(--font-base);
+    font-weight: 400;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    padding: clamp(3px, 0.5vw, 8px) clamp(10px, 1.4vw, 24px);
+    min-height: calc(var(--input-height) * 0.9);
+    box-shadow:
+        inset -1px -1px 0 var(--win98-border-darkest),
+        inset 1px 1px 0 var(--win98-border-lightest),
+        inset -2px -2px 0 var(--win98-border-dark),
+        inset 2px 2px 0 var(--win98-border-light);
+}
+
+.action-btn:active {
+    box-shadow:
+        inset -1px -1px 0 var(--win98-border-lightest),
+        inset 1px 1px 0 var(--win98-border-darkest),
+        inset -2px -2px 0 var(--win98-border-light),
+        inset 2px 2px 0 var(--win98-border-dark);
+    padding: clamp(4px, 0.6vw, 9px) clamp(9px, 1.3vw, 23px)
+        clamp(2px, 0.4vw, 7px) clamp(11px, 1.5vw, 25px);
+}
+
+.action-btn:focus {
+    outline: 1px dotted var(--win98-accent);
+    outline-offset: -4px;
+}
+
+.settings-btn {
+    background: transparent;
+    border: none;
+    outline: none;
+    width: var(--icon-size);
+    height: var(--icon-size);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--win98-text);
+    padding: 0;
+}
+
+.settings-btn .gear-icon {
+    width: calc(var(--icon-size) * 0.85);
+    height: calc(var(--icon-size) * 0.85);
+}
+
+.title-compartment {
+    flex: 2;
+    height: 100%;
+    border-right: 1px solid var(--win98-border-dark);
+    box-shadow: 1px 0 0 var(--win98-border-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "Pixelify Sans", "IBM Plex Sans", sans-serif;
+    font-size: var(--font-title);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.35em;
+    color: var(--win98-accent);
+    user-select: none;
+}
+
+.editor-container {
+    flex: 1;
+    display: flex;
+    width: 100%;
+    height: calc(100vh - var(--nav-height));
+    background: var(--win98-surface);
+    border-left: 2px solid var(--win98-border-lightest);
+    border-right: 2px solid var(--win98-border-darkest);
+    border-bottom: 2px solid var(--win98-border-darkest);
+    overflow: hidden;
+}
+
+.editor-left-pane,
+.editor-right-pane {
+    width: 50%;
+    height: 100%;
+    padding: var(--pane-padding);
+}
+
+.editor-left-pane {
+    border-right: 1px solid var(--win98-border-dark);
+    box-shadow: 1px 0 0 var(--win98-border-light);
+    display: flex;
+    flex-direction: column;
+}
+
+.editor-form {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(12px, 1.5vh, 20px);
+    width: 100%;
+    height: 100%;
+}
+
+.form-row {
+    display: flex;
+    align-items: center;
+    gap: clamp(12px, 2vw, 24px);
+    width: 100%;
+}
+
+.form-row.preview-row {
+    flex: 1;
+    align-items: stretch;
+    min-height: 120px;
+}
+
+.form-row label.field-label {
+    width: 65px;
+    flex-shrink: 0;
+    font-size: var(--font-base);
+    font-weight: bold;
+    color: var(--ctp-subtext1);
+    white-space: nowrap;
+}
+
+.preview-row label.field-label {
+    padding-top: 4px;
+}
+
+.form-control-unit {
+    flex: 1;
+    width: auto;
+}
+
+input.form-control-unit {
+    height: var(--input-height);
+    padding: 0 clamp(6px, 0.8vw, 12px);
+    border: none;
+    outline: none;
+    background: var(--win98-window-bg);
+    color: var(--win98-text);
+    font-family: inherit;
+    font-size: var(--font-base);
+    box-shadow:
+        inset -1px -1px 0 var(--win98-border-lightest),
+        inset 1px 1px 0 var(--win98-border-darkest),
+        inset -2px -2px 0 var(--win98-border-light),
+        inset 2px 2px 0 var(--win98-border-dark);
+}
+
+input.form-control-unit::placeholder,
+.editor-textarea::placeholder {
+    color: var(--ctp-overlay0);
+}
+
+input.form-control-unit:focus {
+    outline: 1px solid var(--win98-accent);
+    outline-offset: -1px;
+}
+
+.upload-btn {
+    height: var(--input-height);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background: var(--win98-surface);
+    color: var(--win98-text);
+    font-family: inherit;
+    font-size: var(--font-base);
+    font-weight: 400;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    box-shadow:
+        inset -1px -1px 0 var(--win98-border-darkest),
+        inset 1px 1px 0 var(--win98-border-lightest),
+        inset -2px -2px 0 var(--win98-border-dark),
+        inset 2px 2px 0 var(--win98-border-light);
+}
+
+.upload-btn:active {
+    box-shadow:
+        inset -1px -1px 0 var(--win98-border-lightest),
+        inset 1px 1px 0 var(--win98-border-darkest),
+        inset -2px -2px 0 var(--win98-border-light),
+        inset 2px 2px 0 var(--win98-border-dark);
+    padding-top: 2px;
+    padding-left: 2px;
+}
+
+.preview-box,
+.textarea-wrapper {
+    background: var(--win98-window-bg);
+    box-shadow:
+        inset -1px -1px 0 var(--win98-border-lightest),
+        inset 1px 1px 0 var(--win98-border-darkest),
+        inset -2px -2px 0 var(--win98-border-light),
+        inset 2px 2px 0 var(--win98-border-dark);
+}
+
+.preview-box {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: calc(var(--font-base) * 0.9);
+    font-family: "IBM Plex Mono", monospace;
+    color: var(--win98-text-disabled);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.media-preview {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    min-width: 0;
+    min-height: 0;
+}
+
+.editor-right-pane {
+    display: flex;
+}
+
+.textarea-wrapper {
+    width: 100%;
+    height: 100%;
+    display: flex;
+}
+
+.editor-textarea {
+    width: 100%;
+    height: 100%;
+    padding: clamp(10px, 1.5vw, 20px);
+    border: none;
+    outline: none;
+    resize: none;
+    font-family: "IBM Plex Mono", "Courier New", monospace;
+    font-size: calc(var(--font-base) * 1.05);
+    line-height: 1.5;
+    background: transparent;
+    color: var(--win98-text);
+    -webkit-font-smoothing: none;
+}
+
+.win98-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(17, 17, 27, 0.72);
+}
+
+.win98-modal-backdrop.hidden {
+    display: none;
+}
+
+.win98-modal {
+    box-sizing: border-box;
+    width: min(420px, calc(100vw - 32px));
+    max-height: calc(100vh - 32px);
+    padding: 3px;
+    background: var(--ctp-surface0);
+    border-top: 2px solid var(--ctp-lavender);
+    border-left: 2px solid var(--ctp-lavender);
+    border-right: 2px solid var(--ctp-crust);
+    border-bottom: 2px solid var(--ctp-crust);
+    box-shadow:
+        inset 1px 1px 0 var(--ctp-surface2),
+        inset -1px -1px 0 var(--ctp-mantle);
+    color: var(--ctp-text);
+    font-family: "IBM Plex Sans", Tahoma, sans-serif;
+}
+
+.win98-modal-titlebar {
+    min-height: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 3px 4px 3px 8px;
+    background: transparent;
+    color: var(--ctp-lavender);
+    box-sizing: border-box;
+}
+
+.win98-modal-titlebar h2 {
+    overflow: hidden;
+    margin: 0;
+    font-size: 13px;
+    font-weight: 700;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.win98-modal-close,
+.win98-button {
+    appearance: none;
+    box-sizing: border-box;
+    border-top: 2px solid var(--ctp-lavender);
+    border-left: 2px solid var(--ctp-lavender);
+    border-right: 2px solid var(--ctp-crust);
+    border-bottom: 2px solid var(--ctp-crust);
+    border-radius: 0;
+    background: var(--ctp-surface1);
+    color: var(--ctp-text);
+    font-family: "IBM Plex Sans", Tahoma, sans-serif;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.win98-modal-close {
+    width: 18px;
+    height: 18px;
+    padding: 0;
+    line-height: 12px;
+    font-size: 15px;
+}
+
+.win98-modal-content {
+    box-sizing: border-box;
+    width: calc(100% - 20px);
+    min-height: 96px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 12px 10px;
+    padding: 14px;
+    background: var(--ctp-base);
+    border-top: 2px solid var(--ctp-mantle);
+    border-left: 2px solid var(--ctp-mantle);
+    border-right: 2px solid var(--ctp-surface2);
+    border-bottom: 2px solid var(--ctp-surface2);
+}
+
+.win98-modal-content p {
+    margin: 0;
+    color: var(--ctp-text);
+    font-size: 13px;
+    line-height: 1.35;
+}
+
+.win98-info-icon {
+    width: 30px;
+    height: 30px;
+    flex: 0 0 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--ctp-lavender);
+    border: 2px solid var(--ctp-lavender);
+    outline: 2px solid var(--ctp-crust);
+    color: var(--ctp-crust);
+    font-family: Georgia, serif;
+    font-size: 23px;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.win98-modal-actions {
+    display: flex;
+    justify-content: center;
+    padding: 0 0 10px;
+}
+
+.win98-button {
+    min-width: 78px;
+    min-height: 28px;
+    padding: 3px 16px;
+    font-size: 12px;
+}
+
+.win98-button.win98-default {
+    outline: 1px solid var(--ctp-text);
+    outline-offset: -4px;
+}
+
+.win98-modal-close:active,
+.win98-button:active {
+    border-top-color: var(--ctp-crust);
+    border-left-color: var(--ctp-crust);
+    border-right-color: var(--ctp-lavender);
+    border-bottom-color: var(--ctp-lavender);
+    transform: translate(1px, 1px);
+}
