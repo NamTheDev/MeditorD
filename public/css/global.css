@@ -86,6 +86,23 @@
 
     --media-grass-background: url("/media/grass-background.webp");
     --media-home-background: url("/media/home-background.webp");
+
+    --win98-surface: var(--ctp-surface0);
+    --win98-window-bg: var(--ctp-base);
+    --win98-border-lightest: var(--ctp-overlay0);
+    --win98-border-light: var(--ctp-surface2);
+    --win98-border-dark: var(--ctp-mantle);
+    --win98-border-darkest: var(--ctp-crust);
+    --win98-text: var(--ctp-text);
+    --win98-text-disabled: var(--ctp-overlay0);
+    --win98-accent: var(--ctp-lavender);
+
+    --nav-height: clamp(48px, 5.5vw, 70px);
+    --font-base: clamp(11px, 0.9vw, 15px);
+    --font-title: clamp(16px, 1.8vw, 24px);
+    --input-height: clamp(28px, 2.5vw, 38px);
+    --icon-size: clamp(24px, 2.5vw, 38px);
+    --pane-padding: clamp(14px, 1.8vw, 28px);
 }
 
 *,
@@ -109,4 +126,8 @@ body {
     background-color: var(--bg);
     color: var(--fg);
     font-family: var(--font-ui);
+}
+
+.hidden {
+    display: none;
 }
