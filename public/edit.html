@@ -1,4 +1,174 @@
-<main>
-  <h1>Editor not yet implemented</h1>
-  <a href="/home.html">Back to home</a>
-</main>
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>My Website</title>
+        <link rel="stylesheet" href="/css/global.css" />
+        <link rel="stylesheet" href="/css/edit.css" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;600&family=Pixelify+Sans:wght@400;700&display=swap"
+            rel="stylesheet"
+        />
+    </head>
+    <body>
+        <header>
+            <nav>
+                <a
+                    href="/"
+                    class="compartment arrow-compartment"
+                    aria-label="Go back"
+                >
+                    <svg class="pixel-icon arrow-icon" viewBox="0 0 16 16">
+                        <path
+                            fill="currentColor"
+                            d="
+            M7,1 h2 v2 h-2 z
+            M5,3 h2 v2 h-2 z
+            M3,5 h2 v2 h-2 z
+            M1,7 h14 v2 h-14 z
+            M3,9 h2 v2 h-2 z
+            M5,11 h2 v2 h-2 z
+            M7,13 h2 v2 h-2 z
+          "
+                        />
+                    </svg>
+                </a>
+
+                <div class="compartment">
+                    <button type="button" class="action-btn">Save</button>
+                </div>
+
+                <div class="title-compartment">EDITOR</div>
+
+                <div class="compartment">
+                    <button
+                        type="button"
+                        class="settings-btn"
+                        aria-label="Settings"
+                    >
+                        <svg class="pixel-icon gear-icon" viewBox="0 0 16 16">
+                            <path
+                                fill="currentColor"
+                                d="
+              M6,0 h4 v3 h-4 z
+              M6,13 h4 v3 h-4 z
+              M0,6 h3 v4 h-3 z
+              M13,6 h3 v4 h-3 z
+              M2,2 h3 v2 h-3 z
+              M11,2 h3 v2 h-3 z
+              M2,12 h3 v2 h-3 z
+              M11,12 h3 v2 h-3 z
+              M4,4 h8 v8 h-8 z
+            "
+                            />
+                            <path
+                                fill="var(--win98-surface)"
+                                d="M6,6 h4 v4 h-4 z"
+                            />
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="compartment">
+                    <button type="button" class="action-btn">
+                        Access The Archive
+                    </button>
+                </div>
+            </nav>
+        </header>
+
+        <main class="editor-container">
+            <div class="editor-left-pane">
+                <form class="editor-form">
+                    <div class="form-row">
+                        <label for="doc-title" class="field-label"
+                            >Title:</label
+                        >
+                        <input
+                            type="text"
+                            id="doc-title"
+                            class="form-control-unit"
+                            placeholder="Enter title..."
+                        />
+                    </div>
+
+                    <div class="form-row">
+                        <label for="doc-url" class="field-label">URL:</label>
+                        <input
+                            type="text"
+                            id="doc-url"
+                            class="form-control-unit"
+                            placeholder="handle: optional"
+                        />
+                    </div>
+
+                    <div class="form-row">
+                        <label class="field-label" for="doc-media"
+                            >Media:</label
+                        >
+                        <input type="file" id="doc-media" class="hidden" />
+                        <label
+                            for="doc-media"
+                            class="upload-btn form-control-unit"
+                            >Upload File</label
+                        >
+                    </div>
+
+                    <div class="form-row preview-row">
+                        <label class="field-label">Preview:</label>
+                        <div class="preview-box form-control-unit">
+                            No Media Selected
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="editor-right-pane">
+                <div class="textarea-wrapper">
+                    <textarea
+                        class="editor-textarea"
+                        placeholder="Start typing..."
+                    ></textarea>
+                </div>
+            </div>
+        </main>
+
+        <div
+            class="win98-modal-backdrop hidden"
+            id="feature-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="feature-modal-title"
+        >
+            <section class="win98-modal">
+                <header class="win98-modal-titlebar">
+                    <h2 id="feature-modal-title"></h2>
+                    <button
+                        type="button"
+                        class="win98-modal-close"
+                        aria-label="Close dialog"
+                    >
+                        X
+                    </button>
+                </header>
+
+                <div class="win98-modal-content">
+                    <div class="win98-info-icon" aria-hidden="true">i</div>
+                    <p id="feature-modal-message"></p>
+                </div>
+
+                <footer class="win98-modal-actions">
+                    <button type="button" class="win98-button win98-default">
+                        OK
+                    </button>
+                </footer>
+            </section>
+        </div>
+
+        <script src="/js/database.js"></script>
+        <script src="/js/edit.js"></script>
+    </body>
+</html>
