@@ -1,34 +1,62 @@
-<link rel="stylesheet" href="/css/global.css">
-<link rel="stylesheet" href="/css/home.css">
+<link rel="stylesheet" href="/css/global.css" />
+<link rel="stylesheet" href="/css/home.css" />
 
 <div class="home-wrapper">
-  <main class="main-container">
-    <a href="/exit.html" id="exit-btn" class="arrow-btn left" aria-label="Exit">
-      <svg class="arrow-svg" viewBox="0 0 340 220" xmlns="http://www.w3.org/2000/svg">
-        <polygon class="arrow-shape" points="0,110 110,45 110,85 340,85 340,135 110,135 110,175" />
-        <text class="label-exit" x="335" y="182" text-anchor="end">Exit</text>
-      </svg>
-    </a>
+    <main class="main-container">
+        <a
+            href="/exit.html"
+            id="exit-btn"
+            class="arrow-btn left"
+            aria-label="Exit"
+        >
+            <svg
+                class="arrow-svg"
+                viewBox="0 0 340 220"
+                xmlns="http://www.w3.org/2000/svg"
+            >
+                <polygon
+                    class="arrow-shape"
+                    points="0,110 110,45 110,85 340,85 340,135 110,135 110,175"
+                />
+                <text class="label-exit" x="335" y="182" text-anchor="end">
+                    Exit
+                </text>
+            </svg>
+        </a>
 
-    <h1 class="brand-title"><span class="accent-letter">M</span>editor<span class="accent-letter">D</span></h1>
+        <h1 class="brand-title">
+            <span class="accent-letter">M</span>editor<span
+                class="accent-letter"
+                >D</span
+            >
+        </h1>
 
-    <a href="/edit.html" id="edit-btn" class="arrow-btn right" aria-label="Edit">
-      <svg class="arrow-svg" viewBox="0 0 340 220" xmlns="http://www.w3.org/2000/svg">
-        <text class="label-edit" x="5" y="65" text-anchor="start">Edit</text>
-        <polygon class="arrow-shape" points="340,110 230,45 230,85 0,85 0,135 230,135 230,175" />
-      </svg>
-    </a>
-  </main>
+        <a
+            href="/edit.html"
+            id="edit-btn"
+            class="arrow-btn right"
+            aria-label="Edit"
+        >
+            <svg
+                class="arrow-svg"
+                viewBox="0 0 340 220"
+                xmlns="http://www.w3.org/2000/svg"
+            >
+                <text class="label-edit" x="5" y="65" text-anchor="start">
+                    Edit
+                </text>
+                <polygon
+                    class="arrow-shape"
+                    points="340,110 230,45 230,85 0,85 0,135 230,135 230,175"
+                />
+            </svg>
+        </a>
+    </main>
 
-  <p class="footer-note">(The <strong class="red">Exit</strong> and <strong class="green">Edit</strong> arrows are clickable)</p>
+    <p class="footer-note">
+        (The <strong class="red">Exit</strong> and
+        <strong class="green">Edit</strong> arrows are clickable)
+    </p>
 </div>
 
-<script>
-  window.addEventListener("keydown", (e) => {
-    if (e.key === "ArrowLeft") {
-      document.getElementById("exit-btn")?.click();
-    } else if (e.key === "ArrowRight") {
-      document.getElementById("edit-btn")?.click();
-    }
-  });
-</script>
+<script src="/js/util.js"></script>
