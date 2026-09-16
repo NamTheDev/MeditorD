@@ -91,7 +91,18 @@ function renderPosts() {
     title.textContent = post.title;
     const meta = document.createElement("div");
     meta.className = "card-meta";
-    meta.textContent = post.username ? `@${post.username}` : "DOCUMENT";
+    const username = document.createElement("span");
+    username.textContent = post.username ? `@${post.username}` : "DOCUMENT";
+    const dateAdded = document.createElement("span");
+    dateAdded.className = "card-date";
+    if (post.created_at) {
+      const date = new Date(post.created_at);
+      const day = String(date.getDate()).padStart(2, "0");
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const year = date.getFullYear();
+      dateAdded.textContent = `${day}/${month}/${year}`;
+    }
+    meta.append(username, dateAdded);
     const excerpt = document.createElement("div");
     excerpt.className = "card-description";
     excerpt.append(document.createTextNode(getDescriptionExcerpt(post.content)));
@@ -118,15 +129,12 @@ function openPostModal(post) {
   document.getElementById("modalTitle").textContent = post.title;
   const body = document.getElementById("modalBody");
   body.replaceChildren();
-  const heading = document.createElement("h2");
-  heading.className = "modal-post-title";
-  heading.textContent = post.title;
   const description = document.createElement("div");
   description.className = "modal-post-description";
   description.innerHTML = markdown.render(
     post.content || "_This post has no description._",
   );
-  body.append(heading, description);
+  body.append(description);
   if (post.hasMedia) {
     const media = document.createElement("img");
     media.className = "modal-media";
