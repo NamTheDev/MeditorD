@@ -133,6 +133,58 @@ body {
     font-family: var(--font-ui);
 }
 
+.mobile-support-message {
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    background: rgba(17, 17, 27, 0.96);
+    z-index: 2147483647;
+    text-align: center;
+}
+
+.mobile-support-message__inner {
+    display: grid;
+    gap: 0.8rem;
+    max-width: min(32rem, 90vw);
+    padding: clamp(1.5rem, 4vw, 3rem);
+    background: rgba(24, 24, 37, 0.95);
+    border: 2px solid var(--border);
+    box-shadow: var(--shadow-lg);
+}
+
+.mobile-support-message__title,
+.mobile-support-message__text {
+    font-family: var(--font-ui);
+    line-height: 1.4;
+    letter-spacing: 0.04em;
+}
+
+.mobile-support-message__title {
+    font-size: clamp(1.25rem, 2.8vw, 2.25rem);
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.mobile-support-message__text {
+    font-size: clamp(0.95rem, 1.8vw, 1.25rem);
+    color: var(--fg-sub);
+}
+
+body.mobile-blocked {
+    overflow: hidden;
+}
+
+body.mobile-blocked > *:not(.mobile-support-message) {
+    display: none !important;
+}
+
+body.mobile-blocked .mobile-support-message {
+    display: flex !important;
+}
+
 .hidden {
     display: none;
 }
