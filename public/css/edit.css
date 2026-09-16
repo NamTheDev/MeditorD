@@ -301,6 +301,7 @@ input.form-control-unit:focus {
 
 .preview-box {
     height: 100%;
+    padding: var(--preview-padding);
     display: flex;
     align-items: center;
     justify-content: center;
