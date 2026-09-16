@@ -2,11 +2,11 @@
 
 ## I. AI Disclaimer
 
-Created with human ideas and design using Google AI Studio, Gemini Flash, DeepSeek, and GitHub Copilot for coding assistance throughout.
+Built from human ideas with Google AI Studio, Gemini Flash, DeepSeek, and GitHub Copilot supporting design, research, and implementation throughout.
 
 ## II. Summary and Description
 
-Bun editor stores documents and compressed media in local SQLite.
+MeditorD is a nostalgic local editor for saving linked documents and media.
 
 ### Directory
 
@@ -22,7 +22,7 @@ meditord/
 ├── 📁 public/
 │   ├── 📁 css/ — Page stylesheets
 │   ├── 📁 js/ — Editor and database clients
-│   └── 📄 HTML pages — Home, editor, exit, and not-found views
+│   └── 📄 HTML pages — Home, editor, archive, exit, and not-found views
 ├── 📄 config.ts — Server environment configuration
 ├── 📄 index.ts — Bun HTTP server
 ├── 📄 package.json — Project metadata
@@ -36,6 +36,7 @@ meditord/
 - 🗄️ Bun SQLite with `database/meditord.sqlite`
 - 🗜️ Gzip-compressed SQLite BLOBs for image and video uploads
 - 🌐 HTML, CSS, and browser JavaScript
+- 🔌 JSON API for document, folder, and media operations
 
 ## III. Installation and Usage
 
@@ -45,4 +46,10 @@ meditord/
 4. Start the server with `bun run index.ts`.
 5. Open `http://localhost:3000`.
 
-The editor saves document text, URLs, and image or video uploads through the document API. Uploaded media is served through the media API.
+Create a submission with a title and username, then provide either a URL or an image/video upload before saving. Content is stored locally in SQLite and uploaded media is served through the media API.
+
+## IV. Resources and License
+
+Project design references and development resources are documented in [`RESOURCES.md`](RESOURCES.md).
+
+This project is licensed under the [`LICENSE`](LICENSE) file.
