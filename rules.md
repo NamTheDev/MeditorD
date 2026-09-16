@@ -20,3 +20,15 @@ Summary: 3 sections.
 4. Section IV: Resources and license.
 
 Use the 4 sections above as the reference when write README.md.
+
+# Commit
+
+The format is:
+```
+<Type>: <Commit message>
+
+<Date (DD-MM-YYYY)>
+
+- <Commit details>
+- ...
+```
