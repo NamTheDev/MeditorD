@@ -21,6 +21,8 @@
 }
 
 .brand-title {
+    display: block;
+    text-decoration: none;
     font-family: "Press Start 2P", monospace;
     font-size: clamp(2rem, 4.4vw, 5rem);
     color: #c8d2f7;
