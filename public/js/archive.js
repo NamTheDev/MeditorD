@@ -65,6 +65,48 @@ function getDescriptionExcerpt(content) {
   return text.length > 120 ? `${text.slice(0, 117)}...` : text || "No description";
 }
 
+function formatPostDate(value) {
+  if (!value) return "";
+
+  // SQLite returns CURRENT_TIMESTAMP as "YYYY-MM-DD HH:MM:SS".
+  const normalizedValue = value.includes(" ") ? value.replace(" ", "T") + "Z" : value;
+  const date = new Date(normalizedValue);
+  if (Number.isNaN(date.getTime())) return "";
+
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
+}
+
+function getYouTubeEmbedUrl(value) {
+  if (!value) return null;
+
+  try {
+    const parsedUrl = new URL(value);
+    const hostname = parsedUrl.hostname.toLowerCase().replace(/^www\./, "");
+    let videoId = "";
+
+    if (hostname === "youtube.com" || hostname === "m.youtube.com") {
+      videoId = parsedUrl.searchParams.get("v") || "";
+    } else if (hostname === "youtu.be") {
+      videoId = parsedUrl.pathname.slice(1);
+    }
+
+    if (!/^[A-Za-z0-9_-]{11}$/.test(videoId)) return null;
+    return `https://www.youtube-nocookie.com/embed/${videoId}`;
+  } catch {
+    return null;
+  }
+}
+
+function getYouTubeThumbnailUrl(value) {
+  const embedUrl = getYouTubeEmbedUrl(value);
+  if (!embedUrl) return null;
+  const videoId = embedUrl.split("/").pop();
+  return videoId ? `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg` : null;
+}
+
 function renderPosts() {
   const container = document.getElementById("postsContainer");
   container.replaceChildren();
@@ -76,14 +118,23 @@ function renderPosts() {
 
     const media = document.createElement("div");
     media.className = "gallery-media thin-sunken";
-    media.innerHTML = post.hasMedia
-      ? `<img src="/api/media/${encodeURIComponent(post.title)}" alt="">`
-      : generateMochaGraphic("cat_retro");
-    const flair = document.createElement("span");
-    flair.className = "flair-tag";
-    flair.textContent = post.hasMedia ? "MEDIA" : "DOCUMENT";
-    media.append(flair);
-
+    const youtubeThumbnailUrl = getYouTubeThumbnailUrl(post.url);
+    if (youtubeThumbnailUrl) {
+      const thumbnail = document.createElement("img");
+      thumbnail.src = youtubeThumbnailUrl;
+      thumbnail.alt = `YouTube thumbnail for ${post.title}`;
+      thumbnail.loading = "lazy";
+      media.append(thumbnail);
+      media.classList.add("embed-thumbnail", "youtube-thumbnail");
+    } else if (post.hasMedia) {
+      const thumbnail = document.createElement("img");
+      thumbnail.src = `/api/media/${encodeURIComponent(post.title)}`;
+      thumbnail.alt = "";
+      thumbnail.loading = "lazy";
+      media.append(thumbnail);
+    } else {
+      media.innerHTML = generateMochaGraphic("cat_retro");
+    }
     const info = document.createElement("div");
     info.className = "card-info";
     const title = document.createElement("div");
@@ -92,16 +143,10 @@ function renderPosts() {
     const meta = document.createElement("div");
     meta.className = "card-meta";
     const username = document.createElement("span");
-    username.textContent = post.username ? `@${post.username}` : "DOCUMENT";
+    username.textContent = post.username ? `@${post.username}` : "";
     const dateAdded = document.createElement("span");
     dateAdded.className = "card-date";
-    if (post.created_at) {
-      const date = new Date(post.created_at);
-      const day = String(date.getDate()).padStart(2, "0");
-      const month = String(date.getMonth() + 1).padStart(2, "0");
-      const year = date.getFullYear();
-      dateAdded.textContent = `${day}/${month}/${year}`;
-    }
+    dateAdded.textContent = formatPostDate(post.created_at);
     meta.append(username, dateAdded);
     const excerpt = document.createElement("div");
     excerpt.className = "card-description";
@@ -128,6 +173,7 @@ function historyBack() {
 function openPostModal(post) {
   document.getElementById("modalTitle").textContent = post.title;
   const body = document.getElementById("modalBody");
+  stopModalMedia(body);
   body.replaceChildren();
   const description = document.createElement("div");
   description.className = "modal-post-description";
@@ -135,7 +181,19 @@ function openPostModal(post) {
     post.content || "_This post has no description._",
   );
   body.append(description);
-  if (post.hasMedia) {
+  const youtubeEmbedUrl = getYouTubeEmbedUrl(post.url);
+  if (youtubeEmbedUrl) {
+    const embed = document.createElement("iframe");
+    embed.className = "modal-embed";
+    embed.src = youtubeEmbedUrl;
+    embed.title = post.title;
+    embed.loading = "lazy";
+    embed.allow =
+      "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
+    embed.referrerPolicy = "strict-origin-when-cross-origin";
+    embed.allowFullscreen = true;
+    body.prepend(embed);
+  } else if (post.hasMedia) {
     const media = document.createElement("img");
     media.className = "modal-media";
     media.src = `/api/media/${encodeURIComponent(post.title)}`;
@@ -154,8 +212,20 @@ function openPostModal(post) {
 
 function closeModal() {
   const modal = document.getElementById("postModal");
+  stopModalMedia(document.getElementById("modalBody"));
+  document.getElementById("modalBody").replaceChildren();
   modal.classList.remove("active");
   modal.setAttribute("aria-hidden", "true");
+}
+
+function stopModalMedia(container) {
+  container.querySelectorAll("audio, video").forEach((media) => {
+    media.pause();
+    media.currentTime = 0;
+  });
+  container.querySelectorAll("iframe").forEach((frame) => {
+    frame.src = "about:blank";
+  });
 }
 
 function closeModalOnBg(event) {
