@@ -1,4 +1,4 @@
-# Gemini 3.8 Flash Chat Log.
+# Gemini 3.8 Flash Chat Log
 > Date: 11-09-2206.
 
 ---
@@ -172,7 +172,7 @@ Equalized the column layout across the navbar: assigned equal flex widths to the
 HMMMMMMMMMMM well ok. But can you increase the size of settings icon? It seems small compare to other elements.
 
 **Assistant:**  
-Scaled up the settings gear icon dimensions so its visual weight matches the surrounding text buttons and arrow.
+Scaled up the settings gear icon dimensions so that its visual weight matches the surrounding text buttons and arrow.
 
 ---
 
