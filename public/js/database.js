@@ -22,9 +22,10 @@ async function getDocument(title) {
   return request(`/documents/${encodeURIComponent(title)}`);
 }
 
-async function saveDocument(title, content, url, media) {
+async function saveDocument(title, username, content, url, media) {
   const form = new FormData();
   form.set("title", title);
+  form.set("username", username);
   form.set("content", content);
   form.set("url", url);
   if (media) form.set("media", media);
