@@ -2,10 +2,10 @@
 
 <div id="fullscreenApp">
     <div class="menu-bar">
-        <button class="win-btn" id="backButton">◀ BACK</button>
+        <button class="action-btn" id="backButton">HOME</button>
         <div class="gallery-title">GALLERY</div>
-        <button class="win-btn btn-accent" id="newPostButton">
-            ✎ NEW SUBMISSION
+        <button class="action-btn" id="newPostButton">
+            NEW SUBMISSION
         </button>
     </div>
     <div class="gallery-viewport sunken" id="galleryViewport">
@@ -16,15 +16,12 @@
     <div class="modal-window raised">
         <div class="title-bar">
             <span id="modalTitle">POST INSPECTOR</span>
+            <button class="modal-close-button" type="button" aria-label="Close post inspector" title="Close">✕</button>
         </div>
         <div class="modal-content-area sunken" id="modalBody"></div>
-        <div class="modal-actions">
-            <button class="win-btn btn-accent modal-close-button">
-                CLOSE
-            </button>
-        </div>
     </div>
 </div>
 <script src="/js/document-api.js"></script>
+<script src="/js/url-validation.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/markdown-it@14.1.0/dist/markdown-it.min.js"></script>
 <script src="/js/archive.js"></script>
