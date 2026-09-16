@@ -74,3 +74,9 @@ Replace the database posts with a Brazilian funk YouTube post and add a Dockerfi
 
 **Assistant:**
 Removed all existing posts and created the `brazillian funk` post with the supplied YouTube URL and structured Markdown content using headings and bullet points. Added a Bun-based `Dockerfile`, persistent database volume configuration, and `.dockerignore`; static validation passed, but the Docker image build was blocked because the local Docker daemon was not running.
+
+**User:**
+Remove mobile support from the application and show a full-screen message directing mobile users to access the app through desktop.
+
+**Assistant:**
+Added a shared full-screen mobile blocker to the global layout. Small, touch-enabled, and recognized mobile devices now see “Mobile is not supported. Please access this app through desktop,” while desktop users retain the existing application interface.
