@@ -44,6 +44,7 @@ export async function handleApi(req: Request, config: ApiConfig = { prefix: "/ap
     if (endpoint === "/documents" && method === "POST") {
       const contentType = req.headers.get("content-type") ?? "";
       let title: string | undefined;
+      let username = "";
       let content = "";
       let url = "";
       let media: File | undefined;
@@ -52,6 +53,7 @@ export async function handleApi(req: Request, config: ApiConfig = { prefix: "/ap
       if (contentType.includes("multipart/form-data")) {
         const form = await req.formData();
         title = form.get("title")?.toString();
+        username = form.get("username")?.toString() ?? "";
         content = form.get("content")?.toString() ?? "";
         url = form.get("url")?.toString() ?? "";
         isFolder = form.get("isFolder") === "true";
@@ -65,11 +67,13 @@ export async function handleApi(req: Request, config: ApiConfig = { prefix: "/ap
       } else {
         const body = (await req.json()) as {
           title?: string;
+          username?: string;
           content?: string;
           url?: string;
           isFolder?: boolean;
         };
         title = body.title;
+        username = body.username ?? "";
         content = body.content ?? "";
         url = body.url ?? "";
         isFolder = body.isFolder ?? false;
@@ -84,7 +88,14 @@ export async function handleApi(req: Request, config: ApiConfig = { prefix: "/ap
         return Response.json({ title, isDirectory: true }, { status: 201 });
       }
 
-      const saved = await db.saveDocument(title, content, url, media);
+      if (!url.trim() && !media) {
+        return Response.json(
+          { error: "A URL or media file is required" },
+          { status: 400 },
+        );
+      }
+
+      const saved = await db.saveDocument(title, username, content, url, media);
       return Response.json(saved, { status: 201 });
     }
 
