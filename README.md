@@ -35,6 +35,7 @@ meditord/
 - 🟦 TypeScript
 - 🗄️ Bun SQLite with `database/meditord.sqlite`
 - 🗜️ Gzip-compressed SQLite BLOBs for image and video uploads
+- 📝 markdown-it for rendering Markdown post descriptions
 - 🌐 HTML, CSS, and browser JavaScript
 - 🔌 JSON API for document, folder, and media operations
 
