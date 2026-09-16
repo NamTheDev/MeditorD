@@ -1,4 +1,5 @@
 const titleInput = document.getElementById("doc-title");
+const urlInput = document.getElementById("doc-url");
 const contentInput = document.querySelector(".editor-textarea");
 const mediaInput = document.getElementById("doc-media");
 const previewBox = document.querySelector(".preview-box");
@@ -34,17 +35,20 @@ function renderMediaPreview(file) {
     return;
   }
 
-  if (!file.type.startsWith("image/")) {
+  if (!file.type.startsWith("image/") && !file.type.startsWith("video/")) {
     previewBox.textContent = file.name;
     return;
   }
 
   previewUrl = URL.createObjectURL(file);
-  const image = document.createElement("img");
-  image.className = "media-preview";
-  image.src = previewUrl;
-  image.alt = file.name;
-  previewBox.append(image);
+  const media = document.createElement(file.type.startsWith("video/") ? "video" : "img");
+  media.className = "media-preview";
+  media.src = previewUrl;
+  media.setAttribute("aria-label", file.name);
+  if (media instanceof HTMLVideoElement) {
+    media.controls = true;
+  }
+  previewBox.append(media);
 }
 
 async function saveCurrentDocument() {
@@ -55,7 +59,17 @@ async function saveCurrentDocument() {
   }
 
   try {
-    await window.database.saveDocument(title, contentInput.value);
+    await window.database.saveDocument(
+      title,
+      contentInput.value,
+      urlInput.value.trim(),
+      mediaInput.files?.[0],
+    );
+    showFeatureNotice(
+      "Upload Complete",
+      "Content uploaded to database.",
+      saveButton,
+    );
   } catch (error) {
     setStatus(error.message);
   }
