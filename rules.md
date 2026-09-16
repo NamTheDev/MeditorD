@@ -46,3 +46,9 @@ Use the 5 sections above as the reference when writing README.md.
 - <Commit details>
 - ...
 ```
+
+# Mobile Support
+
+- The application is desktop-only.
+- Detect small, touch-enabled, or recognized mobile devices in the shared layout.
+- Hide the application interface and show the exact message: “Mobile is not supported. Please access this app through desktop”.
