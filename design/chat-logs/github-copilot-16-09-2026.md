@@ -32,3 +32,45 @@ Move the Preview button to the right side and add "Description:" label on the le
 
 **Assistant:**
 Repositioned the Preview button to the right with flexbox justification and added a left-aligned "Description:" label. Removed the modal post title heading, leaving only the formatted description below media. Tripled the modal title bar text size from 13px to 39px. Added padding to the modal actions container and increased the gap between elements for better button spacing. Implemented date formatting from the database's `created_at` field and displayed dates as DD/MM/YYYY in the bottom-right corner of each gallery card using CSS layout and proper date parsing.
+
+**User:**
+Clear the local SQLite database, add sample posts for testing, then replace them with the requested production-style content and remove the posts when requested.
+
+**Assistant:**
+Cleared and repopulated the local SQLite database as requested during testing. Added and later removed sample posts, created three long Markdown examples on different topics, and finally replaced them with the contents of `RESOURCES.md` as a single `resources` post before removing all posts again.
+
+**User:**
+Fix the missing post dates, improve the post inspector controls, and update the archive button styling and labels.
+
+**Assistant:**
+Included `created_at` in document API responses and added reliable SQLite timestamp parsing so gallery dates render correctly. Replaced the inspector footer close button with a lavender X control, reduced oversized popup text, improved close-button spacing, and changed the archive Back and New Submission buttons to use the same working `action-btn` style. Renamed the Back button to `HOME` and removed decorative symbols from both archive buttons.
+
+**User:**
+Improve archive readability by adding more padding to thumbnails, the titlebar, and Markdown descriptions, with larger gaps between Markdown lines.
+
+**Assistant:**
+Increased thumbnail padding, added vertical titlebar padding while keeping the title content vertically centered and left-aligned, and improved Markdown readability with description padding, larger line height, paragraph spacing, heading spacing, and list-item gaps.
+
+**User:**
+Improve the post inspector thumbnail sizing and add support for YouTube embeds.
+
+**Assistant:**
+Adjusted the modal thumbnail container to a fixed 400px height, constrained generated and uploaded media so they retain visible spacing from the container border, and added privacy-enhanced YouTube iframe support. Tested the supplied YouTube URL with a database post.
+
+**User:**
+Test X embedding, then add gallery thumbnail support and remove unsupported X support.
+
+**Assistant:**
+Tested the supplied X status URL and confirmed that X previews depend on external widgets or oEmbed metadata rather than a predictable thumbnail URL. Added YouTube gallery thumbnails, then removed X rendering and related styles when the supported URL policy was narrowed to HTTP(S) websites and YouTube only.
+
+**User:**
+Stop media playback when the post inspector closes and update URL validation messaging.
+
+**Assistant:**
+Added modal cleanup that pauses local media, blanks embedded iframes, and clears modal content when the inspector closes. Added shared client and server URL validation, with messages describing only the supported URL types: HTTP(S) websites and YouTube URLs.
+
+**User:**
+Replace the database posts with a Brazilian funk YouTube post and add a Dockerfile for the project.
+
+**Assistant:**
+Removed all existing posts and created the `brazillian funk` post with the supplied YouTube URL and structured Markdown content using headings and bullet points. Added a Bun-based `Dockerfile`, persistent database volume configuration, and `.dockerignore`; static validation passed, but the Docker image build was blocked because the local Docker daemon was not running.
