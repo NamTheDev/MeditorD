@@ -1,4 +1,5 @@
 import * as db from "../database";
+import { isSupportedPostUrl } from "../url";
 
 export interface ApiConfig {
   prefix?: string;
@@ -92,6 +93,12 @@ export async function handleApi(req: Request, config: ApiConfig = { prefix: "/ap
         return Response.json(
           { error: "A URL or media file is required" },
           { status: 400 },
+        );
+      }
+      if (url.trim() && !isSupportedPostUrl(url.trim())) {
+        return Response.json(
+          { error: "Supported URL types are HTTP(S) websites and YouTube URLs." },
+          { status: 415 },
         );
       }
 
