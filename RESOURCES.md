@@ -6,7 +6,7 @@ If you are interested in my hand-drawn or human-written notes, you can check out
 
 ## Windows 95/98 Design
 
-Used for the editor and archive pages. This design inspired me to create this project. I have always loved the nostalgic, analog theme and the blocky 3D buttons of the Windows 95/98 era.
+Used for the editor and archive pages. This design inspired me to create the project. I have always loved the nostalgic, analog theme and the blocky 3D buttons of the Windows 95/98 era.
 
 [GitHub/Chrislemke/Windows_95_98](https://chrislemke.github.io/website_designs/designs/Windows_95_98.html)
 
@@ -41,6 +41,7 @@ For more information about my discussions with Gemini, check out the [MeditorD/D
 The following technologies are used in this project:
 
 - **Bun** — JavaScript/TypeScript runtime and native HTTP server via `Bun.serve`.
+- **Docker** — Containerizes the Bun application for consistent deployment.
 - **TypeScript** — Strictly typed server-side application code and Bun configuration.
 - **SQLite** — Local document storage through Bun's built-in `bun:sqlite` driver.
 - **HTML, CSS, and browser JavaScript** — Framework-free frontend pages, styling, editor behavior, and API client.
