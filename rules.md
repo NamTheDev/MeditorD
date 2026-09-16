@@ -13,14 +13,13 @@
 - Address the resources used in the project, referencing `RESOURCES.md`.
 - Link the license to the `LICENSE` file.
 
-Summary: 5 sections.
+Summary: 4 sections.
 1. Section I: AI disclaimer.
 2. Section II: Summary and description.
 3. Section III: Installation and usage.
 4. Section IV: Resources and license.
-5. Section V: Chat log formatting.
 
-Use the 5 sections above as the reference when writing README.md.
+Use the 4 sections above as the reference when writing README.md.
 
 # Chat logs
 
