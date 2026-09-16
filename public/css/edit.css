@@ -337,12 +337,24 @@ input.form-control-unit:focus {
     padding: 6px;
     background: var(--win98-surface);
     border-bottom: 1px solid var(--win98-border-dark);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.description-label {
+    font-size: var(--font-base);
+    font-weight: bold;
+    color: var(--ctp-subtext1);
+    white-space: nowrap;
 }
 
 .description-toolbar .action-btn {
     min-height: 24px;
     padding: 2px 10px;
     font-size: calc(var(--font-base) * 0.9);
+    flex-shrink: 0;
 }
 
 .editor-textarea {
@@ -427,7 +439,7 @@ input.form-control-unit:focus {
 .win98-modal-titlebar h2 {
     overflow: hidden;
     margin: 0;
-    font-size: 13px;
+    font-size: calc(13px * 3);
     font-weight: 700;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -500,7 +512,8 @@ input.form-control-unit:focus {
 .win98-modal-actions {
     display: flex;
     justify-content: center;
-    padding: 0 0 10px;
+    padding: 8px;
+    gap: 8px;
 }
 
 .win98-button {
