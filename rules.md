@@ -34,7 +34,7 @@ Use the 5 sections above as the reference when writing README.md.
 - The full process is:
 1. Run `git add -A` to stage all changes.
 2. Run `git diff --staged` to review the staged changes.
-3. Run `git commit -m "commit message"` for each change.
+3. Run `git commit -m "commit message"` for each file.
 4. Run `git push` to upload the commits to the remote repository.
 
 - The commit message format is:
