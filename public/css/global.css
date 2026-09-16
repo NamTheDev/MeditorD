@@ -198,35 +198,100 @@ button:active,
     padding: 4px 9px 2px 11px;
 }
 
-.btn-accent {
-    background: var(--accent);
-    color: var(--bg-crust);
-    font-weight: bold;
+.action-btn {
+    background: var(--win98-surface);
+    color: var(--win98-text);
+    border: none;
+    font-family: inherit;
+    font-size: var(--font-base);
+    font-weight: 400;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    padding: clamp(3px, 0.5vw, 8px) clamp(10px, 1.4vw, 24px);
+    min-height: calc(var(--input-height) * 0.9);
     box-shadow:
-        inset 1px 1px 0 #ffffff,
-        inset -1px -1px 0 var(--surface1),
-        inset 2px 2px 0 var(--accent),
-        inset -2px -2px 0 var(--ctp-blue);
+        inset -1px -1px 0 var(--win98-border-darkest),
+        inset 1px 1px 0 var(--win98-border-lightest),
+        inset -2px -2px 0 var(--win98-border-dark),
+        inset 2px 2px 0 var(--win98-border-light);
 }
 
-.btn-accent:active {
+.action-btn:active {
     box-shadow:
-        inset 1px 1px 0 var(--surface1),
-        inset -1px -1px 0 #ffffff,
-        inset 2px 2px 0 var(--ctp-blue),
-        inset -2px -2px 0 var(--accent);
+        inset -1px -1px 0 var(--win98-border-lightest),
+        inset 1px 1px 0 var(--win98-border-darkest),
+        inset -2px -2px 0 var(--win98-border-light),
+        inset 2px 2px 0 var(--win98-border-dark);
+    padding: clamp(4px, 0.6vw, 9px) clamp(9px, 1.3vw, 23px)
+        clamp(2px, 0.4vw, 7px) clamp(11px, 1.5vw, 25px);
+}
+
+.action-btn:focus {
+    outline: 1px dotted var(--win98-accent);
+    outline-offset: -4px;
 }
 
 .title-bar {
-    height: 24px;
-    background: var(--accent);
-    color: var(--bg-crust);
+    position: relative;
+    min-height: 36px;
+    background: linear-gradient(90deg, var(--ctp-lavender) 0%, var(--ctp-base) 100%);
+    color: var(--ctp-base);
     font-weight: bold;
-    font-size: 11px;
-    padding: 2px 6px;
+    font-size: var(--font-base);
+    padding: 10px 42px 10px 10px;
     display: flex;
     align-items: center;
     letter-spacing: 0.5px;
+    border-bottom: 1px solid var(--ctp-surface1);
+}
+
+#modalTitle {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    line-height: 1;
+}
+
+.modal-close-button {
+    position: absolute;
+    top: 50%;
+    right: 5px;
+    width: 22px;
+    height: 22px;
+    min-width: 22px;
+    min-height: 22px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--ctp-lavender);
+    color: var(--ctp-base);
+    font-size: var(--font-base);
+    font-weight: 700;
+    line-height: 1;
+    border: none;
+    cursor: pointer;
+    transform: translateY(-50%);
+    box-shadow:
+        inset -1px -1px 0 var(--bevel-darkest),
+        inset 1px 1px 0 #ffffff,
+        inset -2px -2px 0 var(--bevel-dark),
+        inset 2px 2px 0 var(--ctp-lavender);
+}
+
+.modal-close-button:hover {
+    filter: brightness(1.05);
+}
+
+.modal-close-button:active {
+    padding: 0;
+    box-shadow:
+        inset -1px -1px 0 #ffffff,
+        inset 1px 1px 0 var(--bevel-darkest),
+        inset -2px -2px 0 var(--ctp-lavender),
+        inset 2px 2px 0 var(--bevel-dark);
+    transform: translate(1px, calc(-50% + 1px));
 }
 
 .modal-overlay {
@@ -258,13 +323,10 @@ button:active,
     flex: 1;
     overflow-y: auto;
     padding: 14px;
-    margin: 4px 0;
+    margin: 2px 0 0;
     user-select: text;
 }
 
 .modal-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 6px;
-    padding: 4px 0 0;
+    display: none;
 }
