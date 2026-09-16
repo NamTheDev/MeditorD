@@ -13,6 +13,7 @@ database.run(`
   CREATE TABLE IF NOT EXISTS documents (
     title TEXT PRIMARY KEY,
     is_directory INTEGER NOT NULL DEFAULT 0,
+    username TEXT NOT NULL DEFAULT '',
     content TEXT NOT NULL DEFAULT '',
     url TEXT NOT NULL DEFAULT '',
     media BLOB,
@@ -22,6 +23,12 @@ database.run(`
     updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
   )
 `);
+if (!database
+  .query<{ name: string }, []>("PRAGMA table_info(documents)")
+  .all()
+  .some((column) => column.name === "username")) {
+  database.run("ALTER TABLE documents ADD COLUMN username TEXT NOT NULL DEFAULT ''");
+}
 
 export interface FileRecord {
   title: string;
@@ -30,6 +37,7 @@ export interface FileRecord {
 
 export interface DocumentRecord {
   title: string;
+  username: string;
   content: string;
   url: string;
   mediaName: string | null;
@@ -53,6 +61,7 @@ function normalizeTitle(title: string): string {
 
 function toDocumentRecord(row: {
   title: string;
+  username: string;
   content: string;
   url: string;
   media_name: string | null;
@@ -60,6 +69,7 @@ function toDocumentRecord(row: {
 }): DocumentRecord {
   return {
     title: row.title,
+    username: row.username,
     content: row.content,
     url: row.url,
     mediaName: row.media_name,
@@ -87,6 +97,7 @@ export function getDocumentByTitle(title: string): DocumentRecord | null {
     .query<
       {
         title: string;
+        username: string;
         content: string;
         url: string;
         media_name: string | null;
@@ -94,7 +105,7 @@ export function getDocumentByTitle(title: string): DocumentRecord | null {
       },
       [string]
     >(
-      "SELECT title, content, url, media_name, media_type FROM documents WHERE title = ? AND is_directory = 0",
+      "SELECT title, username, content, url, media_name, media_type FROM documents WHERE title = ? AND is_directory = 0",
     )
     .get(normalizedTitle);
 
@@ -120,6 +131,7 @@ export function getDocumentMedia(title: string): MediaRecord | null {
 
 export async function saveDocument(
   title: string,
+  username = "",
   content = "",
   url = "",
   media?: File,
@@ -129,9 +141,10 @@ export async function saveDocument(
 
   database
     .query(
-      `INSERT INTO documents (title, is_directory, content, url, media, media_name, media_type)
-       VALUES (?, 0, ?, ?, ?, ?, ?)
+      `INSERT INTO documents (title, is_directory, username, content, url, media, media_name, media_type)
+       VALUES (?, 0, ?, ?, ?, ?, ?, ?)
        ON CONFLICT(title) DO UPDATE SET
+         username = excluded.username,
          content = excluded.content,
          url = excluded.url,
          media = excluded.media,
@@ -141,6 +154,7 @@ export async function saveDocument(
     )
     .run(
       normalizedTitle,
+      username,
       content,
       url,
       mediaData,
