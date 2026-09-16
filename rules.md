@@ -13,13 +13,13 @@
 - Address resources used in the project, referencing `RESOURCES.md`.
 - Link license to the `LICENSE` file.
 
-Summary: 3 sections.
+Summary: 4 sections.
 1. Section I: AI disclaimer.
 2. Section II: Summary and description.
 3. Section III: Installation and usage.
 4. Section IV: Resources and license.
 
-Use the 4 sections above as the reference when write README.md.
+Use the 4 sections above as the reference when writing README.md.
 
 # Commit
 
