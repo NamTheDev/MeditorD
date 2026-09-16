@@ -15,6 +15,32 @@
         <link rel="stylesheet" href="/css/global.css" />
     </head>
     <body>
+        <div class="mobile-support-message" role="alert" aria-live="assertive">
+            <div class="mobile-support-message__inner">
+                <div class="mobile-support-message__title">Mobile is not supported.</div>
+                <div class="mobile-support-message__text">Please access this app through desktop</div>
+            </div>
+        </div>
         {{body}}
+        <script>
+            (() => {
+                const isMobileDevice = () => {
+                    const widthMatch = window.matchMedia("(max-width: 900px)").matches;
+                    const pointerMatch = window.matchMedia("(pointer: coarse)").matches;
+                    const userAgentMatch = /Android|iPhone|iPad|iPod|Mobile|mobile|Windows Phone/i.test(
+                        navigator.userAgent,
+                    );
+
+                    return widthMatch || pointerMatch || userAgentMatch;
+                };
+
+                const applyMobileBlock = () => {
+                    document.body.classList.toggle("mobile-blocked", isMobileDevice());
+                };
+
+                applyMobileBlock();
+                window.addEventListener("resize", applyMobileBlock, { passive: true });
+            })();
+        </script>
     </body>
 </html>
