@@ -25,7 +25,7 @@ Use the 5 sections above as the reference when writing README.md.
 # Chat logs
 
 - Store exported design conversations in `design/chat-logs/`.
-- Name each log with a concise title of fewer than four words that describes the change.
+- A chat log filename format is `<DD-MM-YYYY>.md`.
 - Format each log with a `# <name of LLM used> Chat Log` heading, a `> Date: DD-MM-YYYY.` line, a `### Transcript` heading, and bold `User` and `Assistant` speaker labels.
 - Summarize each exchange in clear, grammatical Markdown while preserving the requested changes and implementation results.
 
@@ -34,7 +34,7 @@ Use the 5 sections above as the reference when writing README.md.
 - The full process is:
 1. Run `git add -A` to stage all changes.
 2. Run `git diff --staged` to review the staged changes.
-3. Run `git commit -m "commit message"` for each file.
+3. Run `git commit -m "commit message"` for each file individually.
 4. Run `git push` to upload the commits to the remote repository.
 
 - The commit message format is:
