@@ -26,13 +26,15 @@ The editor I used to create this project is Zed by Zed Industries. The reason wh
 
 Canva was very, very helpful in creating the visual template for LLM Gemini 3.8 Flash to replicate the html, css, and js with 90% accuracy. You can check out the screenshots in [MeditorD/Canva_Designs](https://github.com/NamTheDev/MeditorD/tree/main/design/canva).
 
-## LLMS
+## LLMS / AI Tools
 
-The LLMs used in this project are Gemini, DeepSeek, and GitHub Copilot.
+The LLMs used in this project are Gemini, DeepSeek, and GitHub Copilot AI assistant.
 
 - Gemini was used to generate the html, css, and js templates.
 - DeepSeek was used for quick web search.
-- GitHub Copilot was used to assist with the project's overall coding.
+- GitHub Copilot was used to assist with the project's overall coding and commit messages.
+
+For more information on what I have discussed with Gemini, you can check out the [MeditorD/Design_Chat_Logs](https://github.com/NamTheDev/MeditorD/tree/main/design/chat-logs) folder. In case of other LLMs / AI tools, I have lost the chat logs. I will export them in the future, sorry!
 
 ## Tech Stack
 
