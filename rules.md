@@ -4,10 +4,10 @@
 - Always format future README updates with a 20-word AI attribution disclaimer.
 
 2. Section II: Summary and description.
-- A 10-word summary sentence, a symbolic directory tree view, and a tech-stack overview.
+- A 10-word summary sentence, a symbolic directory tree view (full), and a tech-stack overview.
 
 3. Section III: Installation and usage.
-- Instructions using minimal emojis, without overview sections or code showcases.
+- A step-by-step tutorial explaining how to install and use the project.
 
 4. Section IV: Resources and license.
 - Address the resources used in the project, referencing `RESOURCES.md`.
@@ -20,6 +20,12 @@ Summary: 4 sections.
 4. Section IV: Resources and license.
 
 Use the 4 sections above as the reference when writing README.md.
+
+Respect `.gitignore` and `.dockerignore` files.
+
+Do not use any emojis in the README.md file.
+
+No extra comments or explanations.
 
 # Chat logs
 
