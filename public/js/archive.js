@@ -69,7 +69,7 @@ function renderPosts() {
       : generateMochaGraphic("cat_retro");
     const flair = document.createElement("span");
     flair.className = "flair-tag";
-    flair.textContent = post.hasMedia ? "Media" : "Document";
+    flair.textContent = post.hasMedia ? "MEDIA" : "DOCUMENT";
     media.append(flair);
 
     const info = document.createElement("div");
@@ -79,7 +79,7 @@ function renderPosts() {
     title.textContent = post.title;
     const meta = document.createElement("div");
     meta.className = "card-meta";
-    meta.textContent = post.username ? `@${post.username}` : "Document";
+    meta.textContent = post.username ? `@${post.username}` : "DOCUMENT";
     info.append(title, meta);
     card.append(media, info);
     card.addEventListener("click", () => openPostModal(post));
@@ -105,7 +105,7 @@ function openPostModal(post) {
   heading.textContent = post.title;
   const description = document.createElement("p");
   description.className = "modal-post-meta";
-  description.textContent = post.isDirectory ? "Folder" : "Document";
+  description.textContent = post.isDirectory ? "FOLDER" : "DOCUMENT";
   body.append(heading, description);
   if (post.hasMedia) {
     const media = document.createElement("img");
