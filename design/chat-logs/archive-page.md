@@ -1,4 +1,4 @@
-# Gemini 3.8 Flash Chat log.
+# Gemini 3.8 Flash Chat Log
 > Date: 16-09-2026.
 
 ---
