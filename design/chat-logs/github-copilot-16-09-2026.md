@@ -86,3 +86,9 @@ Perform a grammar check across the project, add Docker to the Tech Stack section
 
 **Assistant:**
 Reviewed the project-facing documentation, corrected clear grammar and capitalization issues, added Docker to the Tech Stack sections, expanded the README with the required chat-log formatting section, and documented this exchange.
+
+**User:**
+Investigate the archive page's inconsistent mobile warning text size, update the documentation following the project rules, and commit and push the changes.
+
+**Assistant:**
+Traced the issue to the archive stylesheet applying the responsive base font size directly to `body`. Moved that sizing to `#fullscreenApp` so the shared mobile warning retains consistent typography, then updated the README structure, corrected related rule wording, and documented the change.
