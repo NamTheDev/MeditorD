@@ -32,8 +32,9 @@ meditord/
 ### Tech Stack
 
 - 🟨 Bun runtime and HTTP server
+- 🐳 Docker containerization
 - 🟦 TypeScript
-- 🗄️ Bun SQLite with `database/meditord.sqlite`
+- 🗄️ Bun's SQLite with `database/meditord.sqlite`
 - 🗜️ Gzip-compressed SQLite BLOBs for image and video uploads
 - 📝 markdown-it for rendering Markdown post descriptions
 - 🌐 HTML, CSS, and browser JavaScript
@@ -54,3 +55,7 @@ Create a submission with a title and username, then provide either a URL or an i
 Project design references and development resources are documented in [`RESOURCES.md`](RESOURCES.md).
 
 This project is licensed under the [`LICENSE`](LICENSE) file.
+
+## V. Chat Log Formatting
+
+Exported design conversations are stored in [`design/chat-logs/`](design/chat-logs/) using the `<LLM>-<DD-MM-YYYY>.md` filename format. Each log includes the LLM heading, date, transcript heading, and bold `User` and `Assistant` speaker labels.
