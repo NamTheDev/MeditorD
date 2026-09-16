@@ -1,6 +1,9 @@
 async function request(path, options = {}) {
+  const headers = options.body instanceof FormData
+    ? {}
+    : { "Content-Type": "application/json" };
   const response = await fetch(`/api${path}`, {
-    headers: { "Content-Type": "application/json" },
+    headers,
     ...options,
   });
 
@@ -19,10 +22,16 @@ async function getDocument(title) {
   return request(`/documents/${encodeURIComponent(title)}`);
 }
 
-async function saveDocument(title, content) {
+async function saveDocument(title, content, url, media) {
+  const form = new FormData();
+  form.set("title", title);
+  form.set("content", content);
+  form.set("url", url);
+  if (media) form.set("media", media);
+
   return request("/documents", {
     method: "POST",
-    body: JSON.stringify({ title, content }),
+    body: form,
   });
 }
 
