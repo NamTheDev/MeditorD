@@ -1,4 +1,4 @@
-# Github Copilot Chat Log
+# GitHub Copilot Chat Log
 > Date: 16-09-2026.
 
 ### Transcript
@@ -80,3 +80,9 @@ Remove mobile support from the application and show a full-screen message direct
 
 **Assistant:**
 Added a shared full-screen mobile blocker to the global layout. Small, touch-enabled, and recognized mobile devices now see “Mobile is not supported. Please access this app through desktop,” while desktop users retain the existing application interface.
+
+**User:**
+Perform a grammar check across the project, add Docker to the Tech Stack section, update the README according to the project rules, update the chat log, and commit and push the changes.
+
+**Assistant:**
+Reviewed the project-facing documentation, corrected clear grammar and capitalization issues, added Docker to the Tech Stack sections, expanded the README with the required chat-log formatting section, and documented this exchange.
