@@ -42,7 +42,9 @@ function renderMediaPreview(file) {
   }
 
   previewUrl = URL.createObjectURL(file);
-  const media = document.createElement(file.type.startsWith("video/") ? "video" : "img");
+  const media = document.createElement(
+    file.type.startsWith("video/") ? "video" : "img",
+  );
   media.className = "media-preview";
   media.src = previewUrl;
   media.setAttribute("aria-label", file.name);
