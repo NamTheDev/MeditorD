@@ -52,6 +52,18 @@ function generateMochaGraphic(type) {
 }
 
 let postsData = [];
+const markdown = window.markdownit({
+  html: false,
+  linkify: true,
+  typographer: true,
+});
+
+function getDescriptionExcerpt(content) {
+  const description = document.createElement("div");
+  description.innerHTML = markdown.render(content || "");
+  const text = description.textContent.trim().replace(/\s+/g, " ");
+  return text.length > 120 ? `${text.slice(0, 117)}...` : text || "No description";
+}
 
 function renderPosts() {
   const container = document.getElementById("postsContainer");
@@ -80,7 +92,13 @@ function renderPosts() {
     const meta = document.createElement("div");
     meta.className = "card-meta";
     meta.textContent = post.username ? `@${post.username}` : "DOCUMENT";
-    info.append(title, meta);
+    const excerpt = document.createElement("div");
+    excerpt.className = "card-description";
+    excerpt.append(document.createTextNode(getDescriptionExcerpt(post.content)));
+    const more = document.createElement("strong");
+    more.textContent = " Click for more";
+    excerpt.append(more);
+    info.append(title, excerpt, meta);
     card.append(media, info);
     card.addEventListener("click", () => openPostModal(post));
     container.append(card);
@@ -103,9 +121,11 @@ function openPostModal(post) {
   const heading = document.createElement("h2");
   heading.className = "modal-post-title";
   heading.textContent = post.title;
-  const description = document.createElement("p");
-  description.className = "modal-post-meta";
-  description.textContent = post.isDirectory ? "FOLDER" : "DOCUMENT";
+  const description = document.createElement("div");
+  description.className = "modal-post-description";
+  description.innerHTML = markdown.render(
+    post.content || "_This post has no description._",
+  );
   body.append(heading, description);
   if (post.hasMedia) {
     const media = document.createElement("img");
