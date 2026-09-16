@@ -43,6 +43,7 @@ export interface DocumentRecord {
   mediaName: string | null;
   mediaType: string | null;
   hasMedia: boolean;
+  created_at: string;
 }
 
 export interface MediaRecord {
@@ -66,6 +67,7 @@ function toDocumentRecord(row: {
   url: string;
   media_name: string | null;
   media_type: string | null;
+  created_at: string;
 }): DocumentRecord {
   return {
     title: row.title,
@@ -75,6 +77,7 @@ function toDocumentRecord(row: {
     mediaName: row.media_name,
     mediaType: row.media_type,
     hasMedia: row.media_type !== null,
+    created_at: row.created_at,
   };
 }
 
@@ -102,10 +105,11 @@ export function getDocumentByTitle(title: string): DocumentRecord | null {
         url: string;
         media_name: string | null;
         media_type: string | null;
+        created_at: string;
       },
       [string]
     >(
-      "SELECT title, username, content, url, media_name, media_type FROM documents WHERE title = ? AND is_directory = 0",
+      "SELECT title, username, content, url, media_name, media_type, created_at FROM documents WHERE title = ? AND is_directory = 0",
     )
     .get(normalizedTitle);
 
