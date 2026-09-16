@@ -4,7 +4,7 @@ const contentInput = document.querySelector(".editor-textarea");
 const mediaInput = document.getElementById("doc-media");
 const previewBox = document.querySelector(".preview-box");
 const saveButton = document.querySelector(".action-btn");
-const archiveButton = document.querySelectorAll(".action-btn")[1];
+const archiveButton = document.getElementById("archive-button");
 const settingsButton = document.querySelector(".settings-btn");
 const featureModal = document.getElementById("feature-modal");
 const featureModalTitle = document.getElementById("feature-modal-title");
@@ -75,10 +75,6 @@ async function saveCurrentDocument() {
   }
 }
 
-function showArchiveNotice() {
-  showFeatureNotice("Access The Archive", "Feature coming soon.");
-}
-
 function showSettingsNotice() {
   showFeatureNotice("Settings", "Feature coming soon.");
 }
@@ -102,7 +98,9 @@ mediaInput.addEventListener("change", () => {
 });
 
 saveButton.addEventListener("click", saveCurrentDocument);
-archiveButton.addEventListener("click", showArchiveNotice);
+archiveButton.addEventListener("click", () => {
+  window.location.href = "/archive.html";
+});
 settingsButton.addEventListener("click", showSettingsNotice);
 featureModalClose.addEventListener("click", closeFeatureNotice);
 featureModalOk.addEventListener("click", closeFeatureNotice);
