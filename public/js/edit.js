@@ -2,6 +2,8 @@ const titleInput = document.getElementById("doc-title");
 const usernameInput = document.getElementById("doc-username");
 const urlInput = document.getElementById("doc-url");
 const contentInput = document.querySelector(".editor-textarea");
+const previewButton = document.getElementById("preview-button");
+const markdownPreview = document.querySelector(".markdown-preview");
 const mediaInput = document.getElementById("doc-media");
 const previewBox = document.querySelector(".preview-box");
 const saveButton = document.querySelector(".action-btn");
@@ -14,6 +16,17 @@ const featureModalClose = featureModal.querySelector(".win98-modal-close");
 const featureModalOk = featureModal.querySelector(".win98-button");
 let modalReturnFocus = null;
 let previewUrl = null;
+const markdown = window.markdownit({
+  html: false,
+  linkify: true,
+  typographer: true,
+});
+
+function updateMarkdownPreview() {
+  markdownPreview.innerHTML = markdown.render(
+    contentInput.value || "_Nothing to preview yet._",
+  );
+}
 
 function setStatus(message) {
   if (previewUrl) {
@@ -117,6 +130,20 @@ archiveButton.addEventListener("click", () => {
   window.location.href = "/archive.html";
 });
 settingsButton.addEventListener("click", showSettingsNotice);
+previewButton.addEventListener("click", () => {
+  const isPreviewing = !markdownPreview.classList.contains("hidden");
+  if (isPreviewing) {
+    markdownPreview.classList.add("hidden");
+    contentInput.classList.remove("hidden");
+    previewButton.textContent = "Preview";
+    return;
+  }
+  updateMarkdownPreview();
+  contentInput.classList.add("hidden");
+  markdownPreview.classList.remove("hidden");
+  previewButton.textContent = "Edit";
+});
+contentInput.addEventListener("input", updateMarkdownPreview);
 featureModalClose.addEventListener("click", closeFeatureNotice);
 featureModalOk.addEventListener("click", closeFeatureNotice);
 
