@@ -25,7 +25,7 @@ Use the 5 sections above as the reference when writing README.md.
 # Chat logs
 
 - Store exported design conversations in `design/chat-logs/`.
-- A chat log filename format is `<DD-MM-YYYY>.md`.
+- A chat log filename format is `<LLM>-<DD-MM-YYYY>.md`, example: `gemini-flash-11-09-2026.md`.
 - Format each log with a `# <name of LLM used> Chat Log` heading, a `> Date: DD-MM-YYYY.` line, a `### Transcript` heading, and bold `User` and `Assistant` speaker labels.
 - Summarize each exchange in clear, grammatical Markdown while preserving the requested changes and implementation results.
 
