@@ -1,4 +1,5 @@
 const titleInput = document.getElementById("doc-title");
+const usernameInput = document.getElementById("doc-username");
 const urlInput = document.getElementById("doc-url");
 const contentInput = document.querySelector(".editor-textarea");
 const mediaInput = document.getElementById("doc-media");
@@ -53,17 +54,29 @@ function renderMediaPreview(file) {
 
 async function saveCurrentDocument() {
   const title = titleInput.value.trim();
+  const username = usernameInput.value.trim();
+  const url = urlInput.value.trim();
+  const media = mediaInput.files?.[0];
   if (!title) {
     showFeatureNotice("Cannot Save Document", "Title is required.", titleInput);
+    return;
+  }
+  if (!url && !media) {
+    showFeatureNotice(
+      "Cannot Save Document",
+      "Provide a URL or upload media before saving.",
+      urlInput,
+    );
     return;
   }
 
   try {
     await window.database.saveDocument(
       title,
+      username,
       contentInput.value,
-      urlInput.value.trim(),
-      mediaInput.files?.[0],
+      url,
+      media,
     );
     showFeatureNotice(
       "Upload Complete",
