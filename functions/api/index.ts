@@ -28,18 +28,63 @@ export async function handleApi(req: Request, config: ApiConfig = { prefix: "/ap
       return Response.json(doc);
     }
 
+    if (endpoint.startsWith("/media/") && method === "GET") {
+      const title = decodeURIComponent(endpoint.slice("/media/".length));
+      const media = await db.getDocumentMedia(title);
+      if (!media) return Response.json({ error: "Media not found" }, { status: 404 });
+      return new Response(media.data, {
+        headers: {
+          "Content-Type": media.type,
+          "Content-Disposition": media.name ? `inline; filename="${encodeURIComponent(media.name)}"` : "inline",
+          "Cache-Control": "no-cache",
+        },
+      });
+    }
+
     if (endpoint === "/documents" && method === "POST") {
-      const body = (await req.json()) as { title?: string; content?: string; isFolder?: boolean };
-      if (!body.title) {
+      const contentType = req.headers.get("content-type") ?? "";
+      let title: string | undefined;
+      let content = "";
+      let url = "";
+      let media: File | undefined;
+      let isFolder = false;
+
+      if (contentType.includes("multipart/form-data")) {
+        const form = await req.formData();
+        title = form.get("title")?.toString();
+        content = form.get("content")?.toString() ?? "";
+        url = form.get("url")?.toString() ?? "";
+        isFolder = form.get("isFolder") === "true";
+        const uploadedMedia = form.get("media");
+        if (uploadedMedia instanceof File && uploadedMedia.size > 0) {
+          if (!uploadedMedia.type.startsWith("image/") && !uploadedMedia.type.startsWith("video/")) {
+            return Response.json({ error: "Only image and video files are supported" }, { status: 415 });
+          }
+          media = uploadedMedia;
+        }
+      } else {
+        const body = (await req.json()) as {
+          title?: string;
+          content?: string;
+          url?: string;
+          isFolder?: boolean;
+        };
+        title = body.title;
+        content = body.content ?? "";
+        url = body.url ?? "";
+        isFolder = body.isFolder ?? false;
+      }
+
+      if (!title) {
         return Response.json({ error: "Title is required" }, { status: 400 });
       }
 
-      if (body.isFolder) {
-        await db.createFolder(body.title);
-        return Response.json({ title: body.title, isDirectory: true }, { status: 201 });
+      if (isFolder) {
+        await db.createFolder(title);
+        return Response.json({ title, isDirectory: true }, { status: 201 });
       }
 
-      const saved = await db.saveDocument(body.title, body.content ?? "");
+      const saved = await db.saveDocument(title, content, url, media);
       return Response.json(saved, { status: 201 });
     }
 
