@@ -1,46 +1,29 @@
-<!doctype html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Posts Gallery</title>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-        <link
-            href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;600;700&family=Pixelify+Sans:wght@600;700&family=VT323&display=swap"
-            rel="stylesheet"
-        />
+<link rel="stylesheet" href="/css/archive.css" />
 
-        <link rel="stylesheet" href="/css/global.css" />
-        <link rel="stylesheet" href="/css/archive.css" />
-    </head>
-    <body>
-        <div id="fullscreenApp">
-            <div class="menu-bar">
-                <button class="win-btn" id="backButton">◀ Back</button>
-                <div class="gallery-title">Posts Gallery</div>
-                <button class="win-btn btn-accent" id="newPostButton">
-                    ✎ New Submission
-                </button>
-            </div>
-            <div class="gallery-viewport sunken" id="galleryViewport">
-                <div class="reddit-gallery" id="postsContainer"></div>
-            </div>
+<div id="fullscreenApp">
+    <div class="menu-bar">
+        <button class="win-btn" id="backButton">◀ BACK</button>
+        <div class="gallery-title">POSTS GALLERY</div>
+        <button class="win-btn btn-accent" id="newPostButton">
+            ✎ NEW SUBMISSION
+        </button>
+    </div>
+    <div class="gallery-viewport sunken" id="galleryViewport">
+        <div class="reddit-gallery" id="postsContainer"></div>
+    </div>
+</div>
+<div class="modal-overlay" id="postModal">
+    <div class="modal-window raised">
+        <div class="title-bar">
+            <span id="modalTitle">POST INSPECTOR</span>
         </div>
-        <div class="modal-overlay" id="postModal">
-            <div class="modal-window raised">
-                <div class="title-bar">
-                    <span id="modalTitle">Post Inspector</span>
-                </div>
-                <div class="modal-content-area sunken" id="modalBody"></div>
-                <div class="modal-actions">
-                    <button class="win-btn btn-accent modal-close-button">
-                        Close
-                    </button>
-                </div>
-            </div>
+        <div class="modal-content-area sunken" id="modalBody"></div>
+        <div class="modal-actions">
+            <button class="win-btn btn-accent modal-close-button">
+                CLOSE
+            </button>
         </div>
-        <script src="/js/database.js"></script>
-        <script src="/js/archive.js"></script>
-    </body>
-</html>
+    </div>
+</div>
+<script src="/js/document-api.js"></script>
+<script src="/js/archive.js"></script>
