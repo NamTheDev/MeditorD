@@ -52,7 +52,6 @@ function generateMochaGraphic(type) {
             }
 
             let postsData = [];
-            let isCompact = false;
 
             function renderPosts() {
                 const container = document.getElementById("postsContainer");
@@ -80,7 +79,9 @@ function generateMochaGraphic(type) {
                     title.textContent = post.title;
                     const meta = document.createElement("div");
                     meta.className = "card-meta";
-                    meta.textContent = post.isDirectory ? "Folder" : "Document";
+                    meta.textContent = post.username
+                        ? `@${post.username}`
+                        : "Document";
                     info.append(title, meta);
                     card.append(media, info);
                     card.addEventListener("click", () => openPostModal(post));
@@ -95,14 +96,6 @@ function generateMochaGraphic(type) {
                     return;
                 }
                 window.location.href = "/home.html";
-            }
-
-            function toggleLayout() {
-                const container = document.getElementById("postsContainer");
-                const button = document.getElementById("toggleGridBtn");
-                isCompact = !isCompact;
-                container.classList.toggle("compact", isCompact);
-                button.textContent = isCompact ? "🖼️ Toggle Grid" : "📋 Toggle Compact";
             }
 
             function openPostModal(post) {
@@ -162,7 +155,6 @@ function generateMochaGraphic(type) {
             }
 
             document.getElementById("backButton").addEventListener("click", historyBack);
-            document.getElementById("toggleGridBtn").addEventListener("click", toggleLayout);
             document.getElementById("newPostButton").addEventListener("click", () => {
                 window.location.href = "/edit.html";
             });
