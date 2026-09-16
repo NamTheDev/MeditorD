@@ -47,3 +47,4 @@ The following technologies are used in this project:
 - **HTTP/JSON API** — Document, folder, and media operations exposed under `/api`.
 - **Gzip compression** — Uploaded image and video files are compressed before being stored as SQLite BLOBs.
 - **Bun and Node.js standard APIs** — Filesystem, path, and zlib utilities support static file serving and media storage.
+- **markdown-it** — Renders Markdown post descriptions in the archive and editor preview.
