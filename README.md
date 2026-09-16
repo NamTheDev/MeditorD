@@ -2,7 +2,7 @@
 
 ## I. AI Disclaimer
 
-Built from human ideas with Google AI Studio, Gemini Flash, DeepSeek, and GitHub Copilot supporting design, research, and implementation throughout.
+Built from human ideas with Gemini, DeepSeek, and GitHub Copilot supporting design, research, and implementation throughout.
 
 ## II. Summary and Description
 
