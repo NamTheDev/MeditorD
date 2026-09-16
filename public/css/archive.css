@@ -83,7 +83,7 @@ button:active,
 
 .title-bar {
     height: 24px;
-    background: linear-gradient(to right, var(--ctp-lavender), #a6adc8);
+    background: var(--ctp-lavender);
     color: var(--ctp-crust);
     font-weight: bold;
     font-size: 11px;
