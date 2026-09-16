@@ -26,7 +26,7 @@ Use the 5 sections above as the reference when writing README.md.
 
 - Store exported design conversations in `design/chat-logs/`.
 - Name each log with a concise title of fewer than four words that describes the change.
-- Format each log with a `# Gemini 3.8 Flash Chat Log` heading, a `> Date: DD-MM-YYYY.` line, a `### Transcript` heading, and bold `User` and `Assistant` speaker labels.
+- Format each log with a `# <name of LLM used> Chat Log` heading, a `> Date: DD-MM-YYYY.` line, a `### Transcript` heading, and bold `User` and `Assistant` speaker labels.
 - Summarize each exchange in clear, grammatical Markdown while preserving the requested changes and implementation results.
 
 # Git Commit & Push
