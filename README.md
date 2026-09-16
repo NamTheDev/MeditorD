@@ -2,11 +2,11 @@
 
 ## I. AI Disclaimer
 
-Built from human ideas with Gemini, DeepSeek, and GitHub Copilot supporting design, research, and implementation throughout.
+Built from human ideas with Gemini, DeepSeek, and GitHub Copilot supporting design, research, implementation, testing, and documentation throughout project development.
 
 ## II. Summary and Description
 
-MeditorD is a nostalgic local editor for saving linked documents and media.
+MeditorD is a nostalgic local editor for saving linked documents.
 
 ### Directory
 
