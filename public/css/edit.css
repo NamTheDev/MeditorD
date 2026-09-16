@@ -439,7 +439,7 @@ input.form-control-unit:focus {
 .win98-modal-titlebar h2 {
     overflow: hidden;
     margin: 0;
-    font-size: calc(13px * 3);
+    font-size: 13px;
     font-weight: 700;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -462,11 +462,16 @@ input.form-control-unit:focus {
 }
 
 .win98-modal-close {
-    width: 18px;
-    height: 18px;
-    padding: 0;
-    line-height: 12px;
-    font-size: 15px;
+    width: 26px;
+    height: 24px;
+    min-width: 26px;
+    min-height: 24px;
+    padding: 0 5px;
+    line-height: 1;
+    font-size: 13px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .win98-modal-content {
@@ -535,4 +540,8 @@ input.form-control-unit:focus {
     border-right-color: var(--ctp-lavender);
     border-bottom-color: var(--ctp-lavender);
     transform: translate(1px, 1px);
+}
+
+.win98-modal-close:active {
+    padding: 0 5px;
 }
