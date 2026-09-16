@@ -84,6 +84,14 @@ async function saveCurrentDocument() {
     );
     return;
   }
+  if (url && !window.isSupportedPostUrl(url)) {
+    showFeatureNotice(
+      "Cannot Save Document",
+      "Supported URL types are HTTP(S) websites and YouTube URLs.",
+      urlInput,
+    );
+    return;
+  }
 
   try {
     await window.database.saveDocument(
