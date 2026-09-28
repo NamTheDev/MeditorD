@@ -21,6 +21,10 @@ export async function handleApi(
 
   try {
     if (endpoint === "/documents" && method === "GET") {
+      if (url.searchParams.get("full") === "true") {
+        const items = await db.getAllDocuments();
+        return Response.json(items);
+      }
       const items = await db.listDocuments();
       return Response.json(items);
     }
