@@ -1,0 +1,52 @@
+# Gemini 3.8 Flash Chat Log
+> Date: 28-09-2026.
+
+### Transcript
+
+**User:**
+Review archive.html and archive.css. Increase card dimensions to 400x400px and eliminate dead right-side space so cards or gaps fill the container.
+
+**Assistant:**
+Analyzed grid rules in public/css/archive.css. Detailed Approach 1 (fluid auto-stretching columns with minmax) and Approach 2 (rigid cards with dynamic gaps), comparing real-world usage on platforms like YouTube, Airbnb, and Instagram. Applied Approach 1 using repeat(auto-fill, minmax(400px, 1fr)) and scaled card height, media height, and description limits to 400px.
+
+**User:**
+Generate an inspection command and a bash replacement command without code comments to apply the CSS changes.
+
+**Assistant:**
+Provided a grep line inspection command and an in-place Bun replacement script modifying .reddit-gallery, .gallery-card, .gallery-media, and .card-description in public/css/archive.css. Verified changes via git diff.
+
+**User:**
+Execute git commit and push for the previous project modifications according to project rules, committing each file individually.
+
+**Assistant:**
+Constructed an all-in-one command staging all changes, reviewing staged diffs, generating 15 individual dated commits with standardized commit types and details, and pushing to the remote repository.
+
+**User:**
+Inspect site title and title bar code, standardize browser tab titles to UX best practices, and link media/icon.webp as the site favicon.
+
+**Assistant:**
+Inspected public/global.html, functions/render.ts, and index.ts. Linked /media/icon.webp in global.html. Standardized tab titles to front-loaded UX format ([Page Name] — MeditorD) with dynamic fallback and 404 formatting in index.ts.
+
+**User:**
+Research page caching strategies to improve loading speeds for users.
+
+**Assistant:**
+Researched a three-tier caching pipeline covering in-memory RAM caching on the server, conditional browser HTTP caching with ETag and 304 Not Modified responses, and static asset caching with Cache-Control headers. Implemented in-memory caching and ETag headers in functions/render.ts and asset caching in index.ts.
+
+**User:**
+Investigate display flickering of posts in archive.html. Research solutions combining skeleton loaders, session storage, and server-side rendering.
+
+**Assistant:**
+Diagnosed Flash of Empty Content (FOEC) and the 1+N database query waterfall in client-side loading. Created ASCII diagrams illustrating the multi-tiered rendering pipeline. Added getAllDocuments() in functions/database/documents.ts and /api/documents?full=true in functions/api/index.ts to fetch all posts in a single query.
+
+**User:**
+Implement True Server-Side Rendering (SSR) to completely eliminate card pop-in and flickering on archive.html.
+
+**Assistant:**
+Implemented True SSR in functions/render.ts using markdown-it to pre-render post cards and embed initial JSON on the server. Updated public/archive.html with server placeholders and refactored public/js/archive.js to hydrate from server data using event delegation. Cleaned up HTML structure and ensured CACHE_KEY persistence.
+
+**User:**
+Run TypeScript compiler diagnostics and fix reported errors.
+
+**Assistant:**
+Ran bun x tsc --noEmit. Installed @types/markdown-it, defined type DocumentRow = Parameters<typeof toDocumentRecord>[0] in functions/database/documents.ts, added type-only import for DocumentRecord, and corrected property access to created_at in functions/render.ts.
