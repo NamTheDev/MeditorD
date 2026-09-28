@@ -1,0 +1,266 @@
+const state = {
+  items: [],
+  filter: "",
+  editingTitle: "",
+};
+
+const tableBody = document.getElementById("databaseList");
+
+async function request(path, options = {}) {
+  const headers =
+    options.body && typeof options.body.append === "function"
+      ? {}
+      : options.body
+        ? { "Content-Type": "application/json" }
+        : {};
+  const response = await fetch(`/api${path}`, {
+    ...options,
+    headers,
+  });
+  const body = await response.json().catch(() => null);
+  if (!response.ok) {
+    throw new Error(body?.error || `Request failed (${response.status})`);
+  }
+  return body;
+}
+
+function formatDate(value) {
+  if (!value) return "—";
+  const date = new Date(
+    value.includes(" ") ? `${value.replace(" ", "T")}Z` : value,
+  );
+  return Number.isNaN(date.getTime()) ? value : date.toLocaleDateString();
+}
+
+function toDateTimeInput(value) {
+  if (!value) return "";
+  const date = new Date(
+    value.includes(" ") ? `${value.replace(" ", "T")}Z` : value,
+  );
+  if (Number.isNaN(date.getTime())) return "";
+  const offset = date.getTimezoneOffset() * 60000;
+  return new Date(date.getTime() - offset).toISOString().slice(0, 16);
+}
+
+function renderMessage(message, className = "empty-state") {
+  tableBody.replaceChildren();
+  const row = document.createElement("tr");
+  const cell = document.createElement("td");
+  cell.colSpan = 5;
+  cell.className = className;
+  cell.textContent = message;
+  row.append(cell);
+  tableBody.append(row);
+}
+
+function renderTable() {
+  const query = state.filter.trim().toLowerCase();
+  const items = state.items.filter((item) =>
+    item.title.toLowerCase().includes(query),
+  );
+  tableBody.replaceChildren();
+
+  if (!items.length) {
+    renderMessage(
+      state.items.length ? "No matching posts." : "No posts saved.",
+    );
+    return;
+  }
+
+  items.forEach((item) => {
+    const row = document.createElement("tr");
+    const title = document.createElement("td");
+    title.textContent = item.title;
+    row.append(title);
+
+    if (item.isDirectory) {
+      const folder = document.createElement("td");
+      folder.colSpan = 3;
+      folder.textContent = "Folder";
+      row.append(folder);
+    } else {
+      const documentData = item.document;
+      const username = document.createElement("td");
+      username.textContent = documentData?.username || "—";
+      const url = document.createElement("td");
+      if (documentData?.url) {
+        const link = document.createElement("a");
+        link.href = documentData.url;
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        link.textContent = documentData.url;
+        url.append(link);
+      } else {
+        url.textContent = "—";
+      }
+      const created = document.createElement("td");
+      created.textContent = formatDate(documentData?.created_at);
+      row.append(username, url, created);
+    }
+
+    const actions = document.createElement("td");
+    actions.className = "row-actions";
+    const edit = document.createElement("button");
+    edit.type = "button";
+    edit.textContent = "Edit";
+    edit.addEventListener("click", () => editItem(item));
+    const remove = document.createElement("button");
+    remove.type = "button";
+    remove.textContent = "Delete";
+    remove.addEventListener("click", () => deleteItem(item));
+    actions.append(edit, remove);
+    row.append(actions);
+    tableBody.append(row);
+  });
+}
+
+async function loadItems() {
+  renderMessage("Loading database...");
+  try {
+    const items = await request("/documents");
+    state.items = await Promise.all(
+      items.map(async (item) => ({
+        ...item,
+        document: item.isDirectory
+          ? null
+          : await request(`/documents/${encodeURIComponent(item.title)}`),
+      })),
+    );
+    renderTable();
+  } catch (error) {
+    state.items = [];
+    renderMessage(error.message, "error-state");
+  }
+}
+
+function editItem(item) {
+  if (item.isDirectory) {
+    const newTitle = window.prompt("New folder title:", item.title);
+    if (!newTitle?.trim() || newTitle.trim() === item.title) return;
+    request(`/documents/${encodeURIComponent(item.title)}`, {
+      method: "PUT",
+      body: JSON.stringify({ newTitle: newTitle.trim() }),
+    })
+      .then(loadItems)
+      .catch((error) => window.alert(error.message));
+    return;
+  }
+  const data = item.document;
+  state.editingTitle = item.title;
+  document.getElementById("editModalTitle").textContent = `Edit ${item.title}`;
+  document.getElementById("editTitle").value = item.title;
+  document.getElementById("editUsername").value = data.username || "";
+  document.getElementById("editUrl").value = data.url || "";
+  document.getElementById("editCreatedAt").value = toDateTimeInput(
+    data.created_at,
+  );
+  document.getElementById("editContent").value = data.content || "";
+  document.getElementById("editMedia").value = "";
+  document.getElementById("removeMedia").checked = false;
+  document.getElementById("editError").textContent = "";
+  document.getElementById("editModal").classList.remove("hidden");
+  document.getElementById("editTitle").focus();
+}
+
+function createPost() {
+  state.editingTitle = "";
+  document.getElementById("editModalTitle").textContent = "New post";
+  document.getElementById("editTitle").value = "";
+  document.getElementById("editUsername").value = "";
+  document.getElementById("editUrl").value = "";
+  document.getElementById("editCreatedAt").value = toDateTimeInput(
+    new Date().toISOString(),
+  );
+  document.getElementById("editContent").value = "";
+  document.getElementById("editMedia").value = "";
+  document.getElementById("removeMedia").checked = false;
+  document.getElementById("removeMedia").closest("label").hidden = true;
+  document.getElementById("editError").textContent = "";
+  document.getElementById("editModal").classList.remove("hidden");
+  document.getElementById("editTitle").focus();
+}
+
+function closeEditModal() {
+  document.getElementById("editModal").classList.add("hidden");
+  document.getElementById("removeMedia").closest("label").hidden = false;
+}
+
+async function saveEdit(event) {
+  event.preventDefault();
+
+  const form = new FormData(document.getElementById("editForm"));
+  form.set("title", document.getElementById("editTitle").value.trim());
+  form.set("username", document.getElementById("editUsername").value);
+  form.set("url", document.getElementById("editUrl").value.trim());
+  form.set("createdAt", document.getElementById("editCreatedAt").value);
+  form.set("content", document.getElementById("editContent").value);
+  form.set(
+    "removeMedia",
+    document.getElementById("removeMedia").checked ? "true" : "false",
+  );
+  const media = document.getElementById("editMedia").files?.[0];
+  if (!media) form.delete("media");
+  const errorElement = document.getElementById("editError");
+  errorElement.textContent = "";
+  const oldTitle = state.editingTitle;
+  const existingItem = state.items.find((item) => item.title === oldTitle);
+  const hasContent = Boolean(form.get("content")?.toString().trim());
+  const hasUrl = Boolean(form.get("url")?.toString().trim());
+  const hasMedia =
+    Boolean(media) ||
+    (Boolean(existingItem?.document?.hasMedia) &&
+      !document.getElementById("removeMedia").checked);
+  if (!hasUrl && !hasMedia && !hasContent) {
+    errorElement.textContent =
+      "Either description, URL, or an uploaded media is required.";
+    return;
+  }
+  try {
+    if (oldTitle) {
+      await request(`/documents/${encodeURIComponent(oldTitle)}`, {
+        method: "PUT",
+        body: form,
+      });
+    } else {
+      await request("/documents", { method: "POST", body: form });
+    }
+    closeEditModal();
+    await loadItems();
+  } catch (error) {
+    errorElement.textContent = error.message;
+  }
+}
+
+async function deleteItem(item) {
+  if (!window.confirm(`Delete "${item.title}"?`)) return;
+  try {
+    await request(`/documents/${encodeURIComponent(item.title)}`, {
+      method: "DELETE",
+    });
+    await loadItems();
+  } catch (error) {
+    window.alert(error.message);
+  }
+}
+
+document.getElementById("backButton").addEventListener("click", () => {
+  window.location.href = "/home.html";
+});
+document.getElementById("newPostButton").addEventListener("click", createPost);
+document.getElementById("refreshButton").addEventListener("click", loadItems);
+document.getElementById("searchInput").addEventListener("input", (event) => {
+  state.filter = event.target.value;
+  renderTable();
+});
+document.getElementById("editForm").addEventListener("submit", saveEdit);
+document
+  .getElementById("closeEditButton")
+  .addEventListener("click", closeEditModal);
+document
+  .getElementById("cancelEditButton")
+  .addEventListener("click", closeEditModal);
+document.getElementById("editModal").addEventListener("click", (event) => {
+  if (event.target.id === "editModal") closeEditModal();
+});
+
+loadItems();
