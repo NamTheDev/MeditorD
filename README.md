@@ -78,16 +78,16 @@ meditord/
 
 ### Tech Stack
 
-- Bun runtime and HTTP server
-- Docker containerization
-- TypeScript
-- Bun's SQLite with `database/meditord.sqlite`
-- Gzip-compressed SQLite BLOBs for image and video uploads
-- markdown-it for rendering Markdown post descriptions
-- HTML, CSS, and browser JavaScript
-- Minimal database-management table for browsing saved posts
-- Modal editing and creation for title, username, URL, date, media, and description
-- JSON API for document, folder, and media operations
+- Bun runtime and HTTP server.
+- Docker containerization.
+- TypeScript.
+- Bun's SQLite with `database/meditord.sqlite`.
+- Gzip-compressed SQLite BLOBs for image and video uploads.
+- markdown-it for rendering Markdown post descriptions.
+- HTML, CSS, and browser JavaScript.
+- Minimal database-management table for browsing saved posts.
+- Modal editing and creation for title, username, URL, date, media, and description.
+- JSON API for document, folder, and media operations.
 
 ## III. Installation
 
