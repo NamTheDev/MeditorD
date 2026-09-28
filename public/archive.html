@@ -4,19 +4,27 @@
     <div class="menu-bar">
         <button class="action-btn" id="backButton">HOME</button>
         <div class="gallery-title">GALLERY</div>
-        <button class="action-btn" id="newPostButton">
-            NEW SUBMISSION
-        </button>
+        <button class="action-btn" id="newPostButton">NEW SUBMISSION</button>
     </div>
     <div class="gallery-viewport sunken" id="galleryViewport">
-        <div class="reddit-gallery" id="postsContainer"></div>
+        <div class="reddit-gallery" id="postsContainer">{{archive_posts}}</div>
+        <script id="initialPosts" type="application/json">
+            {{archive_posts_json}}
+        </script>
     </div>
 </div>
 <div class="modal-overlay" id="postModal">
     <div class="modal-window raised">
         <div class="title-bar">
             <span id="modalTitle">POST INSPECTOR</span>
-            <button class="modal-close-button" type="button" aria-label="Close post inspector" title="Close">✕</button>
+            <button
+                class="modal-close-button"
+                type="button"
+                aria-label="Close post inspector"
+                title="Close"
+            >
+                ✕
+            </button>
         </div>
         <div class="modal-content-area sunken" id="modalBody"></div>
     </div>
