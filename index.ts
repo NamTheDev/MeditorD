@@ -30,7 +30,11 @@ const server = Bun.serve({
     if (!path.endsWith(".html")) {
       const rootAsset = Bun.file(join(process.cwd(), ROOT, relativePath));
       if (await rootAsset.exists()) {
-        return new Response(rootAsset);
+        return new Response(rootAsset, {
+          headers: {
+            "Cache-Control": "public, max-age=86400",
+          },
+        });
       }
     }
 
@@ -38,10 +42,20 @@ const server = Bun.serve({
     const file = await getFile(fileToFetch);
 
     if (file) {
-      return await renderPage(fileToFetch, fileToFetch);
+      const pageTitles: Record<string, string> = {
+        home: "Home — MeditorD",
+        archive: "Archive — MeditorD",
+        database: "Database — MeditorD",
+        edit: "Editor — MeditorD",
+        exit: "Exit — MeditorD",
+      };
+      const pageTitle =
+        pageTitles[fileToFetch] ||
+        `${fileToFetch.charAt(0).toUpperCase() + fileToFetch.slice(1)} — MeditorD`;
+      return await renderPage(fileToFetch, pageTitle, 200, req);
     }
 
-    return await renderPage("404", "404 - Page Not Found", 404);
+    return await renderPage("404", "404 Not Found — MeditorD", 404, req);
   },
   error(error) {
     console.error("Server error:", error);
