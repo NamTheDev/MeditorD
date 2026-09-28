@@ -4,6 +4,7 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>{{title}}</title>
+        <link rel="icon" type="image/webp" href="/media/icon.webp" />
         <meta name="color-scheme" content="dark" />
         <meta name="darkreader-lock" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -17,29 +18,41 @@
     <body>
         <div class="mobile-support-message" role="alert" aria-live="assertive">
             <div class="mobile-support-message__inner">
-                <div class="mobile-support-message__title">Mobile is not supported.</div>
-                <div class="mobile-support-message__text">Please access this app through desktop.</div>
+                <div class="mobile-support-message__title">
+                    Mobile is not supported.
+                </div>
+                <div class="mobile-support-message__text">
+                    Please access this app through desktop.
+                </div>
             </div>
         </div>
         {{body}}
         <script>
             (() => {
                 const isMobileDevice = () => {
-                    const widthMatch = window.matchMedia("(max-width: 900px)").matches;
-                    const pointerMatch = window.matchMedia("(pointer: coarse)").matches;
-                    const userAgentMatch = /Android|iPhone|iPad|iPod|Mobile|mobile|Windows Phone/i.test(
-                        navigator.userAgent,
-                    );
+                    const widthMatch =
+                        window.matchMedia("(max-width: 900px)").matches;
+                    const pointerMatch =
+                        window.matchMedia("(pointer: coarse)").matches;
+                    const userAgentMatch =
+                        /Android|iPhone|iPad|iPod|Mobile|mobile|Windows Phone/i.test(
+                            navigator.userAgent,
+                        );
 
                     return widthMatch || pointerMatch || userAgentMatch;
                 };
 
                 const applyMobileBlock = () => {
-                    document.body.classList.toggle("mobile-blocked", isMobileDevice());
+                    document.body.classList.toggle(
+                        "mobile-blocked",
+                        isMobileDevice(),
+                    );
                 };
 
                 applyMobileBlock();
-                window.addEventListener("resize", applyMobileBlock, { passive: true });
+                window.addEventListener("resize", applyMobileBlock, {
+                    passive: true,
+                });
             })();
         </script>
     </body>
