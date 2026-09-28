@@ -23,11 +23,15 @@ database.run(`
     updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
   )
 `);
-if (!database
-  .query<{ name: string }, []>("PRAGMA table_info(documents)")
-  .all()
-  .some((column) => column.name === "username")) {
-  database.run("ALTER TABLE documents ADD COLUMN username TEXT NOT NULL DEFAULT ''");
+if (
+  !database
+    .query<{ name: string }, []>("PRAGMA table_info(documents)")
+    .all()
+    .some((column) => column.name === "username")
+) {
+  database.run(
+    "ALTER TABLE documents ADD COLUMN username TEXT NOT NULL DEFAULT ''",
+  );
 }
 
 export interface FileRecord {
@@ -53,8 +57,15 @@ export interface MediaRecord {
 }
 
 function normalizeTitle(title: string): string {
-  const normalized = posix.normalize(title.replaceAll("\\", "/")).replace(/^\/+/, "");
-  if (!normalized || normalized === "." || normalized.startsWith("../") || normalized.includes("/../")) {
+  const normalized = posix
+    .normalize(title.replaceAll("\\", "/"))
+    .replace(/^\/+/, "");
+  if (
+    !normalized ||
+    normalized === "." ||
+    normalized.startsWith("../") ||
+    normalized.includes("/../")
+  ) {
     throw new Error("Invalid document title");
   }
   return normalized;
@@ -120,9 +131,15 @@ export function getDocumentMedia(title: string): MediaRecord | null {
   const normalizedTitle = normalizeTitle(title);
   const row = database
     .query<
-      { media: Uint8Array | null; media_name: string | null; media_type: string | null },
+      {
+        media: Uint8Array | null;
+        media_name: string | null;
+        media_type: string | null;
+      },
       [string]
-    >("SELECT media, media_name, media_type FROM documents WHERE title = ? AND is_directory = 0")
+    >(
+      "SELECT media, media_name, media_type FROM documents WHERE title = ? AND is_directory = 0",
+    )
     .get(normalizedTitle);
 
   if (!row?.media || !row.media_type) return null;
@@ -141,7 +158,9 @@ export async function saveDocument(
   media?: File,
 ): Promise<DocumentRecord> {
   const normalizedTitle = normalizeTitle(title);
-  const mediaData = media ? gzipSync(new Uint8Array(await media.arrayBuffer())) : null;
+  const mediaData = media
+    ? gzipSync(new Uint8Array(await media.arrayBuffer()))
+    : null;
 
   database
     .query(
@@ -169,6 +188,55 @@ export async function saveDocument(
   return getDocumentByTitle(normalizedTitle)!;
 }
 
+export async function updateDocument(
+  oldTitle: string,
+  title: string,
+  username: string,
+  content: string,
+  url: string,
+  createdAt: string,
+  media?: File,
+  removeMedia = false,
+): Promise<DocumentRecord | null> {
+  const normalizedOldTitle = normalizeTitle(oldTitle);
+  const normalizedTitle = normalizeTitle(title);
+  const mediaData = media
+    ? gzipSync(new Uint8Array(await media.arrayBuffer()))
+    : null;
+  const mediaName = media?.name ?? null;
+  const mediaType = media?.type || null;
+
+  const result = database
+    .query(
+      `UPDATE documents SET
+        title = ?, username = ?, content = ?, url = ?, created_at = ?,
+        media = CASE WHEN ? THEN NULL WHEN ? THEN ? ELSE media END,
+        media_name = CASE WHEN ? THEN NULL WHEN ? THEN ? ELSE media_name END,
+        media_type = CASE WHEN ? THEN NULL WHEN ? THEN ? ELSE media_type END,
+        updated_at = CURRENT_TIMESTAMP
+       WHERE title = ? AND is_directory = 0`,
+    )
+    .run(
+      normalizedTitle,
+      username,
+      content,
+      url,
+      createdAt || new Date().toISOString(),
+      removeMedia ? 1 : 0,
+      media ? 1 : 0,
+      mediaData,
+      removeMedia ? 1 : 0,
+      media ? 1 : 0,
+      mediaName,
+      removeMedia ? 1 : 0,
+      media ? 1 : 0,
+      mediaType,
+      normalizedOldTitle,
+    );
+
+  return result.changes ? getDocumentByTitle(normalizedTitle) : null;
+}
+
 export function createFolder(folderPath: string): boolean {
   const normalizedPath = normalizeTitle(folderPath);
   database
@@ -185,7 +253,9 @@ export function renameItem(oldPath: string, newPath: string): boolean {
   const oldTitle = normalizeTitle(oldPath);
   const newTitle = normalizeTitle(newPath);
   const item = database
-    .query<{ is_directory: number }, [string]>("SELECT is_directory FROM documents WHERE title = ?")
+    .query<{ is_directory: number }, [string]>(
+      "SELECT is_directory FROM documents WHERE title = ?",
+    )
     .get(oldTitle);
   if (!item) return false;
 
@@ -203,7 +273,9 @@ export function renameItem(oldPath: string, newPath: string): boolean {
         .run(`${oldTitle}/`, `${newTitle}/`, `${oldTitle}/%`);
     } else {
       database
-        .query("UPDATE documents SET title = ?, updated_at = CURRENT_TIMESTAMP WHERE title = ?")
+        .query(
+          "UPDATE documents SET title = ?, updated_at = CURRENT_TIMESTAMP WHERE title = ?",
+        )
         .run(newTitle, oldTitle);
     }
   });
