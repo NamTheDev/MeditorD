@@ -5,7 +5,10 @@ export interface ApiConfig {
   prefix?: string;
 }
 
-export async function handleApi(req: Request, config: ApiConfig = { prefix: "/api" }): Promise<Response | null> {
+export async function handleApi(
+  req: Request,
+  config: ApiConfig = { prefix: "/api" },
+): Promise<Response | null> {
   const url = new URL(req.url);
   const prefix = config.prefix || "/api";
 
@@ -32,11 +35,14 @@ export async function handleApi(req: Request, config: ApiConfig = { prefix: "/ap
     if (endpoint.startsWith("/media/") && method === "GET") {
       const title = decodeURIComponent(endpoint.slice("/media/".length));
       const media = await db.getDocumentMedia(title);
-      if (!media) return Response.json({ error: "Media not found" }, { status: 404 });
+      if (!media)
+        return Response.json({ error: "Media not found" }, { status: 404 });
       return new Response(media.data, {
         headers: {
           "Content-Type": media.type,
-          "Content-Disposition": media.name ? `inline; filename="${encodeURIComponent(media.name)}"` : "inline",
+          "Content-Disposition": media.name
+            ? `inline; filename="${encodeURIComponent(media.name)}"`
+            : "inline",
           "Cache-Control": "no-cache",
         },
       });
@@ -60,8 +66,14 @@ export async function handleApi(req: Request, config: ApiConfig = { prefix: "/ap
         isFolder = form.get("isFolder") === "true";
         const uploadedMedia = form.get("media");
         if (uploadedMedia instanceof File && uploadedMedia.size > 0) {
-          if (!uploadedMedia.type.startsWith("image/") && !uploadedMedia.type.startsWith("video/")) {
-            return Response.json({ error: "Only image and video files are supported" }, { status: 415 });
+          if (
+            !uploadedMedia.type.startsWith("image/") &&
+            !uploadedMedia.type.startsWith("video/")
+          ) {
+            return Response.json(
+              { error: "Only image and video files are supported" },
+              { status: 415 },
+            );
           }
           media = uploadedMedia;
         }
@@ -89,15 +101,19 @@ export async function handleApi(req: Request, config: ApiConfig = { prefix: "/ap
         return Response.json({ title, isDirectory: true }, { status: 201 });
       }
 
-      if (!url.trim() && !media) {
+      if (!url.trim() && !media && !content.trim()) {
         return Response.json(
-          { error: "A URL or media file is required" },
+          {
+            error: "Either description, URL, or an uploaded media is required.",
+          },
           { status: 400 },
         );
       }
       if (url.trim() && !isSupportedPostUrl(url.trim())) {
         return Response.json(
-          { error: "Supported URL types are HTTP(S) websites and YouTube URLs." },
+          {
+            error: "Supported URL types are HTTP(S) websites and YouTube URLs.",
+          },
           { status: 415 },
         );
       }
@@ -108,27 +124,100 @@ export async function handleApi(req: Request, config: ApiConfig = { prefix: "/ap
 
     if (endpoint.startsWith("/documents/") && method === "PUT") {
       const oldTitle = decodeURIComponent(endpoint.slice("/documents/".length));
-      const body = (await req.json()) as { newTitle?: string };
-      if (!body.newTitle) {
-        return Response.json({ error: "New title is required" }, { status: 400 });
+      const contentType = req.headers.get("content-type") ?? "";
+      if (!contentType.includes("multipart/form-data")) {
+        const body = (await req.json()) as { newTitle?: string };
+        if (!body.newTitle) {
+          return Response.json(
+            { error: "New title is required" },
+            { status: 400 },
+          );
+        }
+        const success = await db.renameItem(oldTitle, body.newTitle);
+        if (!success) {
+          return Response.json({ error: "Item not found" }, { status: 404 });
+        }
+        return Response.json({ success: true });
       }
 
-      const success = await db.renameItem(oldTitle, body.newTitle);
-      if (!success) {
+      const form = await req.formData();
+      const title = form.get("title")?.toString().trim();
+      if (!title) {
+        return Response.json({ error: "Title is required" }, { status: 400 });
+      }
+      const url = form.get("url")?.toString().trim() ?? "";
+      if (url && !isSupportedPostUrl(url)) {
+        return Response.json(
+          {
+            error: "Supported URL types are HTTP(S) websites and YouTube URLs.",
+          },
+          { status: 415 },
+        );
+      }
+      const uploadedMedia = form.get("media");
+      const media =
+        uploadedMedia instanceof File && uploadedMedia.size > 0
+          ? uploadedMedia
+          : undefined;
+      if (
+        media &&
+        !media.type.startsWith("image/") &&
+        !media.type.startsWith("video/")
+      ) {
+        return Response.json(
+          { error: "Only image and video files are supported" },
+          { status: 415 },
+        );
+      }
+      const existing = await db.getDocumentByTitle(oldTitle);
+      if (!existing) {
         return Response.json({ error: "Item not found" }, { status: 404 });
       }
-      return Response.json({ success: true });
+      if (
+        !url &&
+        !media &&
+        !form.get("content")?.toString().trim() &&
+        (!existing.hasMedia || form.get("removeMedia") === "true")
+      ) {
+        return Response.json(
+          {
+            error: "Either description, URL, or an uploaded media is required.",
+          },
+          { status: 400 },
+        );
+      }
+      const updated = await db.updateDocument(
+        oldTitle,
+        title,
+        form.get("username")?.toString() ?? "",
+        form.get("content")?.toString() ?? "",
+        url,
+        form.get("createdAt")?.toString() ?? "",
+        media,
+        form.get("removeMedia") === "true",
+      );
+      if (!updated) {
+        return Response.json({ error: "Item not found" }, { status: 404 });
+      }
+      return Response.json(updated);
     }
 
     if (endpoint.startsWith("/documents/") && method === "DELETE") {
       const title = decodeURIComponent(endpoint.slice("/documents/".length));
       const success = await db.deleteDocument(title);
-      if (!success) return Response.json({ error: "Not found" }, { status: 404 });
+      if (!success)
+        return Response.json({ error: "Not found" }, { status: 404 });
       return Response.json({ success: true });
     }
 
-    return Response.json({ error: "Method or route not allowed" }, { status: 405 });
+    return Response.json(
+      { error: "Method or route not allowed" },
+      { status: 405 },
+    );
   } catch (err: any) {
-    return Response.json({ error: err.message || "Internal server error" }, { status: 500 });
+    return Response.json(
+      { error: err.message || "Internal server error" },
+      { status: 500 },
+    );
   }
 }
