@@ -52,6 +52,14 @@ function generateMochaGraphic(type) {
 }
 
 let postsData = [];
+const CACHE_KEY = "meditord_archive_posts_v1";
+
+const initialPostsEl = document.getElementById("initialPosts");
+if (initialPostsEl) {
+  try {
+    postsData = JSON.parse(initialPostsEl.textContent || "[]");
+  } catch {}
+}
 const markdown = window.markdownit({
   html: false,
   linkify: true,
@@ -62,7 +70,9 @@ function formatPostDate(value) {
   if (!value) return "";
 
   // SQLite returns CURRENT_TIMESTAMP as "YYYY-MM-DD HH:MM:SS".
-  const normalizedValue = value.includes(" ") ? value.replace(" ", "T") + "Z" : value;
+  const normalizedValue = value.includes(" ")
+    ? value.replace(" ", "T") + "Z"
+    : value;
   const date = new Date(normalizedValue);
   if (Number.isNaN(date.getTime())) return "";
 
@@ -141,20 +151,13 @@ function renderPosts() {
     username.textContent = post.username ? `@${post.username}` : "";
     const dateAdded = document.createElement("span");
     dateAdded.className = "card-date";
-    dateAdded.textContent = formatPostDate(post.created_at);
+    dateAdded.textContent = formatPostDate(post.createdAt || post.created_at);
     meta.append(username, dateAdded);
     const excerpt = document.createElement("div");
     excerpt.className = "card-description";
     excerpt.innerHTML = markdown.render(post.content || "_No description._");
     info.append(title, excerpt, meta);
     card.append(info);
-    if (excerpt.scrollHeight > excerpt.clientHeight) {
-      const notice = document.createElement("strong");
-      notice.className = "description-notice";
-      notice.textContent = "Click for more";
-      info.insertBefore(notice, meta);
-    }
-    card.addEventListener("click", () => openPostModal(post));
     container.append(card);
   });
 }
@@ -227,19 +230,24 @@ function closeModalOnBg(event) {
 
 async function loadPosts() {
   try {
-    const items = (await window.database.listDocuments()).filter(
-      (post) => !post.isDirectory,
-    );
-    postsData = await Promise.all(
-      items.map(async (item) => ({
-        ...item,
-        ...(await window.database.getDocument(item.title)),
-      })),
-    );
-    renderPosts();
+    const response = await fetch("/api/documents?full=true");
+    if (!response.ok) throw new Error("Failed to load posts");
+    const freshPosts = await response.json();
+    const freshKey = JSON.stringify(freshPosts);
+    const currentKey = JSON.stringify(postsData);
+
+    if (freshKey !== currentKey) {
+      postsData = freshPosts;
+      try {
+        sessionStorage.setItem(CACHE_KEY, freshKey);
+      } catch {}
+      renderPosts();
+    }
   } catch (error) {
-    const container = document.getElementById("postsContainer");
-    container.textContent = error.message;
+    if (!postsData.length) {
+      const container = document.getElementById("postsContainer");
+      container.textContent = error.message;
+    }
   }
 }
 
@@ -251,4 +259,16 @@ document
   .querySelector(".modal-close-button")
   .addEventListener("click", closeModal);
 document.getElementById("postModal").addEventListener("click", closeModalOnBg);
-loadPosts();
+
+const postsContainer = document.getElementById("postsContainer");
+postsContainer.addEventListener("click", (event) => {
+  const card = event.target.closest(".gallery-card");
+  if (!card) return;
+  const title = card.dataset.title;
+  const post = postsData.find((p) => p.title === title);
+  if (post) openPostModal(post);
+});
+
+if (!postsContainer.children.length && postsData.length > 0) {
+  renderPosts();
+}
