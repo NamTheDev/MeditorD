@@ -76,10 +76,10 @@ async function saveCurrentDocument() {
     showFeatureNotice("Cannot Save Document", "Title is required.", titleInput);
     return;
   }
-  if (!url && !media) {
+  if (!url && !media && !contentInput.value.trim()) {
     showFeatureNotice(
       "Cannot Save Document",
-      "Provide a URL or upload media before saving.",
+      "Either description, URL, or an uploaded media is required.",
       urlInput,
     );
     return;
