@@ -92,6 +92,17 @@ function toDocumentRecord(row: {
   };
 }
 
+type DocumentRow = Parameters<typeof toDocumentRecord>[0];
+
+export function getAllDocuments(): DocumentRecord[] {
+  const rows = database
+    .query<DocumentRow, []>(
+      "SELECT title, username, content, url, media_name, media_type, created_at FROM documents WHERE is_directory = 0 ORDER BY created_at DESC, title ASC",
+    )
+    .all();
+  return rows.map(toDocumentRecord);
+}
+
 export function listDocuments(): FileRecord[] {
   const rows = database
     .query<{ title: string; is_directory: number }, []>(
