@@ -3,11 +3,13 @@
 1. Section I: AI disclaimer.
 - Always format future README updates with a 20-word AI attribution disclaimer.
 
-2. Section II: Summary and description.
+2. Section II: Introduction.
 - A 10-word summary sentence, a symbolic directory tree view (full), and a tech-stack overview.
+- Do not add descriptions to files or directories in the README directory tree.
 
-3. Section III: Installation and usage.
-- A step-by-step tutorial explaining how to install and use the project.
+3. Section III: Installation.
+- A step-by-step tutorial in ordered list format explaining how to install the project.
+- Explicitly mention the path `/database.html` (or `/database`) for accessing the database page.
 
 4. Section IV: Resources and license.
 - Address the resources used in the project, referencing `RESOURCES.md`.
@@ -51,9 +53,3 @@ No extra comments or explanations.
 - <Commit details>
 - ...
 ```
-
-# Mobile Support
-
-- The application is desktop-only.
-- Detect small, touch-enabled, or recognized mobile devices in the shared layout.
-- Hide the application interface and show the exact message: “Mobile is not supported. Please access this app through desktop”.
