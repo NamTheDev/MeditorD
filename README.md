@@ -4,7 +4,7 @@
 
 Built from human ideas with Gemini, DeepSeek, and GitHub Copilot supporting design, research, implementation, testing, and documentation throughout project development.
 
-## II. Summary and Description
+## II. Introduction
 
 MeditorD is a nostalgic editor for securely saving linked documents.
 
@@ -13,30 +13,28 @@ MeditorD is a nostalgic editor for securely saving linked documents.
 ```text
 meditord/
 ├── database/
-│   └── meditord.sqlite — Runtime SQLite database
+│   └── meditord.sqlite
 ├── design/
 │   ├── canva/
 │   │   ├── 404.png
 │   │   ├── home-background.png
 │   │   └── home.png
-│   ├── chat-logs/
-│   │   ├── gemini-flash-11-09-2026.md
-│   │   └── github-copilot-16-09-2026.md
 │   └── ideas/
 │       └── editor.png
 ├── functions/
 │   ├── api/
-│   │   └── index.ts — Document and media API routes
+│   │   └── index.ts
 │   ├── database/
-│   │   ├── documents.ts — SQLite document operations
-│   │   └── index.ts — Database exports
-│   ├── file.ts — Public page file resolution
-│   ├── render.ts — HTML page rendering
-│   ├── string.ts — Path normalization helpers
-│   └── url.ts — URL validation helpers
+│   │   ├── documents.ts
+│   │   └── index.ts
+│   ├── file.ts
+│   ├── render.ts
+│   ├── string.ts
+│   └── url.ts
 ├── public/
 │   ├── css/
 │   │   ├── archive.css
+│   │   ├── database.css
 │   │   ├── edit.css
 │   │   ├── exit.css
 │   │   ├── global.css
@@ -44,6 +42,7 @@ meditord/
 │   │   └── not-found.css
 │   ├── js/
 │   │   ├── archive.js
+│   │   ├── database.js
 │   │   ├── document-api.js
 │   │   ├── edit.js
 │   │   ├── home-navigation.js
@@ -54,22 +53,27 @@ meditord/
 │   │   └── home-background.webp
 │   ├── 404.html
 │   ├── archive.html
+│   ├── database.html
 │   ├── edit.html
 │   ├── exit.html
 │   ├── global.html
 │   └── home.html
-├── .dockerignore — Docker build exclusions
-├── .gitignore — Git exclusions
-├── Dockerfile — Bun container definition
-├── LICENSE — Project license
-├── README.md — Project documentation
-├── RESOURCES.md — Design and development references
-├── bun.lock — Bun dependency lockfile
-├── config.ts — Server environment configuration
-├── index.ts — Bun HTTP server
-├── package.json — Project metadata
-├── rules.md — Project documentation and workflow rules
-└── tsconfig.json — TypeScript configuration
+├── .dockerignore
+├── .gitignore
+├── chat-logs/
+│   ├── gemini-flash-11-09-2026.md
+│   ├── github-copilot-16-09-2026.md
+│   └── github-copilot-25-09-2026.md
+├── Dockerfile
+├── LICENSE
+├── README.md
+├── RESOURCES.md
+├── bun.lock
+├── config.ts
+├── index.ts
+├── package.json
+├── rules.md
+└── tsconfig.json
 ```
 
 ### Tech Stack
@@ -81,9 +85,11 @@ meditord/
 - Gzip-compressed SQLite BLOBs for image and video uploads
 - markdown-it for rendering Markdown post descriptions
 - HTML, CSS, and browser JavaScript
+- Minimal database-management table for browsing saved posts
+- Modal editing and creation for title, username, URL, date, media, and description
 - JSON API for document, folder, and media operations
 
-## III. Installation and Usage
+## III. Installation
 
 1. Install Bun v1.0 or newer.
 2. Clone this repository and change into its directory.
@@ -91,8 +97,7 @@ meditord/
 4. Optionally set `PORT`, `HOST`, and `ROOT` in `.env`.
 5. Start the server with `bun run index.ts`.
 6. Open `http://localhost:3000` in a desktop browser.
-
-Create a submission with a title and username, then provide either a URL or an image/video upload before saving. Content is stored locally in SQLite, and uploaded media is served through the media API. Mobile devices are not supported.
+7. Open `http://localhost:3000/database.html` to access the database page.
 
 ## IV. Resources and License
 
