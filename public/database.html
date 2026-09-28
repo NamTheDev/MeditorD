@@ -1,0 +1,103 @@
+<link rel="stylesheet" href="/css/database.css" />
+
+<div id="databaseApp">
+    <header class="database-header">
+        <h1>Database</h1>
+        <div class="database-actions">
+            <button id="backButton" type="button">Home</button>
+            <button id="newPostButton" type="button">New post</button>
+            <button id="refreshButton" type="button">Refresh</button>
+        </div>
+    </header>
+
+    <main>
+        <label class="search">
+            <span class="visually-hidden">Search posts</span>
+            <input
+                id="searchInput"
+                type="search"
+                placeholder="Search posts"
+                autocomplete="off"
+            />
+        </label>
+        <div class="table-wrap">
+            <table>
+                <caption class="visually-hidden">
+                    Saved posts
+                </caption>
+                <thead>
+                    <tr>
+                        <th scope="col">Title</th>
+                        <th scope="col">Username</th>
+                        <th scope="col">URL</th>
+                        <th scope="col">Created</th>
+                        <th scope="col">
+                            <span class="visually-hidden">Actions</span>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody id="databaseList">
+                    <tr>
+                        <td colspan="5">Loading database...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+</div>
+
+<div
+    class="edit-modal hidden"
+    id="editModal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="editModalTitle"
+>
+    <form class="edit-modal-box" id="editForm">
+        <div class="edit-modal-header">
+            <h2 id="editModalTitle">Edit post</h2>
+            <button
+                class="modal-close"
+                id="closeEditButton"
+                type="button"
+                aria-label="Close"
+            >
+                ×
+            </button>
+        </div>
+        <label>Title<input id="editTitle" name="title" required /></label>
+        <label>Username<input id="editUsername" name="username" /></label>
+        <label>URL<input id="editUrl" name="url" type="url" /></label>
+        <label
+            >Created<input
+                id="editCreatedAt"
+                name="createdAt"
+                type="datetime-local"
+        /></label>
+        <label
+            >Media<input
+                id="editMedia"
+                name="media"
+                type="file"
+                accept="image/*,video/*"
+        /></label>
+        <label
+            >Description<textarea
+                id="editContent"
+                name="content"
+                rows="7"
+            ></textarea>
+        </label>
+        <label class="remove-media"
+            ><input id="removeMedia" name="removeMedia" type="checkbox" />
+            Remove current media</label
+        >
+        <p class="modal-error" id="editError" role="alert"></p>
+        <div class="edit-modal-actions">
+            <button id="cancelEditButton" type="button">Cancel</button>
+            <button type="submit">Save</button>
+        </div>
+    </form>
+</div>
+
+<script src="/js/database.js"></script>
