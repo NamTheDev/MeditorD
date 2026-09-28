@@ -58,13 +58,6 @@ const markdown = window.markdownit({
   typographer: true,
 });
 
-function getDescriptionExcerpt(content) {
-  const description = document.createElement("div");
-  description.innerHTML = markdown.render(content || "");
-  const text = description.textContent.trim().replace(/\s+/g, " ");
-  return text.length > 120 ? `${text.slice(0, 117)}...` : text || "No description";
-}
-
 function formatPostDate(value) {
   if (!value) return "";
 
@@ -116,24 +109,26 @@ function renderPosts() {
     card.className = "gallery-card raised";
     card.dataset.title = post.title;
 
-    const media = document.createElement("div");
-    media.className = "gallery-media thin-sunken";
     const youtubeThumbnailUrl = getYouTubeThumbnailUrl(post.url);
     if (youtubeThumbnailUrl) {
+      const media = document.createElement("div");
+      media.className = "gallery-media thin-sunken";
       const thumbnail = document.createElement("img");
       thumbnail.src = youtubeThumbnailUrl;
       thumbnail.alt = `YouTube thumbnail for ${post.title}`;
       thumbnail.loading = "lazy";
       media.append(thumbnail);
       media.classList.add("embed-thumbnail", "youtube-thumbnail");
+      card.append(media);
     } else if (post.hasMedia) {
+      const media = document.createElement("div");
+      media.className = "gallery-media thin-sunken";
       const thumbnail = document.createElement("img");
       thumbnail.src = `/api/media/${encodeURIComponent(post.title)}`;
       thumbnail.alt = "";
       thumbnail.loading = "lazy";
       media.append(thumbnail);
-    } else {
-      media.innerHTML = generateMochaGraphic("cat_retro");
+      card.append(media);
     }
     const info = document.createElement("div");
     info.className = "card-info";
@@ -150,12 +145,15 @@ function renderPosts() {
     meta.append(username, dateAdded);
     const excerpt = document.createElement("div");
     excerpt.className = "card-description";
-    excerpt.append(document.createTextNode(getDescriptionExcerpt(post.content)));
-    const more = document.createElement("strong");
-    more.textContent = " Click for more";
-    excerpt.append(more);
+    excerpt.innerHTML = markdown.render(post.content || "_No description._");
     info.append(title, excerpt, meta);
-    card.append(media, info);
+    card.append(info);
+    if (excerpt.scrollHeight > excerpt.clientHeight) {
+      const notice = document.createElement("strong");
+      notice.className = "description-notice";
+      notice.textContent = "Click for more";
+      info.insertBefore(notice, meta);
+    }
     card.addEventListener("click", () => openPostModal(post));
     container.append(card);
   });
@@ -199,11 +197,6 @@ function openPostModal(post) {
     media.src = `/api/media/${encodeURIComponent(post.title)}`;
     media.alt = post.title;
     body.prepend(media);
-  } else {
-    const graphic = document.createElement("div");
-    graphic.className = "modal-large-img thin-sunken";
-    graphic.innerHTML = generateMochaGraphic("cat_retro");
-    body.prepend(graphic);
   }
   const modal = document.getElementById("postModal");
   modal.classList.add("active");
