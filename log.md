@@ -42,3 +42,17 @@
 - Replaced the client-side $1+N$ database request waterfall with a single-batch query (`getAllDocuments()`).
 - Resolved all TypeScript compiler diagnostics (`@types/markdown-it`, `DocumentRow`, `verbatimModuleSyntax`).
 - Updated `README.md` tech stack punctuation and archived dated Gemini 3.8 Flash chat logs.
+
+# 29-09-2026
+- Replaced the application favicon asset in `public/media/icon.webp`.
+
+# 02-10-2026
+- Updated the Docker build and startup workflow to install Git, include repository metadata, pull current changes, and refresh locked Bun dependencies before launch.
+- Refreshed Bun and TypeScript dependency metadata, pinned TypeScript 7.0.2, promoted `markdown-it` to a runtime dependency, and reorganized exported AI conversations under `design/chat-logs/`.
+- Reworked the archive into a masonry layout with natural media sizing, expandable 200-word descriptions, contextual edit/delete/download actions, downloadable media and Markdown, and archive navigation from the database page.
+- Replaced native browser alert, confirm, and prompt flows with shared application dialogs styled for the Win98 and Catppuccin interface.
+- Added SQLite archive revision metadata and triggers, schema/revision ETags, early conditional 304 responses, and archive SSR caching keyed by the current validator.
+- Added deployment build IDs and SHA-256 fingerprints for local JavaScript and CSS, one-year immutable caching for correctly versioned assets, revalidation-safe mutable asset handling, and separate UI/archive client cache state.
+- Fixed strict TypeScript indexing issues in the rendering cache code and restored clean TypeScript and reusable-module diagnostics.
+- Updated README and chat-log documentation, renamed `rules.md` to `guidelines.md`, documented the `log.md` update process and format, and corrected per-file commit and validation guidance.
+
