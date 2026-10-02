@@ -127,22 +127,43 @@ async function loadItems() {
       })),
     );
     renderTable();
+
+    const editTitle = new URLSearchParams(window.location.search).get("edit");
+    if (editTitle) {
+      const target = state.items.find(
+        (item) => !item.isDirectory && item.title === editTitle,
+      );
+      if (target) {
+        editItem(target);
+        const nextUrl = new URL(window.location.href);
+        nextUrl.searchParams.delete("edit");
+        window.history.replaceState({}, "", nextUrl);
+      }
+    }
   } catch (error) {
     state.items = [];
     renderMessage(error.message, "error-state");
   }
 }
 
-function editItem(item) {
+async function editItem(item) {
   if (item.isDirectory) {
-    const newTitle = window.prompt("New folder title:", item.title);
+    const newTitle = await window.showAppPrompt("New folder title:", {
+      title: "Rename folder",
+      value: item.title,
+      inputLabel: "Folder name",
+      confirmLabel: "Save",
+    });
     if (!newTitle?.trim() || newTitle.trim() === item.title) return;
-    request(`/documents/${encodeURIComponent(item.title)}`, {
-      method: "PUT",
-      body: JSON.stringify({ newTitle: newTitle.trim() }),
-    })
-      .then(loadItems)
-      .catch((error) => window.alert(error.message));
+    try {
+      await request(`/documents/${encodeURIComponent(item.title)}`, {
+        method: "PUT",
+        body: JSON.stringify({ newTitle: newTitle.trim() }),
+      });
+      await loadItems();
+    } catch (error) {
+      await window.showAppAlert(error.message, { title: "Error" });
+    }
     return;
   }
   const data = item.document;
@@ -232,19 +253,26 @@ async function saveEdit(event) {
 }
 
 async function deleteItem(item) {
-  if (!window.confirm(`Delete "${item.title}"?`)) return;
+  const confirmed = await window.showAppConfirm(`Delete "${item.title}"?`, {
+    title: "Delete item",
+    confirmLabel: "Delete",
+  });
+  if (!confirmed) return;
   try {
     await request(`/documents/${encodeURIComponent(item.title)}`, {
       method: "DELETE",
     });
     await loadItems();
   } catch (error) {
-    window.alert(error.message);
+    await window.showAppAlert(error.message, { title: "Error" });
   }
 }
 
 document.getElementById("backButton").addEventListener("click", () => {
   window.location.href = "/home.html";
+});
+document.getElementById("archiveButton").addEventListener("click", () => {
+  window.location.href = "/archive.html";
 });
 document.getElementById("newPostButton").addEventListener("click", createPost);
 document.getElementById("refreshButton").addEventListener("click", loadItems);
