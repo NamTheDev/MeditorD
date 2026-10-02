@@ -478,6 +478,12 @@ button:active,
         min-height: 44px;
     }
 
+    input,
+    textarea,
+    select {
+        font-size: 16px;
+    }
+
     .app-dialog-close {
         min-width: 44px;
         min-height: 44px;
