@@ -5,6 +5,15 @@ export interface ApiConfig {
   prefix?: string;
 }
 
+function ifNoneMatchMatches(header: string | null, etag: string): boolean {
+  if (!header) return false;
+  const target = etag.replace(/^W\//, "");
+  return header
+    .split(",")
+    .map((value) => value.trim())
+    .some((value) => value === "*" || value.replace(/^W\//, "") === target);
+}
+
 export async function handleApi(
   req: Request,
   config: ApiConfig = { prefix: "/api" },
@@ -22,8 +31,24 @@ export async function handleApi(
   try {
     if (endpoint === "/documents" && method === "GET") {
       if (url.searchParams.get("full") === "true") {
+        const etag = db.getArchiveValidator();
+        if (ifNoneMatchMatches(req.headers.get("if-none-match"), etag)) {
+          return new Response(null, {
+            status: 304,
+            headers: {
+              ETag: etag,
+              "Cache-Control": "no-cache",
+            },
+          });
+        }
+
         const items = await db.getAllDocuments();
-        return Response.json(items);
+        return Response.json(items, {
+          headers: {
+            ETag: etag,
+            "Cache-Control": "no-cache",
+          },
+        });
       }
       const items = await db.listDocuments();
       return Response.json(items);
