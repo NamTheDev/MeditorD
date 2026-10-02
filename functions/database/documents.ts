@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { mkdir } from "node:fs/promises";
 import { join, posix } from "node:path";
 import { gzipSync, gunzipSync } from "node:zlib";
@@ -6,7 +7,7 @@ import { Database } from "bun:sqlite";
 const DB_DIRECTORY = join(process.cwd(), "database");
 const DB_PATH = join(DB_DIRECTORY, "meditord.sqlite");
 
-export const POST_SCHEMA_VERSION = 1;
+export const POST_SCHEMA_VERSION = 2;
 
 await mkdir(DB_DIRECTORY, { recursive: true });
 
@@ -21,6 +22,7 @@ database.run(`
     media BLOB,
     media_name TEXT,
     media_type TEXT,
+    media_hash TEXT,
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
   )
@@ -34,6 +36,34 @@ if (
   database.run(
     "ALTER TABLE documents ADD COLUMN username TEXT NOT NULL DEFAULT ''",
   );
+}
+
+if (
+  !database
+    .query<{ name: string }, []>("PRAGMA table_info(documents)")
+    .all()
+    .some((column) => column.name === "media_hash")
+) {
+  database.run("ALTER TABLE documents ADD COLUMN media_hash TEXT");
+}
+
+const mediaRowsMissingHash = database
+  .query<{ title: string; media: Uint8Array }, []>(
+    "SELECT title, media FROM documents WHERE media IS NOT NULL AND media_hash IS NULL",
+  )
+  .all();
+
+if (mediaRowsMissingHash.length) {
+  const updateMediaHash = database.query(
+    "UPDATE documents SET media_hash = ? WHERE title = ?",
+  );
+  const backfillMediaHashes = database.transaction(() => {
+    for (const row of mediaRowsMissingHash) {
+      const mediaHash = createHash("sha256").update(row.media).digest("hex");
+      updateMediaHash.run(mediaHash, row.title);
+    }
+  });
+  backfillMediaHashes();
 }
 
 database.run(`
@@ -57,8 +87,10 @@ database.run(`
   END
 `);
 
+database.run("DROP TRIGGER IF EXISTS trg_documents_archive_rev_update");
+
 database.run(`
-  CREATE TRIGGER IF NOT EXISTS trg_documents_archive_rev_update
+  CREATE TRIGGER trg_documents_archive_rev_update
   AFTER UPDATE ON documents
   WHEN
     (OLD.is_directory = 0 OR NEW.is_directory = 0)
@@ -70,6 +102,7 @@ database.run(`
       OR OLD.url IS NOT NEW.url
       OR OLD.media_name IS NOT NEW.media_name
       OR OLD.media_type IS NOT NEW.media_type
+      OR OLD.media_hash IS NOT NEW.media_hash
       OR OLD.created_at IS NOT NEW.created_at
     )
   BEGIN
@@ -102,6 +135,7 @@ export interface DocumentRecord {
   url: string;
   mediaName: string | null;
   mediaType: string | null;
+  mediaHash: string | null;
   hasMedia: boolean;
   created_at: string;
 }
@@ -110,6 +144,12 @@ export interface MediaRecord {
   data: Uint8Array;
   name: string | null;
   type: string;
+}
+
+export interface MediaMetadataRecord {
+  name: string | null;
+  type: string;
+  hash: string;
 }
 
 function normalizeTitle(title: string): string {
@@ -134,6 +174,7 @@ function toDocumentRecord(row: {
   url: string;
   media_name: string | null;
   media_type: string | null;
+  media_hash: string | null;
   created_at: string;
 }): DocumentRecord {
   return {
@@ -143,6 +184,7 @@ function toDocumentRecord(row: {
     url: row.url,
     mediaName: row.media_name,
     mediaType: row.media_type,
+    mediaHash: row.media_hash,
     hasMedia: row.media_type !== null,
     created_at: row.created_at,
   };
@@ -171,7 +213,7 @@ export function getArchiveValidator(): string {
 export function getAllDocuments(): DocumentRecord[] {
   const rows = database
     .query<DocumentRow, []>(
-      "SELECT title, username, content, url, media_name, media_type, created_at FROM documents WHERE is_directory = 0 ORDER BY created_at DESC, title ASC",
+      "SELECT title, username, content, url, media_name, media_type, media_hash, created_at FROM documents WHERE is_directory = 0 ORDER BY created_at DESC, title ASC",
     )
     .all();
   return rows.map(toDocumentRecord);
@@ -201,15 +243,41 @@ export function getDocumentByTitle(title: string): DocumentRecord | null {
         url: string;
         media_name: string | null;
         media_type: string | null;
+        media_hash: string | null;
         created_at: string;
       },
       [string]
     >(
-      "SELECT title, username, content, url, media_name, media_type, created_at FROM documents WHERE title = ? AND is_directory = 0",
+      "SELECT title, username, content, url, media_name, media_type, media_hash, created_at FROM documents WHERE title = ? AND is_directory = 0",
     )
     .get(normalizedTitle);
 
   return row ? toDocumentRecord(row) : null;
+}
+
+export function getDocumentMediaMetadata(
+  title: string,
+): MediaMetadataRecord | null {
+  const normalizedTitle = normalizeTitle(title);
+  const row = database
+    .query<
+      {
+        media_name: string | null;
+        media_type: string | null;
+        media_hash: string | null;
+      },
+      [string]
+    >(
+      "SELECT media_name, media_type, media_hash FROM documents WHERE title = ? AND is_directory = 0",
+    )
+    .get(normalizedTitle);
+
+  if (!row?.media_type || !row.media_hash) return null;
+  return {
+    name: row.media_name,
+    type: row.media_type,
+    hash: row.media_hash,
+  };
 }
 
 export function getDocumentMedia(title: string): MediaRecord | null {
@@ -246,11 +314,17 @@ export async function saveDocument(
   const mediaData = media
     ? gzipSync(new Uint8Array(await media.arrayBuffer()))
     : null;
+  const mediaHash = mediaData
+    ? createHash("sha256").update(mediaData).digest("hex")
+    : null;
 
   database
     .query(
-      `INSERT INTO documents (title, is_directory, username, content, url, media, media_name, media_type)
-       VALUES (?, 0, ?, ?, ?, ?, ?, ?)
+      `INSERT INTO documents (
+         title, is_directory, username, content, url,
+         media, media_name, media_type, media_hash
+       )
+       VALUES (?, 0, ?, ?, ?, ?, ?, ?, ?)
        ON CONFLICT(title) DO UPDATE SET
          username = excluded.username,
          content = excluded.content,
@@ -258,6 +332,7 @@ export async function saveDocument(
          media = excluded.media,
          media_name = excluded.media_name,
          media_type = excluded.media_type,
+         media_hash = excluded.media_hash,
          updated_at = CURRENT_TIMESTAMP`,
     )
     .run(
@@ -268,6 +343,7 @@ export async function saveDocument(
       mediaData,
       media?.name ?? null,
       media?.type || null,
+      mediaHash,
     );
 
   return getDocumentByTitle(normalizedTitle)!;
@@ -290,6 +366,9 @@ export async function updateDocument(
     : null;
   const mediaName = media?.name ?? null;
   const mediaType = media?.type || null;
+  const mediaHash = mediaData
+    ? createHash("sha256").update(mediaData).digest("hex")
+    : null;
 
   const result = database
     .query(
@@ -298,6 +377,7 @@ export async function updateDocument(
         media = CASE WHEN ? THEN NULL WHEN ? THEN ? ELSE media END,
         media_name = CASE WHEN ? THEN NULL WHEN ? THEN ? ELSE media_name END,
         media_type = CASE WHEN ? THEN NULL WHEN ? THEN ? ELSE media_type END,
+        media_hash = CASE WHEN ? THEN NULL WHEN ? THEN ? ELSE media_hash END,
         updated_at = CURRENT_TIMESTAMP
        WHERE title = ? AND is_directory = 0`,
     )
@@ -316,6 +396,9 @@ export async function updateDocument(
       removeMedia ? 1 : 0,
       media ? 1 : 0,
       mediaType,
+      removeMedia ? 1 : 0,
+      media ? 1 : 0,
+      mediaHash,
       normalizedOldTitle,
     );
 
