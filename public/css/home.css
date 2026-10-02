@@ -109,6 +109,11 @@
 
 
 @media (max-width: 700px) {
+    .home-wrapper {
+        background-image: none;
+        background-color: var(--bg);
+    }
+
     .main-container {
         flex-direction: column;
         gap: clamp(4px, 1.5dvh, 14px);
