@@ -18,8 +18,9 @@ meditord/
 │   │   ├── home-background.png
 │   │   └── home.png
 │   ├── chat-logs/
-│   │   ├── gemini-3.8-flash-11-09-2026.md
-│   │   ├── gemini-3.8-flash-28-09-2026.md
+│   │   ├── chatgpt-02-10-2026.md
+│   │   ├── gemini-11-09-2026.md
+│   │   ├── gemini-28-09-2026.md
 │   │   ├── github-copilot-16-09-2026.md
 │   │   └── github-copilot-25-09-2026.md
 │   └── ideas/
