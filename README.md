@@ -2,7 +2,7 @@
 
 ## I. AI Disclaimer
 
-Built from human ideas with Gemini, DeepSeek, and GitHub Copilot supporting design, research, implementation, testing, and documentation throughout project development.
+Built from human ideas with Gemini, DeepSeek, GitHub Copilot, and ChatGPT supporting design, research, implementation, testing, and documentation throughout development.
 
 ## II. Introduction
 
@@ -74,7 +74,7 @@ meditord/
 ├── index.ts
 ├── log.md
 ├── package.json
-├── rules.md
+├── guidelines.md
 └── tsconfig.json
 ```
 
