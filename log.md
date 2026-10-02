@@ -69,4 +69,5 @@
 - Restyled the mobile Write/Preview controls with Catppuccin Mocha surfaces and Windows 95/98 raised/sunken bevel states after reviewing the documented design references.
 - Added the dated ChatGPT mobile UX feedback log and synchronized the README directory tree.
 - Removed the home-screen background image on narrow mobile layouts while preserving the desktop background and shared Catppuccin base color.
+- Fixed archive media appearing blank on mobile by prioritizing the first visible media requests and rendering uploaded videos as video elements instead of images.
 
