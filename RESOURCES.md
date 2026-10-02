@@ -24,17 +24,18 @@ I used Zed by Zed Industries to create this project. I prefer it to VS Code beca
 
 ## Canva
 
-Canva was very helpful in creating the visual template that Gemini 3.8 Flash used to replicate the HTML, CSS, and JavaScript with 90% accuracy. You can check out the screenshots in [MeditorD/Canva_Designs](https://github.com/NamTheDev/MeditorD/tree/main/design/canva).
+Canva was very helpful in creating the visual template that Gemini used to replicate the HTML, CSS, and JavaScript with 90% accuracy. You can check out the screenshots in [MeditorD/Canva_Designs](https://github.com/NamTheDev/MeditorD/tree/main/design/canva).
 
 ## LLMs / AI Tools
 
-The LLMs and AI tools used in this project are Gemini, DeepSeek, and GitHub Copilot.
+The LLMs and AI tools used in this project are Gemini, DeepSeek, GitHub Copilot, and ChatGPT.
 
 - Gemini was used to generate the HTML, CSS, and JavaScript templates.
 - DeepSeek was used for quick web search.
 - GitHub Copilot was used to assist with the project's overall coding and commit messages.
+- ChatGPT was used for cache architecture, implementation, debugging, local diagnostics, repository maintenance, and documentation updates.
 
-For more information about my discussions with Gemini, check out the [MeditorD/Design_Chat_Logs](https://github.com/NamTheDev/MeditorD/tree/main/design/chat-logs) folder. I lost the chat logs for the other LLMs and AI tools, but I will export them in the future.
+For more information about AI-assisted design and development discussions, check out the [MeditorD/Design_Chat_Logs](https://github.com/NamTheDev/MeditorD/tree/main/design/chat-logs) folder. Chat logs are currently available for Gemini, GitHub Copilot, and ChatGPT.
 
 ## Tech Stack
 
