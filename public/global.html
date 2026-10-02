@@ -88,11 +88,29 @@
                     if (frame) return;
                     frame = requestAnimationFrame(() => {
                         frame = 0;
-                        const keyboardOffset = Math.max(
+                        const activeElement = document.activeElement;
+                        const textInputFocused =
+                            activeElement instanceof HTMLTextAreaElement ||
+                            activeElement?.isContentEditable ||
+                            (activeElement instanceof HTMLInputElement &&
+                                ![
+                                    "button",
+                                    "checkbox",
+                                    "file",
+                                    "radio",
+                                    "range",
+                                    "reset",
+                                    "submit",
+                                ].includes(activeElement.type));
+                        const rawOffset = Math.max(
                             0,
                             window.innerHeight -
                                 (viewport.height + viewport.offsetTop),
                         );
+                        const keyboardOffset =
+                            textInputFocused && viewport.scale === 1
+                                ? rawOffset
+                                : 0;
                         const root = document.documentElement;
                         root.style.setProperty(
                             "--keyboard-offset",
@@ -119,6 +137,7 @@
                 window.addEventListener("orientationchange", syncViewport, {
                     passive: true,
                 });
+                window.addEventListener("focusin", syncViewport);
                 window.addEventListener("focusout", () => {
                     window.setTimeout(syncViewport, 0);
                 });
