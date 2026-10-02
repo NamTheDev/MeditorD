@@ -1,7 +1,109 @@
-import { ROOT } from "../config";
-import { join } from "path";
+import { createHash } from "node:crypto";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import MarkdownIt from "markdown-it";
-import { getAllDocuments, type DocumentRecord } from "./database/documents";
+import { ROOT } from "../config";
+import {
+  getAllDocuments,
+  getArchiveValidator,
+  POST_SCHEMA_VERSION,
+  type DocumentRecord,
+} from "./database/documents";
+
+function resolveBuildId(): string {
+  const configured = process.env.BUILD_ID?.trim();
+  if (configured) {
+    const normalized = configured.replace(/[^A-Za-z0-9._-]/g, "");
+    if (normalized) return normalized.slice(0, 64);
+  }
+
+  try {
+    const gitDirectory = join(process.cwd(), ".git");
+    const head = readFileSync(join(gitDirectory, "HEAD"), "utf8").trim();
+    if (/^[0-9a-f]{40}$/i.test(head)) {
+      return head.slice(0, 12);
+    }
+
+    const refMatch = /^ref:\s+(.+)$/.exec(head);
+    if (refMatch) {
+      const revision = readFileSync(
+        join(gitDirectory, refMatch[1]),
+        "utf8",
+      ).trim();
+      if (/^[0-9a-f]{40}$/i.test(revision)) {
+        return revision.slice(0, 12);
+      }
+    }
+  } catch {}
+
+  return `runtime-${Date.now().toString(36)}`;
+}
+
+export const BUILD_ID = resolveBuildId();
+
+const assetFingerprintCache = new Map<string, string>();
+
+export async function getAssetFingerprint(
+  assetPath: string,
+): Promise<string | null> {
+  const normalizedPath = assetPath.split("?")[0].replace(/^\/+/, "");
+  if (!/\.(?:js|css)$/i.test(normalizedPath)) return null;
+
+  const cached = assetFingerprintCache.get(normalizedPath);
+  if (cached) return cached;
+
+  const asset = Bun.file(join(process.cwd(), ROOT, normalizedPath));
+  if (!(await asset.exists())) return null;
+
+  const bytes = new Uint8Array(await asset.arrayBuffer());
+  const fingerprint = createHash("sha256")
+    .update(bytes)
+    .digest("hex")
+    .slice(0, 10);
+  assetFingerprintCache.set(normalizedPath, fingerprint);
+  return fingerprint;
+}
+
+function escapeRegex(value: string): string {
+  return value.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&");
+}
+
+async function fingerprintLocalAssets(html: string): Promise<string> {
+  const assetPaths = new Set(
+    Array.from(
+      html.matchAll(/(?:src|href)="(\/[^"]+\.(?:js|css))(?:\?[^"]*)?"/gi),
+      (match) => match[1],
+    ),
+  );
+
+  for (const assetPath of assetPaths) {
+    const fingerprint = await getAssetFingerprint(assetPath);
+    if (!fingerprint) continue;
+    const escapedPath = escapeRegex(assetPath);
+    html = html.replace(
+      new RegExp(`(["'])${escapedPath}(?:\\?[^"']*)?\\1`, "g"),
+      `$1${assetPath}?v=${fingerprint}$1`,
+    );
+  }
+
+  return html;
+}
+
+function ifNoneMatchMatches(header: string | null, etag: string): boolean {
+  if (!header) return false;
+  const target = etag.replace(/^W\//, "");
+  return header
+    .split(",")
+    .map((value) => value.trim())
+    .some((value) => value === "*" || value.replace(/^W\//, "") === target);
+}
+
+function getArchivePageEtag(archiveValidator: string): string {
+  const validator = archiveValidator
+    .replace(/^W\/"|"$/g, "")
+    .replace(/[^A-Za-z0-9._-]/g, "");
+  return `W/"b${BUILD_ID}-${validator}"`;
+}
 
 const md = new MarkdownIt({
   html: false,
@@ -14,7 +116,12 @@ interface CachedPage {
   etag: string;
 }
 
+interface CachedArchivePage extends CachedPage {
+  archiveValidator: string;
+}
+
 const pageCache = new Map<string, CachedPage>();
+let archivePageCache: CachedArchivePage | undefined;
 
 function escapeHtml(str: string): string {
   return str
@@ -159,43 +266,71 @@ async function renderPage(
 ): Promise<Response> {
   const isArchive = file === "archive";
   const cacheKey = `${file}:${title}`;
-  let cached = isArchive ? undefined : pageCache.get(cacheKey);
+  const archiveValidator = isArchive ? getArchiveValidator() : null;
+  const etag =
+    isArchive && archiveValidator
+      ? getArchivePageEtag(archiveValidator)
+      : `"${BUILD_ID}"`;
 
-  if (!cached) {
+  if (
+    status === 200 &&
+    ifNoneMatchMatches(req?.headers.get("if-none-match") ?? null, etag)
+  ) {
+    return new Response(null, {
+      status: 304,
+      headers: {
+        ETag: etag,
+        "Cache-Control": "no-cache",
+        "X-MeditorD-Build": BUILD_ID,
+      },
+    });
+  }
+
+  let cached: CachedPage | undefined;
+  if (isArchive && archiveValidator) {
+    if (archivePageCache?.archiveValidator === archiveValidator) {
+      cached = archivePageCache;
+    }
+  } else {
+    cached = pageCache.get(cacheKey);
+  }
+
+  if (!cached || cached.etag !== etag) {
     const [layout, rawContent] = await Promise.all([
       Bun.file(join(process.cwd(), ROOT, "global.html")).text(),
       Bun.file(join(process.cwd(), ROOT, `${file}.html`)).text(),
     ]);
 
     let content = rawContent;
-    if (isArchive) {
+    if (isArchive && archiveValidator) {
       const posts = getAllDocuments();
       const cardsHtml = posts.map(renderCard).join("\n");
       const postsJson = JSON.stringify(posts);
       content = content
         .replace("{{archive_posts}}", () => cardsHtml)
-        .replace("{{archive_posts_json}}", () => postsJson);
+        .replace("{{archive_posts_json}}", () => postsJson)
+        .replace("{{archive_etag}}", () => escapeHtml(archiveValidator))
+        .replace(
+          "{{post_schema_version}}",
+          () => String(POST_SCHEMA_VERSION),
+        );
     }
 
-    const html = layout
+    let html = layout
       .replaceAll("{{title}}", () => title)
+      .replaceAll("{{build_id}}", () => escapeHtml(BUILD_ID))
       .replace("{{body}}", () => content);
+    html = await fingerprintLocalAssets(html);
 
-    const etag = `W/"${Bun.hash(html).toString(16)}"`;
     cached = { html, etag };
-    if (!isArchive) {
+    if (isArchive && archiveValidator) {
+      archivePageCache = {
+        ...cached,
+        archiveValidator,
+      };
+    } else {
       pageCache.set(cacheKey, cached);
     }
-  }
-
-  if (req?.headers.get("if-none-match") === cached.etag) {
-    return new Response(null, {
-      status: 304,
-      headers: {
-        ETag: cached.etag,
-        "Cache-Control": "no-cache",
-      },
-    });
   }
 
   return new Response(cached.html, {
@@ -204,6 +339,7 @@ async function renderPage(
       "Content-Type": "text/html; charset=utf-8",
       "Cache-Control": "no-cache",
       ETag: cached.etag,
+      "X-MeditorD-Build": BUILD_ID,
     },
   });
 }
