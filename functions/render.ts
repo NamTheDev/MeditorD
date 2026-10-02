@@ -48,7 +48,7 @@ export async function getAssetFingerprint(
   assetPath: string,
 ): Promise<string | null> {
   const normalizedPath = (assetPath.split("?", 1)[0] ?? "").replace(
-    /^\/+/, 
+    /^\/+/,
     "",
   );
   if (!/\.(?:js|css)$/i.test(normalizedPath)) return null;
