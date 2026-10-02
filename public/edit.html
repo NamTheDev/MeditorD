@@ -60,9 +60,9 @@
 </header>
 
 <main class="editor-container">
-    <div class="editor-layout">
+    <div class="editor-layout" id="editor-layout">
         <div class="editor-left-pane">
-        <form class="editor-form">
+            <form class="editor-form">
             <div class="form-row">
                 <label for="doc-title" class="field-label">Title:</label>
                 <input
@@ -107,10 +107,10 @@
                     No Media Selected
                 </div>
             </div>
-        </form>
-    </div>
+            </form>
+        </div>
 
-    <div class="editor-right-pane">
+        <div class="editor-right-pane">
         <div class="textarea-wrapper">
             <div class="description-toolbar">
                 <span class="description-label">Description:</span>
@@ -159,8 +159,44 @@
                 <button type="button" data-markdown-action="list">−</button>
                 <button type="button" data-markdown-action="link">Link</button>
             </div>
+            </div>
         </div>
+    </div>
+
+    <div class="mobile-editor-scrollbar" id="editor-mobile-scrollbar">
+        <button
+            class="mobile-scrollbar-arrow"
+            type="button"
+            data-scroll-direction="-1"
+            aria-label="Scroll editor up"
+        >
+            ▲
+        </button>
+        <div
+            class="mobile-scrollbar-track"
+            id="editor-mobile-scrollbar-track"
+            role="scrollbar"
+            tabindex="0"
+            aria-controls="editor-layout"
+            aria-orientation="vertical"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            aria-valuenow="0"
+            aria-label="Editor scroll position"
+        >
+            <div
+                class="mobile-scrollbar-thumb"
+                id="editor-mobile-scrollbar-thumb"
+            ></div>
         </div>
+        <button
+            class="mobile-scrollbar-arrow"
+            type="button"
+            data-scroll-direction="1"
+            aria-label="Scroll editor down"
+        >
+            ▼
+        </button>
     </div>
 </main>
 
