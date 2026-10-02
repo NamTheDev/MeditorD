@@ -142,11 +142,16 @@ body {
     image-rendering: pixelated;
 }
 
-.gallery-media img {
+.gallery-media img,
+.gallery-media video {
     display: block;
     width: 100%;
     height: auto;
     object-fit: contain;
+}
+
+.gallery-media video {
+    background: var(--ctp-crust);
 }
 
 .gallery-media.embed-thumbnail {
