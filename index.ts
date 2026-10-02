@@ -30,9 +30,14 @@ const server = Bun.serve({
     if (!path.endsWith(".html")) {
       const rootAsset = Bun.file(join(process.cwd(), ROOT, relativePath));
       if (await rootAsset.exists()) {
+        const extension = relativePath.split(".").pop()?.toLowerCase();
+        const cacheControl =
+          extension === "js" || extension === "css"
+            ? "no-cache"
+            : "public, max-age=86400";
         return new Response(rootAsset, {
           headers: {
-            "Cache-Control": "public, max-age=86400",
+            "Cache-Control": cacheControl,
           },
         });
       }
