@@ -40,6 +40,3 @@ MeditorD loads fonts through Google Fonts rather than vendoring font files in th
 
 Files under `design/canva/` and image assets under `public/media/` are not automatically relicensed merely because the repository uses the MIT license. Before redistributing third-party imagery, templates, stock content, or other externally sourced material, verify that the relevant source license or service terms permit that redistribution.
 
-## User-Provided Content
-
-MeditorD can store user-provided text, links, images, and video. The root MIT license does not grant rights to third-party content added by users. Anyone operating or distributing an instance is responsible for ensuring that uploaded or linked content is used lawfully and with appropriate permissions.
