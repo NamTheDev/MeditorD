@@ -8,6 +8,6 @@
     "@types/markdown-it": "^14.2.0"
   },
   "peerDependencies": {
-    "typescript": "^7"
+    "typescript": "^7.0.2"
   }
 }
