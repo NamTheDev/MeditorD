@@ -25,9 +25,10 @@ function resolveBuildId(): string {
     }
 
     const refMatch = /^ref:\s+(.+)$/.exec(head);
-    if (refMatch) {
+    const refPath = refMatch?.[1];
+    if (refPath) {
       const revision = readFileSync(
-        join(gitDirectory, refMatch[1]),
+        join(gitDirectory, refPath),
         "utf8",
       ).trim();
       if (/^[0-9a-f]{40}$/i.test(revision)) {
@@ -46,7 +47,10 @@ const assetFingerprintCache = new Map<string, string>();
 export async function getAssetFingerprint(
   assetPath: string,
 ): Promise<string | null> {
-  const normalizedPath = assetPath.split("?")[0].replace(/^\/+/, "");
+  const normalizedPath = (assetPath.split("?", 1)[0] ?? "").replace(
+    /^\/+/, 
+    "",
+  );
   if (!/\.(?:js|css)$/i.test(normalizedPath)) return null;
 
   const cached = assetFingerprintCache.get(normalizedPath);
@@ -69,12 +73,13 @@ function escapeRegex(value: string): string {
 }
 
 async function fingerprintLocalAssets(html: string): Promise<string> {
-  const assetPaths = new Set(
-    Array.from(
-      html.matchAll(/(?:src|href)="(\/[^"]+\.(?:js|css))(?:\?[^"]*)?"/gi),
-      (match) => match[1],
-    ),
-  );
+  const assetPaths = new Set<string>();
+  for (const match of html.matchAll(
+    /(?:src|href)="(\/[^"]+\.(?:js|css))(?:\?[^"]*)?"/gi,
+  )) {
+    const assetPath = match[1];
+    if (assetPath) assetPaths.add(assetPath);
+  }
 
   for (const assetPath of assetPaths) {
     const fingerprint = await getAssetFingerprint(assetPath);
