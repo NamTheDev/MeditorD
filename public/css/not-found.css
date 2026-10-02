@@ -46,3 +46,31 @@
     text-anchor: middle;
     dominant-baseline: central;
 }
+
+
+@media (max-width: 700px) {
+    .heading-404 {
+        top: max(8%, var(--safe-top));
+        left: max(5%, var(--safe-left));
+        right: max(5%, var(--safe-right));
+        font-size: clamp(2rem, 11vw, 4rem);
+    }
+
+    .return-btn-404 {
+        right: max(5%, var(--safe-right));
+        bottom: max(8%, var(--safe-bottom));
+        width: min(72vw, 360px);
+        min-height: 44px;
+    }
+
+    .arrow-text-404 {
+        font-size: 40px;
+    }
+}
+
+@media (hover: none) {
+    .return-btn-404:hover {
+        transform: none;
+        filter: none;
+    }
+}
