@@ -218,4 +218,5 @@ window.addEventListener("keydown", (event) => {
 });
 
 
+updateMarkdownPreview();
 setDescriptionView("write");
