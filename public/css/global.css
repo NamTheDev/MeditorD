@@ -107,6 +107,12 @@
     --input-height: clamp(28px, 2.5vw, 38px);
     --icon-size: clamp(24px, 2.5vw, 38px);
     --pane-padding: clamp(14px, 1.8vw, 28px);
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-right: env(safe-area-inset-right, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-left: env(safe-area-inset-left, 0px);
+    --keyboard-offset: 0px;
+    --visual-viewport-height: 100dvh;
 }
 
 *,
@@ -131,59 +137,13 @@ body {
     background-color: var(--bg);
     color: var(--fg);
     font-family: var(--font-ui);
+    overscroll-behavior: none;
 }
 
-.mobile-support-message {
-    position: fixed;
-    inset: 0;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    padding: 2rem;
-    background: rgba(17, 17, 27, 0.96);
-    z-index: 2147483647;
-    text-align: center;
+body {
+    min-height: 100dvh;
 }
 
-.mobile-support-message__inner {
-    display: grid;
-    gap: 0.8rem;
-    max-width: min(32rem, 90vw);
-    padding: clamp(1.5rem, 4vw, 3rem);
-    background: rgba(24, 24, 37, 0.95);
-    border: 2px solid var(--border);
-    box-shadow: var(--shadow-lg);
-}
-
-.mobile-support-message__title,
-.mobile-support-message__text {
-    font-family: var(--font-ui);
-    line-height: 1.4;
-    letter-spacing: 0.04em;
-}
-
-.mobile-support-message__title {
-    font-size: clamp(1.25rem, 2.8vw, 2.25rem);
-    font-weight: 700;
-    text-transform: uppercase;
-}
-
-.mobile-support-message__text {
-    font-size: clamp(0.95rem, 1.8vw, 1.25rem);
-    color: var(--fg-sub);
-}
-
-body.mobile-blocked {
-    overflow: hidden;
-}
-
-body.mobile-blocked > *:not(.mobile-support-message) {
-    display: none !important;
-}
-
-body.mobile-blocked .mobile-support-message {
-    display: flex !important;
-}
 
 .hidden {
     display: none;
@@ -389,7 +349,11 @@ button:active,
     z-index: 10000;
     display: grid;
     place-items: center;
-    padding: 20px;
+    padding:
+        max(20px, var(--safe-top))
+        max(20px, var(--safe-right))
+        max(20px, calc(var(--safe-bottom) + var(--keyboard-offset)))
+        max(20px, var(--safe-left));
     background: rgba(17, 17, 27, 0.78);
 }
 
@@ -412,6 +376,8 @@ button:active,
 
 .app-dialog-window {
     width: min(420px, 100%);
+    max-height: min(88dvh, var(--visual-viewport-height));
+    overflow: auto;
     padding: 3px;
     background: var(--ctp-surface0);
     color: var(--ctp-text);
@@ -502,4 +468,30 @@ button:active,
 .app-dialog-input-wrap input:focus-visible {
     outline: 2px solid var(--ctp-lavender);
     outline-offset: 2px;
+}
+
+
+@media (pointer: coarse) {
+    button,
+    .win-btn,
+    .action-btn {
+        min-height: 44px;
+    }
+
+    .app-dialog-close {
+        min-width: 44px;
+        min-height: 44px;
+    }
+
+    .app-dialog-actions button {
+        min-width: 88px;
+        min-height: 44px;
+    }
+}
+
+@media (hover: none) {
+    button,
+    a {
+        -webkit-tap-highlight-color: transparent;
+    }
 }
