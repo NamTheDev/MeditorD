@@ -6,6 +6,8 @@ import { Database } from "bun:sqlite";
 const DB_DIRECTORY = join(process.cwd(), "database");
 const DB_PATH = join(DB_DIRECTORY, "meditord.sqlite");
 
+export const POST_SCHEMA_VERSION = 1;
+
 await mkdir(DB_DIRECTORY, { recursive: true });
 
 const database = new Database(DB_PATH, { create: true });
@@ -33,6 +35,60 @@ if (
     "ALTER TABLE documents ADD COLUMN username TEXT NOT NULL DEFAULT ''",
   );
 }
+
+database.run(`
+  CREATE TABLE IF NOT EXISTS metadata (
+    key TEXT PRIMARY KEY,
+    value INTEGER NOT NULL
+  )
+`);
+database.run(
+  "INSERT OR IGNORE INTO metadata (key, value) VALUES ('archive_revision', 1)",
+);
+
+database.run(`
+  CREATE TRIGGER IF NOT EXISTS trg_documents_archive_rev_insert
+  AFTER INSERT ON documents
+  WHEN NEW.is_directory = 0
+  BEGIN
+    UPDATE metadata
+    SET value = value + 1
+    WHERE key = 'archive_revision';
+  END
+`);
+
+database.run(`
+  CREATE TRIGGER IF NOT EXISTS trg_documents_archive_rev_update
+  AFTER UPDATE ON documents
+  WHEN
+    (OLD.is_directory = 0 OR NEW.is_directory = 0)
+    AND (
+      OLD.is_directory IS NOT NEW.is_directory
+      OR OLD.title IS NOT NEW.title
+      OR OLD.username IS NOT NEW.username
+      OR OLD.content IS NOT NEW.content
+      OR OLD.url IS NOT NEW.url
+      OR OLD.media_name IS NOT NEW.media_name
+      OR OLD.media_type IS NOT NEW.media_type
+      OR OLD.created_at IS NOT NEW.created_at
+    )
+  BEGIN
+    UPDATE metadata
+    SET value = value + 1
+    WHERE key = 'archive_revision';
+  END
+`);
+
+database.run(`
+  CREATE TRIGGER IF NOT EXISTS trg_documents_archive_rev_delete
+  AFTER DELETE ON documents
+  WHEN OLD.is_directory = 0
+  BEGIN
+    UPDATE metadata
+    SET value = value + 1
+    WHERE key = 'archive_revision';
+  END
+`);
 
 export interface FileRecord {
   title: string;
@@ -93,6 +149,24 @@ function toDocumentRecord(row: {
 }
 
 type DocumentRow = Parameters<typeof toDocumentRecord>[0];
+
+export function getArchiveRevision(): number {
+  const row = database
+    .query<{ value: number }, [string]>(
+      "SELECT value FROM metadata WHERE key = ?",
+    )
+    .get("archive_revision");
+
+  if (!row) {
+    throw new Error("archive_revision metadata is missing");
+  }
+
+  return Number(row.value);
+}
+
+export function getArchiveValidator(): string {
+  return `W/"s${POST_SCHEMA_VERSION}-r${getArchiveRevision()}"`;
+}
 
 export function getAllDocuments(): DocumentRecord[] {
   const rows = database
