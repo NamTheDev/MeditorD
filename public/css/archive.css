@@ -84,27 +84,32 @@ body {
 }
 
 .reddit-gallery {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
-    gap: clamp(12px, 1.5vw, 24px);
-    align-items: start;
+    columns: 320px;
+    column-gap: clamp(12px, 1.5vw, 24px);
     width: 100%;
+    align-items: start;
 }
 
 .reddit-gallery.compact {
-    grid-template-columns: 1fr;
+    columns: 1;
 }
 
 .gallery-card {
+    display: inline-block;
     width: 100%;
-    height: 400px;
+    break-inside: avoid;
+    margin-bottom: clamp(12px, 1.5vw, 24px);
     box-sizing: border-box;
     background: var(--ctp-surface0);
     padding: 8px;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
+    position: relative;
+    z-index: 0;
+    overflow: visible;
     cursor: pointer;
+}
+
+.gallery-card:has(.card-menu:not(.hidden)) {
+    z-index: 100;
 }
 
 .gallery-card:hover {
@@ -113,9 +118,9 @@ body {
 
 .gallery-media {
     width: 100%;
-    height: 200px;
-    flex: 0 0 200px;
-    padding: 16px;
+    height: auto;
+    flex: none;
+    padding: 0;
     background: var(--ctp-crust);
     position: relative;
     overflow: hidden;
@@ -126,14 +131,15 @@ body {
 
 .gallery-media svg {
     width: 100%;
-    height: 100%;
+    height: auto;
     object-fit: contain;
     image-rendering: pixelated;
 }
 
 .gallery-media img {
+    display: block;
     width: 100%;
-    height: 100%;
+    height: auto;
     object-fit: contain;
 }
 
@@ -143,6 +149,110 @@ body {
 
 .gallery-media.youtube-thumbnail img {
     object-fit: cover;
+}
+
+.card-actions {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    z-index: 10;
+}
+
+.card-menu-button {
+    border: 1px solid var(--bevel-darkest);
+    border-top-color: var(--bevel-lightest);
+    border-left-color: var(--bevel-lightest);
+    background: var(--ctp-surface1);
+    color: var(--ctp-text);
+    width: 28px;
+    height: 28px;
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0;
+}
+
+.card-menu {
+    position: absolute;
+    top: calc(100% + 4px);
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    min-width: 120px;
+    background: var(--ctp-surface0);
+    border: 2px solid var(--bevel-darkest);
+    border-top-color: var(--bevel-lightest);
+    border-left-color: var(--bevel-lightest);
+    box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+}
+
+.card-menu.hidden,
+.card-submenu.hidden {
+    display: none;
+}
+
+.card-menu button {
+    appearance: none;
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid var(--ctp-surface1);
+    color: var(--ctp-text);
+    text-align: left;
+    padding: 8px 10px;
+    cursor: pointer;
+    font: inherit;
+}
+
+.card-menu button:last-child {
+    border-bottom: 0;
+}
+
+.card-submenu {
+    position: absolute;
+    top: 0;
+    right: 100%;
+    display: flex;
+    flex-direction: column;
+    min-width: 140px;
+    background: var(--ctp-surface0);
+    border: 2px solid var(--bevel-darkest);
+    border-top-color: var(--bevel-lightest);
+    border-left-color: var(--bevel-lightest);
+    z-index: 1001;
+}
+
+.card-menu-item {
+    position: relative;
+    width: 100%;
+}
+
+.card-menu > button,
+.card-menu-item > button {
+    width: 100%;
+    min-height: 0;
+    padding: 8px 10px;
+    justify-content: flex-start;
+    text-align: left;
+}
+
+.card-menu-item > button {
+    justify-content: space-between;
+}
+
+.card-submenu {
+    top: 0;
+    left: 100%;
+    right: auto;
+    margin-left: 4px;
+    min-width: 160px;
+}
+
+.card-submenu.open-left {
+    left: auto;
+    right: 100%;
+    margin-left: 0;
+    margin-right: 4px;
 }
 
 .card-info {
@@ -182,11 +292,10 @@ body {
 
 .card-description {
     min-height: 0;
-    max-height: 120px;
     color: var(--ctp-subtext1);
     font-size: calc(var(--font-base) * 0.9);
     line-height: 1.4;
-    overflow: hidden;
+    overflow: visible;
 }
 
 .card-description p {
@@ -222,6 +331,17 @@ body {
 .card-description strong {
     color: var(--ctp-lavender);
     white-space: nowrap;
+}
+
+.read-more-toggle {
+    display: inline-block;
+    padding: 0;
+    background: none;
+    border: 0;
+    color: var(--ctp-lavender);
+    font: inherit;
+    cursor: pointer;
+    text-decoration: underline;
 }
 
 .description-notice {
