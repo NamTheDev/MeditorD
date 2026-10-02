@@ -1,7 +1,7 @@
 .exit-wrapper {
     position: relative;
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    height: 100dvh;
     overflow: hidden;
     background: var(--media-grass-background) no-repeat center center / 100%
         100%;
@@ -61,4 +61,33 @@
     background-position: center;
     width: 500px;
     height: 500px;
+}
+
+
+@media (max-width: 700px) {
+    .exit-title {
+        top: max(8%, var(--safe-top));
+        left: max(5%, var(--safe-left));
+        right: max(5%, var(--safe-right));
+        font-size: clamp(2rem, 11vw, 4rem);
+        -webkit-text-stroke-width: 6px;
+        text-shadow:
+            2px 2px 0 #000000,
+            4px 4px 0 #000000,
+            6px 6px 10px rgba(0, 0, 0, 0.8);
+    }
+
+    .return-btn-exit {
+        right: max(5%, var(--safe-right));
+        bottom: max(8%, var(--safe-bottom));
+        width: min(72vw, 360px);
+        min-height: 44px;
+    }
+}
+
+@media (hover: none) {
+    .return-btn-exit:hover {
+        transform: none;
+        filter: none;
+    }
 }
