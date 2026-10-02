@@ -72,4 +72,5 @@
 - Fixed archive media appearing blank on mobile by prioritizing the first visible media requests and rendering uploaded videos as video elements instead of images.
 - Added SHA-256 fingerprints, immutable browser caching, strong ETags, and early 304 handling for SQLite-backed archive media so revisits can reuse cached images and videos without rereading or decompressing unchanged BLOBs.
 - Simplified Docker deployment by removing in-container Git installation, runtime pulls, and repeated dependency installs; source updates now happen on the host and pass the native Git revision into the image as `BUILD_ID`.
+- Added an executable `deploy.sh` host wrapper for the Arch homeserver so deployment automatically pulls the repository natively, rebuilds with the updated Git revision, replaces the container, and preserves the database mount.
 
