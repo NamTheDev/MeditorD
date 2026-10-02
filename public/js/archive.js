@@ -51,6 +51,24 @@ function generateMochaGraphic(type) {
   }
 }
 
+function getPostTimestamp(post) {
+  const value = post?.createdAt || post?.created_at || "";
+  const normalizedValue =
+    typeof value === "string" && value.includes(" ")
+      ? value.replace(" ", "T") + "Z"
+      : value;
+  const timestamp = Date.parse(normalizedValue);
+  return Number.isNaN(timestamp) ? 0 : timestamp;
+}
+
+function sortPostsNewestFirst(posts) {
+  return [...posts].sort((left, right) => {
+    const dateOrder = getPostTimestamp(right) - getPostTimestamp(left);
+    if (dateOrder !== 0) return dateOrder;
+    return String(left.title || "").localeCompare(String(right.title || ""));
+  });
+}
+
 let postsData = [];
 const CACHE_KEY = "meditord_archive";
 const initialPostsEl = document.getElementById("initialPosts");
@@ -99,12 +117,14 @@ const cachedArchive = readArchiveCache();
 let hydratedFromServer = false;
 if (initialPostsEl) {
   try {
-    postsData = JSON.parse(initialPostsEl.textContent || "[]");
+    postsData = sortPostsNewestFirst(
+      JSON.parse(initialPostsEl.textContent || "[]"),
+    );
     hydratedFromServer = true;
   } catch {}
 }
 if (!hydratedFromServer && cachedArchive) {
-  postsData = cachedArchive.posts;
+  postsData = sortPostsNewestFirst(cachedArchive.posts);
   archiveEtag = archiveEtag || cachedArchive.etag || "";
 }
 if (hydratedFromServer) writeArchiveCache();
@@ -447,7 +467,7 @@ async function loadPosts() {
     }
     if (!response.ok) throw new Error("Failed to load posts");
 
-    const freshPosts = await response.json();
+    const freshPosts = sortPostsNewestFirst(await response.json());
     const freshKey = JSON.stringify(freshPosts);
     const currentKey = JSON.stringify(postsData);
     archiveEtag = response.headers.get("etag") || archiveEtag;
