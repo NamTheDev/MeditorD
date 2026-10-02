@@ -220,11 +220,70 @@ function getDownloadActions(post) {
   return "";
 }
 
+function setMediaPriority(element, index) {
+  if (!(element instanceof HTMLImageElement)) return;
+
+  if (index < 4) {
+    element.loading = "eager";
+  } else {
+    element.loading = "lazy";
+  }
+
+  if (index < 2) {
+    element.fetchPriority = "high";
+  }
+}
+
+function createUploadedMedia(post, index) {
+  const source = `/api/media/${encodeURIComponent(post.title)}`;
+
+  if (post.mediaType?.startsWith("video/")) {
+    const video = document.createElement("video");
+    video.className = "gallery-media-element";
+    video.src = source;
+    video.preload = index < 2 ? "auto" : "metadata";
+    video.muted = true;
+    video.playsInline = true;
+    video.setAttribute("aria-label", post.title);
+    return video;
+  }
+
+  const image = document.createElement("img");
+  image.className = "gallery-media-element";
+  image.src = source;
+  image.alt = "";
+  setMediaPriority(image, index);
+  return image;
+}
+
+function upgradeInitialMedia() {
+  postsData.forEach((post, index) => {
+    const card = Array.from(
+      document.querySelectorAll(".gallery-card"),
+    ).find((entry) => entry.dataset.title === post.title);
+    if (!card) return;
+
+    const mediaContainer = card.querySelector(".gallery-media");
+    if (!mediaContainer) return;
+
+    if (post.hasMedia && post.mediaType?.startsWith("video/")) {
+      const current = mediaContainer.querySelector("img");
+      if (current) {
+        current.replaceWith(createUploadedMedia(post, index));
+      }
+      return;
+    }
+
+    const image = mediaContainer.querySelector("img");
+    if (image) setMediaPriority(image, index);
+  });
+}
+
 function renderPosts() {
   const container = document.getElementById("postsContainer");
   container.replaceChildren();
 
-  postsData.forEach((post) => {
+  postsData.forEach((post, index) => {
     const card = document.createElement("article");
     card.className = "gallery-card raised";
     card.dataset.title = post.title;
@@ -253,18 +312,14 @@ function renderPosts() {
       const thumbnail = document.createElement("img");
       thumbnail.src = youtubeThumbnailUrl;
       thumbnail.alt = `YouTube thumbnail for ${post.title}`;
-      thumbnail.loading = "lazy";
+      setMediaPriority(thumbnail, index);
       media.append(thumbnail);
       media.classList.add("embed-thumbnail", "youtube-thumbnail");
       card.append(media);
     } else if (post.hasMedia) {
       const media = document.createElement("div");
       media.className = "gallery-media thin-sunken";
-      const thumbnail = document.createElement("img");
-      thumbnail.src = `/api/media/${encodeURIComponent(post.title)}`;
-      thumbnail.alt = "";
-      thumbnail.loading = "lazy";
-      media.append(thumbnail);
+      media.append(createUploadedMedia(post, index));
       card.append(media);
     }
 
@@ -324,10 +379,21 @@ function openPostModal(post) {
     embed.allowFullscreen = true;
     body.prepend(embed);
   } else if (post.hasMedia) {
-    const media = document.createElement("img");
+    const media = document.createElement(
+      post.mediaType?.startsWith("video/") ? "video" : "img",
+    );
     media.className = "modal-media";
     media.src = `/api/media/${encodeURIComponent(post.title)}`;
-    media.alt = post.title;
+    media.setAttribute("aria-label", post.title);
+    if (media instanceof HTMLVideoElement) {
+      media.controls = true;
+      media.playsInline = true;
+      media.preload = "auto";
+    } else {
+      media.alt = post.title;
+      media.loading = "eager";
+      media.fetchPriority = "high";
+    }
     body.prepend(media);
   }
   const modal = document.getElementById("postModal");
@@ -621,6 +687,8 @@ document.addEventListener("click", (event) => {
 
 if (!postsContainer.children.length && postsData.length > 0) {
   renderPosts();
+} else {
+  upgradeInitialMedia();
 }
 
 loadPosts();
