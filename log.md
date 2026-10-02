@@ -61,5 +61,5 @@
 - Audited the repository against current GitHub acceptable-use and MIT licensing requirements, added `THIRD_PARTY_NOTICES.md`, and clarified that distributed third-party software, fonts, design references, and assets retain their own terms.
 - Refined third-party licensing documentation for MeditorD's self-hosted and local model by removing runtime user data from `THIRD_PARTY_NOTICES.md` and its `RESOURCES.md` summary.
 - Added content-driven editor layouts with container-query collapse, mobile Write/Preview state, a keyboard-docked Markdown toolbar, and wide source/preview rendering; adapted archive, database, home, exit, and 404 views for narrow and hybrid-device layouts.
-- Replaced the desktop-only mobile blocker with responsive Android, iOS, and tablet support using safe-area insets, dynamic/visual viewport tracking, internal pane scrolling, and touch-safe controls.
+- Replaced the desktop-only mobile blocker with responsive Android, iOS, and tablet support using safe-area insets, focus-gated dynamic/visual viewport keyboard tracking, internal pane scrolling, and touch-safe controls.
 
