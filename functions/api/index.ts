@@ -44,9 +44,14 @@ export async function handleApi(
       return new Response(media.data, {
         headers: {
           "Content-Type": media.type,
-          "Content-Disposition": media.name
-            ? `inline; filename="${encodeURIComponent(media.name)}"`
-            : "inline",
+          "Content-Disposition": [
+            url.searchParams.get("download") === "true" ? "attachment" : "inline",
+            media.name
+              ? `filename="${encodeURIComponent(media.name)}"`
+              : "",
+          ]
+            .filter(Boolean)
+            .join("; "),
           "Cache-Control": "no-cache",
         },
       });
