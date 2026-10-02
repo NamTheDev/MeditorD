@@ -74,6 +74,7 @@ meditord/
 ├── THIRD_PARTY_NOTICES.md
 ├── bun.lock
 ├── config.ts
+├── deploy.sh
 ├── index.ts
 ├── log.md
 ├── package.json
@@ -107,10 +108,10 @@ meditord/
 
 ### Docker Alternative
 
-1. Update the repository on the host with `git pull --ff-only`.
-2. Build the image with the native Git revision: `docker build --build-arg BUILD_ID="$(git rev-parse --short=12 HEAD)" -t meditord .`
-3. Run the container with the local database mounted: `docker run --rm -p 3000:3000 -v "$(pwd)/database:/app/database" meditord`.
-4. Re-run the host Git pull and Docker build commands when deploying new source changes.
+1. Ensure Git and Docker are installed natively on the host.
+2. Run `./deploy.sh` from the MeditorD repository.
+3. The deployment script pulls the latest source on the host, rebuilds the image with the current Git revision as `BUILD_ID`, replaces the existing MeditorD container, and preserves the host `database` directory.
+4. Optionally set `MEDITORD_IMAGE`, `MEDITORD_CONTAINER`, `MEDITORD_PORT`, or `MEDITORD_DATABASE_DIR` before running the script to override its defaults.
 
 ## IV. Resources and License
 
