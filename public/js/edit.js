@@ -8,6 +8,18 @@ const previewViewButton = document.getElementById("preview-view-button");
 const markdownPreview = document.querySelector(".markdown-preview");
 const textareaWrapper = document.querySelector(".textarea-wrapper");
 const mobileMarkdownToolbar = document.querySelector(".mobile-markdown-toolbar");
+const editorContainer = document.querySelector(".editor-container");
+const editorLayout = document.getElementById("editor-layout");
+const mobileScrollbar = document.getElementById("editor-mobile-scrollbar");
+const mobileScrollbarTrack = document.getElementById(
+  "editor-mobile-scrollbar-track",
+);
+const mobileScrollbarThumb = document.getElementById(
+  "editor-mobile-scrollbar-thumb",
+);
+const mobileScrollbarArrows = mobileScrollbar.querySelectorAll(
+  "[data-scroll-direction]",
+);
 const mediaInput = document.getElementById("doc-media");
 const previewBox = document.querySelector(".preview-box");
 const saveButton = document.querySelector(".action-btn");
@@ -20,6 +32,11 @@ const featureModalClose = featureModal.querySelector(".win98-modal-close");
 const featureModalOk = featureModal.querySelector(".win98-button");
 let modalReturnFocus = null;
 let previewUrl = null;
+let narrowEditorLayout = false;
+let scrollbarFrame = 0;
+let scrollbarDragPointer = null;
+let scrollbarDragStartY = 0;
+let scrollbarDragStartScrollTop = 0;
 const markdown = window.markdownit({
   html: false,
   linkify: true,
@@ -31,6 +48,95 @@ function updateMarkdownPreview() {
     contentInput.value || "_Nothing to preview yet._",
   );
 }
+
+function resizeMobileTextarea() {
+  if (!narrowEditorLayout) {
+    contentInput.style.height = "";
+    return;
+  }
+
+  contentInput.style.height = "auto";
+  contentInput.style.height = `${Math.max(320, contentInput.scrollHeight)}px`;
+}
+
+function syncMobileScrollbar() {
+  scrollbarFrame = 0;
+
+  if (!narrowEditorLayout) {
+    mobileScrollbar.hidden = true;
+    return;
+  }
+
+  const scrollRange = Math.max(
+    0,
+    editorLayout.scrollHeight - editorLayout.clientHeight,
+  );
+  if (scrollRange <= 1) {
+    mobileScrollbar.hidden = true;
+    mobileScrollbarTrack.setAttribute("aria-valuenow", "0");
+    return;
+  }
+
+  mobileScrollbar.hidden = false;
+  const trackHeight = mobileScrollbarTrack.clientHeight;
+  if (trackHeight <= 0) return;
+
+  const thumbHeight = Math.min(
+    trackHeight,
+    Math.max(
+      44,
+      Math.round(
+        trackHeight * (editorLayout.clientHeight / editorLayout.scrollHeight),
+      ),
+    ),
+  );
+  const thumbTravel = Math.max(0, trackHeight - thumbHeight);
+  const scrollRatio = editorLayout.scrollTop / scrollRange;
+  const thumbTop = thumbTravel * scrollRatio;
+
+  mobileScrollbarThumb.style.height = `${thumbHeight}px`;
+  mobileScrollbarThumb.style.transform = `translateY(${thumbTop}px)`;
+  mobileScrollbarTrack.setAttribute(
+    "aria-valuenow",
+    String(Math.round(scrollRatio * 100)),
+  );
+}
+
+function queueMobileScrollbarSync() {
+  if (scrollbarFrame) return;
+  scrollbarFrame = requestAnimationFrame(syncMobileScrollbar);
+}
+
+function syncEditorLayoutMode() {
+  narrowEditorLayout = editorContainer.clientWidth <= 839;
+  resizeMobileTextarea();
+  queueMobileScrollbarSync();
+}
+
+function scrollEditorBy(amount) {
+  editorLayout.scrollTop += amount;
+  queueMobileScrollbarSync();
+}
+
+function stopScrollbarDrag(event) {
+  if (
+    scrollbarDragPointer === null ||
+    (event && event.pointerId !== scrollbarDragPointer)
+  ) {
+    return;
+  }
+
+  if (
+    event &&
+    mobileScrollbarThumb.hasPointerCapture?.(scrollbarDragPointer)
+  ) {
+    mobileScrollbarThumb.releasePointerCapture(scrollbarDragPointer);
+  }
+
+  scrollbarDragPointer = null;
+  mobileScrollbarThumb.classList.remove("dragging");
+}
+
 
 function setDescriptionView(view) {
   const previewing = view === "preview";
@@ -45,6 +151,9 @@ function setDescriptionView(view) {
   previewViewButton.classList.toggle("active", previewing);
   writeViewButton.setAttribute("aria-selected", String(!previewing));
   previewViewButton.setAttribute("aria-selected", String(previewing));
+
+  resizeMobileTextarea();
+  queueMobileScrollbarSync();
 }
 
 function applyMarkdownAction(action) {
@@ -76,6 +185,8 @@ function applyMarkdownAction(action) {
   }
 
   updateMarkdownPreview();
+  resizeMobileTextarea();
+  queueMobileScrollbarSync();
 }
 
 function setStatus(message) {
@@ -181,6 +292,7 @@ function closeFeatureNotice() {
 
 mediaInput.addEventListener("change", () => {
   renderMediaPreview(mediaInput.files?.[0]);
+  requestAnimationFrame(queueMobileScrollbarSync);
 });
 
 saveButton.addEventListener("click", saveCurrentDocument);
@@ -201,7 +313,110 @@ mobileMarkdownToolbar.addEventListener("click", (event) => {
   if (!button) return;
   applyMarkdownAction(button.dataset.markdownAction);
 });
-contentInput.addEventListener("input", updateMarkdownPreview);
+contentInput.addEventListener("input", () => {
+  updateMarkdownPreview();
+  resizeMobileTextarea();
+  queueMobileScrollbarSync();
+});
+mobileScrollbarArrows.forEach((button) => {
+  button.addEventListener("click", () => {
+    const direction = Number(button.dataset.scrollDirection) || 0;
+    const step = Math.max(96, Math.round(editorLayout.clientHeight * 0.18));
+    scrollEditorBy(direction * step);
+  });
+});
+
+mobileScrollbarTrack.addEventListener("pointerdown", (event) => {
+  if (event.target !== mobileScrollbarTrack) return;
+  event.preventDefault();
+
+  const trackRect = mobileScrollbarTrack.getBoundingClientRect();
+  const thumbRect = mobileScrollbarThumb.getBoundingClientRect();
+  const clickY = event.clientY - trackRect.top;
+  const thumbTop = thumbRect.top - trackRect.top;
+  const thumbBottom = thumbRect.bottom - trackRect.top;
+  const direction = clickY < thumbTop ? -1 : clickY > thumbBottom ? 1 : 0;
+
+  if (direction) {
+    scrollEditorBy(direction * Math.round(editorLayout.clientHeight * 0.8));
+  }
+});
+
+mobileScrollbarThumb.addEventListener("pointerdown", (event) => {
+  if (mobileScrollbar.hidden) return;
+  event.preventDefault();
+
+  scrollbarDragPointer = event.pointerId;
+  scrollbarDragStartY = event.clientY;
+  scrollbarDragStartScrollTop = editorLayout.scrollTop;
+  mobileScrollbarThumb.classList.add("dragging");
+  mobileScrollbarThumb.setPointerCapture(event.pointerId);
+});
+
+mobileScrollbarThumb.addEventListener("pointermove", (event) => {
+  if (event.pointerId !== scrollbarDragPointer) return;
+  event.preventDefault();
+
+  const trackHeight = mobileScrollbarTrack.clientHeight;
+  const thumbHeight = mobileScrollbarThumb.offsetHeight;
+  const thumbTravel = Math.max(1, trackHeight - thumbHeight);
+  const scrollRange = Math.max(
+    0,
+    editorLayout.scrollHeight - editorLayout.clientHeight,
+  );
+  const scrollPerPixel = scrollRange / thumbTravel;
+
+  editorLayout.scrollTop =
+    scrollbarDragStartScrollTop +
+    (event.clientY - scrollbarDragStartY) * scrollPerPixel;
+  queueMobileScrollbarSync();
+});
+
+mobileScrollbarThumb.addEventListener("pointerup", stopScrollbarDrag);
+mobileScrollbarThumb.addEventListener("pointercancel", stopScrollbarDrag);
+mobileScrollbarThumb.addEventListener("lostpointercapture", stopScrollbarDrag);
+
+mobileScrollbarTrack.addEventListener("keydown", (event) => {
+  const pageStep = Math.max(96, Math.round(editorLayout.clientHeight * 0.8));
+
+  if (event.key === "ArrowUp") {
+    event.preventDefault();
+    scrollEditorBy(-80);
+  } else if (event.key === "ArrowDown") {
+    event.preventDefault();
+    scrollEditorBy(80);
+  } else if (event.key === "PageUp") {
+    event.preventDefault();
+    scrollEditorBy(-pageStep);
+  } else if (event.key === "PageDown") {
+    event.preventDefault();
+    scrollEditorBy(pageStep);
+  } else if (event.key === "Home") {
+    event.preventDefault();
+    editorLayout.scrollTop = 0;
+    queueMobileScrollbarSync();
+  } else if (event.key === "End") {
+    event.preventDefault();
+    editorLayout.scrollTop = editorLayout.scrollHeight;
+    queueMobileScrollbarSync();
+  }
+});
+
+editorLayout.addEventListener("scroll", queueMobileScrollbarSync, {
+  passive: true,
+});
+
+if ("ResizeObserver" in window) {
+  const editorResizeObserver = new ResizeObserver(() => {
+    syncEditorLayoutMode();
+  });
+  editorResizeObserver.observe(editorContainer);
+  editorResizeObserver.observe(document.querySelector(".editor-left-pane"));
+  editorResizeObserver.observe(document.querySelector(".editor-right-pane"));
+}
+
+window.addEventListener("resize", syncEditorLayoutMode, { passive: true });
+
 featureModalClose.addEventListener("click", closeFeatureNotice);
 featureModalOk.addEventListener("click", closeFeatureNotice);
 
@@ -218,5 +433,8 @@ window.addEventListener("keydown", (event) => {
 });
 
 
+syncEditorLayoutMode();
 updateMarkdownPreview();
+resizeMobileTextarea();
 setDescriptionView("write");
+queueMobileScrollbarSync();
