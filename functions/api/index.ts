@@ -63,9 +63,33 @@ export async function handleApi(
 
     if (endpoint.startsWith("/media/") && method === "GET") {
       const title = decodeURIComponent(endpoint.slice("/media/".length));
-      const media = await db.getDocumentMedia(title);
-      if (!media)
+      const metadata = db.getDocumentMediaMetadata(title);
+      if (!metadata) {
         return Response.json({ error: "Media not found" }, { status: 404 });
+      }
+
+      const etag = `"m${metadata.hash}"`;
+      const requestedVersion = url.searchParams.get("v");
+      const cacheControl =
+        requestedVersion === metadata.hash
+          ? "public, max-age=31536000, immutable"
+          : "no-cache";
+
+      if (ifNoneMatchMatches(req.headers.get("if-none-match"), etag)) {
+        return new Response(null, {
+          status: 304,
+          headers: {
+            ETag: etag,
+            "Cache-Control": cacheControl,
+          },
+        });
+      }
+
+      const media = await db.getDocumentMedia(title);
+      if (!media) {
+        return Response.json({ error: "Media not found" }, { status: 404 });
+      }
+
       return new Response(media.data, {
         headers: {
           "Content-Type": media.type,
@@ -77,7 +101,8 @@ export async function handleApi(
           ]
             .filter(Boolean)
             .join("; "),
-          "Cache-Control": "no-cache",
+          ETag: etag,
+          "Cache-Control": cacheControl,
         },
       });
     }
