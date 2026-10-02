@@ -70,6 +70,7 @@ meditord/
 ├── LICENSE
 ├── README.md
 ├── RESOURCES.md
+├── THIRD_PARTY_NOTICES.md
 ├── bun.lock
 ├── config.ts
 ├── index.ts
@@ -106,4 +107,4 @@ meditord/
 
 Project design references and development resources are documented in [`RESOURCES.md`](RESOURCES.md).
 
-This project is licensed under the [`LICENSE`](LICENSE) file.
+Original MeditorD material is licensed under the [`LICENSE`](LICENSE) file. Third-party materials retain their own terms as documented in [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).
