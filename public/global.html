@@ -2,7 +2,10 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content"
+        />
         <title>{{title}}</title>
         <meta name="meditord-build-id" content="{{build_id}}" />
         <link rel="icon" type="image/webp" href="/media/icon.webp" />
@@ -17,16 +20,6 @@
         <link rel="stylesheet" href="/css/global.css" />
     </head>
     <body>
-        <div class="mobile-support-message" role="alert" aria-live="assertive">
-            <div class="mobile-support-message__inner">
-                <div class="mobile-support-message__title">
-                    Mobile is not supported.
-                </div>
-                <div class="mobile-support-message__text">
-                    Please access this app through desktop.
-                </div>
-            </div>
-        </div>
         {{body}}
         <div
             class="app-dialog-overlay"
@@ -87,29 +80,47 @@
         <script src="/js/app-dialog.js"></script>
         <script>
             (() => {
-                const isMobileDevice = () => {
-                    const widthMatch =
-                        window.matchMedia("(max-width: 900px)").matches;
-                    const pointerMatch =
-                        window.matchMedia("(pointer: coarse)").matches;
-                    const userAgentMatch =
-                        /Android|iPhone|iPad|iPod|Mobile|mobile|Windows Phone/i.test(
-                            navigator.userAgent,
+                const viewport = window.visualViewport;
+                if (!viewport) return;
+
+                let frame = 0;
+                const syncViewport = () => {
+                    if (frame) return;
+                    frame = requestAnimationFrame(() => {
+                        frame = 0;
+                        const keyboardOffset = Math.max(
+                            0,
+                            window.innerHeight -
+                                (viewport.height + viewport.offsetTop),
                         );
-
-                    return widthMatch || pointerMatch || userAgentMatch;
+                        const root = document.documentElement;
+                        root.style.setProperty(
+                            "--keyboard-offset",
+                            `${keyboardOffset}px`,
+                        );
+                        root.style.setProperty(
+                            "--visual-viewport-height",
+                            `${viewport.height}px`,
+                        );
+                        root.classList.toggle(
+                            "keyboard-visible",
+                            keyboardOffset > 80,
+                        );
+                    });
                 };
 
-                const applyMobileBlock = () => {
-                    document.body.classList.toggle(
-                        "mobile-blocked",
-                        isMobileDevice(),
-                    );
-                };
-
-                applyMobileBlock();
-                window.addEventListener("resize", applyMobileBlock, {
+                syncViewport();
+                viewport.addEventListener("resize", syncViewport, {
                     passive: true,
+                });
+                viewport.addEventListener("scroll", syncViewport, {
+                    passive: true,
+                });
+                window.addEventListener("orientationchange", syncViewport, {
+                    passive: true,
+                });
+                window.addEventListener("focusout", () => {
+                    window.setTimeout(syncViewport, 0);
                 });
             })();
         </script>
