@@ -58,4 +58,5 @@
 - Renamed Gemini chat logs to use the simplified LLM name, added the dated ChatGPT development log, documented ChatGPT in `RESOURCES.md`, and synchronized the README chat-log tree.
 - Extended the dated ChatGPT chat log with the license recommit and guideline-driven documentation maintenance.
 - Recommitted `LICENSE` using the standard project commit-message format and normalized line wrapping without changing the MIT license terms.
+- Audited the repository against current GitHub acceptable-use and MIT licensing requirements, added `THIRD_PARTY_NOTICES.md`, and clarified that third-party software, fonts, design references, assets, and user content retain their own terms.
 
