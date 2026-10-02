@@ -7,7 +7,8 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 COPY package.json bun.lock ./
-RUN bun install --frozen-lockfile --production
+
+RUN bun install --frozen-lockfile
 
 COPY . .
 
@@ -19,4 +20,4 @@ VOLUME ["/app/database"]
 
 EXPOSE 3000
 
-CMD ["sh", "-c", "git pull && bun run index.ts"]
+CMD ["sh", "-c", "git pull && bun install --frozen-lockfile && exec bun run index.ts"]
