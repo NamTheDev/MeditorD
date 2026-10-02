@@ -186,6 +186,7 @@ nav {
     border-right: 2px solid var(--win98-border-darkest);
     border-bottom: 2px solid var(--win98-border-darkest);
     overflow: hidden;
+    position: relative;
     container: editor-shell / inline-size;
 }
 
@@ -575,8 +576,13 @@ input.form-control-unit:focus {
 
 
 .mobile-view-switch,
-.mobile-markdown-toolbar {
+.mobile-markdown-toolbar,
+.mobile-editor-scrollbar {
     display: none;
+}
+
+.mobile-editor-scrollbar[hidden] {
+    display: none !important;
 }
 
 @media (max-width: 839px) {
@@ -687,7 +693,14 @@ input.form-control-unit:focus {
         overflow-y: auto;
         overscroll-behavior-y: contain;
         -webkit-overflow-scrolling: touch;
+        touch-action: pan-y;
+        scrollbar-width: none;
+        padding-right: 32px;
         padding-bottom: var(--safe-bottom);
+    }
+
+    .editor-layout::-webkit-scrollbar {
+        display: none;
     }
 
     .editor-left-pane,
@@ -702,6 +715,7 @@ input.form-control-unit:focus {
     }
 
     .editor-left-pane {
+        overflow: visible;
         border-right: 0;
         border-bottom: 1px solid var(--win98-border-dark);
         box-shadow: 0 1px 0 var(--win98-border-light);
@@ -737,12 +751,15 @@ input.form-control-unit:focus {
     }
 
     .editor-right-pane {
-        min-height: max(460px, calc(var(--visual-viewport-height) - 120px));
+        min-height: 0;
+        overflow: visible;
         padding-bottom: calc(72px + var(--safe-bottom));
     }
 
     .textarea-wrapper {
+        height: auto;
         min-height: 420px;
+        overflow: visible;
     }
 
     .description-toolbar {
@@ -760,37 +777,82 @@ input.form-control-unit:focus {
     .mobile-view-switch {
         display: flex;
         margin-left: auto;
-        border: 1px solid var(--win98-border-dark);
+        gap: 2px;
+        padding: 2px;
+        border: 0;
+        background: var(--win98-surface);
+        box-shadow:
+            inset 1px 1px 0 var(--win98-border-darkest),
+            inset -1px -1px 0 var(--win98-border-lightest),
+            inset 2px 2px 0 var(--win98-border-dark),
+            inset -2px -2px 0 var(--win98-border-light);
     }
 
     .mobile-view-tab {
-        min-width: 76px;
-        min-height: 40px;
-        padding: 6px 12px;
+        min-width: 84px;
+        min-height: 44px;
+        padding: 5px 12px;
+        border: 0;
         background: var(--win98-surface);
         color: var(--win98-text);
-        border: 0;
-        box-shadow: none;
-        font: inherit;
+        font-family: "Pixelify Sans", "IBM Plex Sans", sans-serif;
+        font-size: 14px;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        line-height: 1;
+        text-transform: uppercase;
+        box-shadow:
+            inset -1px -1px 0 var(--win98-border-darkest),
+            inset 1px 1px 0 var(--win98-border-lightest),
+            inset -2px -2px 0 var(--win98-border-dark),
+            inset 2px 2px 0 var(--win98-border-light);
     }
 
     .mobile-view-tab.active,
-    .mobile-view-tab[aria-selected="true"] {
-        background: var(--win98-accent);
-        color: var(--ctp-base);
+    .mobile-view-tab[aria-selected="true"],
+    .mobile-view-tab:active {
+        padding: 6px 11px 4px 13px;
+        background: var(--ctp-surface1);
+        color: var(--win98-accent);
+        box-shadow:
+            inset -1px -1px 0 var(--win98-border-lightest),
+            inset 1px 1px 0 var(--win98-border-darkest),
+            inset -2px -2px 0 var(--win98-border-light),
+            inset 2px 2px 0 var(--win98-border-dark);
+    }
+
+    .mobile-view-tab:focus-visible {
+        outline: 1px dotted var(--win98-accent);
+        outline-offset: -5px;
     }
 
     .editor-textarea {
-        min-height: 0;
+        flex: none;
+        min-height: 320px;
+        height: auto;
+        overflow-y: hidden;
+        touch-action: pan-y;
         font-size: 16px;
         padding: 14px;
         padding-bottom: calc(68px + var(--safe-bottom));
-        overscroll-behavior-y: contain;
     }
 
     .markdown-preview {
+        flex: none;
+        min-height: 320px;
+        overflow: visible;
+        touch-action: pan-y;
         padding: 14px;
         font-size: 16px;
+    }
+
+    .editor-layout button,
+    .editor-layout input,
+    .editor-layout label,
+    .preview-box,
+    .description-toolbar,
+    .textarea-wrapper {
+        touch-action: pan-y;
     }
 
     .editor-right-pane:focus-within .mobile-markdown-toolbar {
@@ -811,6 +873,7 @@ input.form-control-unit:focus {
         gap: 6px;
         overflow-x: auto;
         overscroll-behavior-x: contain;
+        touch-action: pan-x;
         padding:
             6px
             max(8px, var(--safe-right))
@@ -827,6 +890,97 @@ input.form-control-unit:focus {
         min-height: 44px;
         padding: 6px 10px;
         font-family: "IBM Plex Mono", monospace;
+    }
+
+
+    .mobile-editor-scrollbar {
+        position: absolute;
+        top: 2px;
+        right: max(2px, var(--safe-right));
+        bottom: 2px;
+        z-index: 55;
+        width: 28px;
+        display: grid;
+        grid-template-rows: 40px minmax(0, 1fr) 40px;
+        background: var(--win98-surface);
+        box-shadow:
+            inset 1px 1px 0 var(--win98-border-lightest),
+            inset -1px -1px 0 var(--win98-border-darkest),
+            inset 2px 2px 0 var(--win98-border-light),
+            inset -2px -2px 0 var(--win98-border-dark);
+        user-select: none;
+        -webkit-user-select: none;
+        touch-action: none;
+    }
+
+    .mobile-scrollbar-arrow {
+        width: 100%;
+        min-width: 0;
+        min-height: 40px;
+        padding: 0;
+        border: 0;
+        background: var(--win98-surface);
+        color: var(--win98-text);
+        font-size: 11px;
+        line-height: 1;
+        box-shadow:
+            inset -1px -1px 0 var(--win98-border-darkest),
+            inset 1px 1px 0 var(--win98-border-lightest),
+            inset -2px -2px 0 var(--win98-border-dark),
+            inset 2px 2px 0 var(--win98-border-light);
+        touch-action: none;
+    }
+
+    .mobile-scrollbar-arrow:active {
+        padding: 1px 0 0 1px;
+        box-shadow:
+            inset -1px -1px 0 var(--win98-border-lightest),
+            inset 1px 1px 0 var(--win98-border-darkest),
+            inset -2px -2px 0 var(--win98-border-light),
+            inset 2px 2px 0 var(--win98-border-dark);
+    }
+
+    .mobile-scrollbar-track {
+        position: relative;
+        min-height: 0;
+        margin: 1px 2px;
+        background: var(--ctp-mantle);
+        box-shadow:
+            inset 1px 1px 0 var(--win98-border-darkest),
+            inset -1px -1px 0 var(--win98-border-lightest),
+            inset 2px 2px 0 var(--win98-border-dark),
+            inset -2px -2px 0 var(--win98-border-light);
+        touch-action: none;
+    }
+
+    .mobile-scrollbar-track:focus-visible {
+        outline: 1px dotted var(--win98-accent);
+        outline-offset: -3px;
+    }
+
+    .mobile-scrollbar-thumb {
+        position: absolute;
+        top: 0;
+        right: 2px;
+        left: 2px;
+        min-height: 44px;
+        background: var(--win98-surface);
+        box-shadow:
+            inset -1px -1px 0 var(--win98-border-darkest),
+            inset 1px 1px 0 var(--win98-border-lightest),
+            inset -2px -2px 0 var(--win98-border-dark),
+            inset 2px 2px 0 var(--win98-border-light);
+        cursor: ns-resize;
+        touch-action: none;
+    }
+
+    .mobile-scrollbar-thumb.dragging {
+        background: var(--ctp-surface1);
+        box-shadow:
+            inset -1px -1px 0 var(--win98-border-lightest),
+            inset 1px 1px 0 var(--win98-border-darkest),
+            inset -2px -2px 0 var(--win98-border-light),
+            inset 2px 2px 0 var(--win98-border-dark);
     }
 
     .win98-modal-backdrop {
