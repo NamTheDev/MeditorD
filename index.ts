@@ -1,7 +1,7 @@
 import { join } from "path";
 import { PORT, HOST, ROOT } from "./config";
 import { getFile } from "./functions/file";
-import { renderPage } from "./functions/render";
+import { getAssetFingerprint, renderPage } from "./functions/render";
 import { clean } from "./functions/string";
 import { handleApi } from "./functions/api";
 
@@ -31,15 +31,43 @@ const server = Bun.serve({
       const rootAsset = Bun.file(join(process.cwd(), ROOT, relativePath));
       if (await rootAsset.exists()) {
         const extension = relativePath.split(".").pop()?.toLowerCase();
-        const cacheControl =
-          extension === "js" || extension === "css"
-            ? "no-cache"
-            : "public, max-age=86400";
-        return new Response(rootAsset, {
-          headers: {
-            "Cache-Control": cacheControl,
-          },
+        const isFingerprintedAsset = extension === "js" || extension === "css";
+        const fingerprint = isFingerprintedAsset
+          ? await getAssetFingerprint(`/${relativePath}`)
+          : null;
+        const requestedVersion = url.searchParams.get("v");
+        const hasCurrentFingerprint =
+          Boolean(fingerprint) && requestedVersion === fingerprint;
+        const cacheControl = isFingerprintedAsset
+          ? hasCurrentFingerprint
+            ? "public, max-age=31536000, immutable"
+            : "no-cache"
+          : "public, max-age=86400";
+        const etag = fingerprint ? `"${fingerprint}"` : null;
+
+        if (
+          etag &&
+          req.headers
+            .get("if-none-match")
+            ?.split(",")
+            .map((value) => value.trim().replace(/^W\//, ""))
+            .includes(etag)
+        ) {
+          return new Response(null, {
+            status: 304,
+            headers: {
+              ETag: etag,
+              "Cache-Control": cacheControl,
+            },
+          });
+        }
+
+        const headers = new Headers({
+          "Cache-Control": cacheControl,
         });
+        if (etag) headers.set("ETag", etag);
+
+        return new Response(rootAsset, { headers });
       }
     }
 
