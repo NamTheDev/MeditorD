@@ -2,22 +2,20 @@ FROM oven/bun:1
 
 WORKDIR /app
 
-RUN apt-get update \
-    && apt-get install -y git \
-    && rm -rf /var/lib/apt/lists/*
+ARG BUILD_ID=local
+ENV BUILD_ID=${BUILD_ID}
+ENV HOST=0.0.0.0
+ENV PORT=3000
 
 COPY package.json bun.lock ./
 
-RUN bun install --frozen-lockfile
+RUN bun install --frozen-lockfile --production
 
 COPY . .
-
-ENV HOST=0.0.0.0
-ENV PORT=3000
 
 RUN mkdir -p /app/database
 VOLUME ["/app/database"]
 
 EXPOSE 3000
 
-CMD ["sh", "-c", "git pull && bun install --frozen-lockfile && exec bun run index.ts"]
+CMD ["bun", "run", "index.ts"]
