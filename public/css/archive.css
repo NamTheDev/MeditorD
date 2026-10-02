@@ -90,21 +90,24 @@ body {
 }
 
 .reddit-gallery {
-    columns: min(320px, 100%);
-    column-gap: clamp(12px, 1.5vw, 24px);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: clamp(12px, 1.5vw, 24px);
     width: 100%;
     align-items: start;
+    direction: rtl;
 }
 
 .reddit-gallery.compact {
-    columns: 1;
+    grid-template-columns: 1fr;
 }
 
 .gallery-card {
-    display: inline-block;
+    display: block;
     width: 100%;
-    break-inside: avoid;
-    margin-bottom: clamp(12px, 1.5vw, 24px);
+    min-width: 0;
+    direction: ltr;
+    margin-bottom: 0;
     box-sizing: border-box;
     background: var(--ctp-surface0);
     padding: 8px;
@@ -571,7 +574,8 @@ select:focus {
     }
 
     .reddit-gallery {
-        columns: 1;
+        display: block;
+        direction: ltr;
     }
 
     .gallery-card {
