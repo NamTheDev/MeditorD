@@ -38,6 +38,56 @@ function formatPostDate(value: string): string {
   return `${day}/${month}/${year}`;
 }
 
+function stripMarkdownForPlainText(value: string): string {
+  return (value || "")
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, "")
+    .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")
+    .replace(/[#>*_`~\-]+/g, " ")
+    .replace(/\r?\n+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function getCollapsedDescriptionHtml(value: string): string {
+  const content = (value || "").trim();
+  const plainText = stripMarkdownForPlainText(content);
+  const words = plainText.split(/\s+/).filter(Boolean);
+  if (words.length <= 200) {
+    return md.render(content || "_No description._");
+  }
+
+  const excerpt = words.slice(0, 200).join(" ");
+  return `<p>${escapeHtml(excerpt)} … <button type="button" class="read-more-toggle" data-action="toggle-description">more</button></p>`;
+}
+
+function renderDownloadActions(post: DocumentRecord): string {
+  const hasDescription = Boolean(post.content?.trim());
+  const hasMedia = Boolean(post.hasMedia);
+  const mediaLabel = post.mediaType?.startsWith("video/")
+    ? "Download video"
+    : "Download image";
+  const mediaAction = post.mediaType?.startsWith("video/")
+    ? "download-video"
+    : "download-image";
+  if (hasMedia && hasDescription) {
+    return `<div class="card-menu-item">
+        <button type="button" data-action="toggle-download-menu">Download ›</button>
+        <div class="card-submenu hidden" role="menu" aria-label="Download options">
+          <button type="button" data-action="${mediaAction}">${mediaLabel}</button>
+          <button type="button" data-action="download-markdown">Download .md</button>
+          <button type="button" data-action="download-both">Download both</button>
+        </div>
+      </div>`;
+  }
+  if (hasMedia) {
+    return `<button type="button" data-action="${mediaAction}">${mediaLabel}</button>`;
+  }
+  if (hasDescription) {
+    return `<button type="button" data-action="download-markdown">Download .md</button>`;
+  }
+  return "";
+}
+
 function getYouTubeEmbedUrl(value: string): string | null {
   if (!value) return null;
   try {
@@ -76,15 +126,23 @@ function renderCard(post: DocumentRecord): string {
     </div>`;
   }
 
-  const renderedMarkdown = md.render(post.content || "_No description._");
   const formattedDate = formatPostDate(post.created_at);
   const username = post.username ? `@${escapeHtml(post.username)}` : "";
+  const downloadActions = renderDownloadActions(post);
 
   return `<article class="gallery-card raised" data-title="${escapeHtml(post.title)}">
+    <div class="card-actions">
+      <button type="button" class="card-menu-button" aria-label="Open actions for ${escapeHtml(post.title)}" data-action="toggle-menu">⋯</button>
+      <div class="card-menu hidden" role="menu" aria-label="Post actions">
+        <button type="button" data-action="edit">Edit</button>
+        ${downloadActions}
+        <button type="button" data-action="delete">Delete</button>
+      </div>
+    </div>
     ${mediaHtml}
     <div class="card-info">
       <div class="card-title">${escapeHtml(post.title)}</div>
-      <div class="card-description">${renderedMarkdown}</div>
+      <div class="card-description" data-title="${escapeHtml(post.title)}">${getCollapsedDescriptionHtml(post.content || "")}</div>
       <div class="card-meta">
         <span>${username}</span>
         <span class="card-date">${formattedDate}</span>
