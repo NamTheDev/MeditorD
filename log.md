@@ -41,7 +41,7 @@
 - Implemented True Server-Side Rendering (SSR) for the archive gallery to eliminate loading flicker completely.
 - Replaced the client-side $1+N$ database request waterfall with a single-batch query (`getAllDocuments()`).
 - Resolved all TypeScript compiler diagnostics (`@types/markdown-it`, `DocumentRow`, `verbatimModuleSyntax`).
-- Updated `README.md` tech stack punctuation and archived dated Gemini 3.8 Flash chat logs.
+- Updated `README.md` tech stack punctuation and archived dated Gemini chat logs.
 
 # 29-09-2026
 - Replaced the application favicon asset in `public/media/icon.webp`.
@@ -55,4 +55,5 @@
 - Added deployment build IDs and SHA-256 fingerprints for local JavaScript and CSS, one-year immutable caching for correctly versioned assets, revalidation-safe mutable asset handling, and separate UI/archive client cache state.
 - Fixed strict TypeScript indexing issues in the rendering cache code and restored clean TypeScript and reusable-module diagnostics.
 - Updated README and chat-log documentation, renamed `rules.md` to `guidelines.md`, documented the `log.md` update process and format, and corrected per-file commit and validation guidance.
+- Renamed Gemini chat logs to use the simplified LLM name, added the dated ChatGPT development log, documented ChatGPT in `RESOURCES.md`, and synchronized the README chat-log tree.
 
