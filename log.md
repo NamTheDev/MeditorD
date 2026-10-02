@@ -63,3 +63,9 @@
 - Added content-driven editor layouts with container-query collapse, mobile Write/Preview state, a keyboard-docked Markdown toolbar, and wide source/preview rendering; adapted archive, database, home, exit, and 404 views for narrow and hybrid-device layouts.
 - Replaced the desktop-only mobile blocker with responsive Android, iOS, and tablet support using safe-area insets, focus-gated dynamic/visual viewport keyboard tracking, internal pane scrolling, and touch-safe controls.
 
+# 03-10-2026
+- Fixed Android mobile editor scrolling by consolidating the narrow layout onto one touch-scroll surface and auto-growing the Markdown textarea instead of using nested vertical scrolling.
+- Replaced the non-draggable mobile scrollbar indicator with a Win98-style touch-draggable scrollbar supporting pointer capture, arrow scrolling, track paging, keyboard controls, and synchronized thumb position.
+- Restyled the mobile Write/Preview controls with Catppuccin Mocha surfaces and Windows 95/98 raised/sunken bevel states after reviewing the documented design references.
+- Added the dated ChatGPT mobile UX feedback log and synchronized the README directory tree.
+
