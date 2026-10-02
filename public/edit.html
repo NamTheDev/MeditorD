@@ -113,6 +113,30 @@
         <div class="textarea-wrapper">
             <div class="description-toolbar">
                 <span class="description-label">Description:</span>
+                <div
+                    class="mobile-view-switch"
+                    role="tablist"
+                    aria-label="Description view"
+                >
+                    <button
+                        type="button"
+                        class="mobile-view-tab active"
+                        id="write-view-button"
+                        role="tab"
+                        aria-selected="true"
+                    >
+                        Write
+                    </button>
+                    <button
+                        type="button"
+                        class="mobile-view-tab"
+                        id="preview-view-button"
+                        role="tab"
+                        aria-selected="false"
+                    >
+                        Preview
+                    </button>
+                </div>
                 <button type="button" class="action-btn" id="preview-button">
                     Preview
                 </button>
@@ -122,6 +146,18 @@
                 placeholder="Start typing..."
             ></textarea>
             <div class="markdown-preview hidden" aria-live="polite"></div>
+            <div
+                class="mobile-markdown-toolbar"
+                role="toolbar"
+                aria-label="Markdown formatting"
+            >
+                <button type="button" data-markdown-action="heading">#</button>
+                <button type="button" data-markdown-action="bold">B</button>
+                <button type="button" data-markdown-action="italic">I</button>
+                <button type="button" data-markdown-action="code">`</button>
+                <button type="button" data-markdown-action="list">−</button>
+                <button type="button" data-markdown-action="link">Link</button>
+            </div>
         </div>
     </div>
 </main>
