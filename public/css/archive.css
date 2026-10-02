@@ -1,7 +1,7 @@
 html,
 body {
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    height: 100dvh;
     overflow: hidden;
     background-color: var(--ctp-base);
     color: var(--ctp-text);
@@ -13,12 +13,16 @@ body {
 }
 
 #fullscreenApp {
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    height: 100dvh;
     display: flex;
     flex-direction: column;
     background: var(--ctp-surface0);
-    padding: 3px;
+    padding:
+        max(3px, var(--safe-top))
+        max(3px, var(--safe-right))
+        max(3px, var(--safe-bottom))
+        max(3px, var(--safe-left));
     font-size: var(--font-base);
 }
 
@@ -77,6 +81,8 @@ body {
     flex: 1;
     background: var(--ctp-mantle);
     overflow-y: auto;
+    overscroll-behavior-y: contain;
+    -webkit-overflow-scrolling: touch;
     padding: var(--pane-padding);
     display: flex;
     flex-direction: column;
@@ -84,7 +90,7 @@ body {
 }
 
 .reddit-gallery {
-    columns: 320px;
+    columns: min(320px, 100%);
     column-gap: clamp(12px, 1.5vw, 24px);
     width: 100%;
     align-items: start;
@@ -513,4 +519,133 @@ select:focus {
     width: 45%;
     height: 12px;
     margin-top: auto;
+}
+
+
+@media (max-width: 600px) {
+    .menu-bar {
+        height: auto;
+        min-height: 92px;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        grid-template-rows: 44px 44px;
+        gap: 4px;
+        padding: 2px;
+    }
+
+    .gallery-title {
+        position: static;
+        grid-column: 1 / -1;
+        grid-row: 1;
+        transform: none;
+        font-size: clamp(16px, 6vw, 22px);
+        letter-spacing: 0.25em;
+    }
+
+    #backButton,
+    #newPostButton {
+        width: 100%;
+        min-width: 0;
+        min-height: 44px;
+        margin: 0;
+        padding-inline: 8px;
+    }
+
+    #backButton {
+        grid-column: 1;
+        grid-row: 2;
+    }
+
+    #newPostButton {
+        grid-column: 2;
+        grid-row: 2;
+    }
+
+    .gallery-viewport {
+        padding: clamp(10px, 3vw, 16px);
+    }
+
+    .reddit-gallery {
+        columns: 1;
+    }
+
+    .gallery-card {
+        margin-bottom: 14px;
+    }
+
+    .card-menu-button {
+        width: 44px;
+        height: 44px;
+    }
+
+    .card-menu {
+        min-width: min(72vw, 240px);
+    }
+
+    .card-menu > button,
+    .card-menu-item > button,
+    .card-submenu button {
+        min-height: 44px;
+        padding: 10px 12px;
+    }
+
+    .card-submenu,
+    .card-submenu.open-left {
+        position: static;
+        left: auto;
+        right: auto;
+        width: 100%;
+        min-width: 0;
+        margin: 0;
+        border-right: 0;
+        border-left: 0;
+    }
+
+    .modal-overlay {
+        padding:
+            max(12px, var(--safe-top))
+            max(12px, var(--safe-right))
+            max(12px, var(--safe-bottom))
+            max(12px, var(--safe-left));
+    }
+
+    .modal-window {
+        width: 100%;
+        max-height: min(92dvh, var(--visual-viewport-height));
+    }
+
+    .modal-content-area {
+        overscroll-behavior-y: contain;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .modal-embed {
+        height: auto;
+        aspect-ratio: 16 / 9;
+    }
+
+    .modal-media {
+        max-height: 46dvh;
+        padding: 8px;
+    }
+}
+
+@media (pointer: coarse) {
+    .read-more-toggle {
+        min-height: 44px;
+        padding-inline: 4px;
+    }
+
+    .modal-close-button {
+        width: 44px;
+        height: 44px;
+        min-width: 44px;
+        min-height: 44px;
+    }
+}
+
+@media (hover: none) {
+    .gallery-card:hover {
+        outline: none;
+    }
 }
