@@ -105,6 +105,13 @@ meditord/
 6. Open `http://localhost:3000` in a modern browser.
 7. Open `http://localhost:3000/database.html` to access the database page.
 
+### Docker Alternative
+
+1. Update the repository on the host with `git pull --ff-only`.
+2. Build the image with the native Git revision: `docker build --build-arg BUILD_ID="$(git rev-parse --short=12 HEAD)" -t meditord .`
+3. Run the container with the local database mounted: `docker run --rm -p 3000:3000 -v "$(pwd)/database:/app/database" meditord`.
+4. Re-run the host Git pull and Docker build commands when deploying new source changes.
+
 ## IV. Resources and License
 
 Project design references and development resources are documented in [`RESOURCES.md`](RESOURCES.md).
