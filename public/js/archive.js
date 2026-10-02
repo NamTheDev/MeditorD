@@ -220,6 +220,15 @@ function getDownloadActions(post) {
   return "";
 }
 
+function getMediaUrl(post, { download = false } = {}) {
+  const base = `/api/media/${encodeURIComponent(post.title)}`;
+  const params = new URLSearchParams();
+  if (post.mediaHash) params.set("v", post.mediaHash);
+  if (download) params.set("download", "true");
+  const query = params.toString();
+  return query ? `${base}?${query}` : base;
+}
+
 function setMediaPriority(element, index) {
   if (!(element instanceof HTMLImageElement)) return;
 
@@ -235,7 +244,7 @@ function setMediaPriority(element, index) {
 }
 
 function createUploadedMedia(post, index) {
-  const source = `/api/media/${encodeURIComponent(post.title)}`;
+  const source = getMediaUrl(post);
 
   if (post.mediaType?.startsWith("video/")) {
     const video = document.createElement("video");
@@ -383,7 +392,7 @@ function openPostModal(post) {
       post.mediaType?.startsWith("video/") ? "video" : "img",
     );
     media.className = "modal-media";
-    media.src = `/api/media/${encodeURIComponent(post.title)}`;
+    media.src = getMediaUrl(post);
     media.setAttribute("aria-label", post.title);
     if (media instanceof HTMLVideoElement) {
       media.controls = true;
@@ -528,9 +537,7 @@ function triggerBlobDownload(blob, filename) {
 }
 
 async function downloadMedia(post) {
-  const response = await fetch(
-    `/api/media/${encodeURIComponent(post.title)}?download=true`,
-  );
+  const response = await fetch(getMediaUrl(post, { download: true }));
   if (!response.ok) throw new Error("Media could not be downloaded.");
   const blob = await response.blob();
   if (!post.mediaName) throw new Error("The original media filename is unavailable.");
