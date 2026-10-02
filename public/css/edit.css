@@ -640,6 +640,46 @@ input.form-control-unit:focus {
     }
 }
 
+@container editor-shell (min-width: 1180px) {
+    .editor-layout {
+        grid-template-columns: minmax(300px, 0.75fr) minmax(760px, 2fr);
+    }
+
+    .textarea-wrapper {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        grid-template-rows: auto minmax(0, 1fr);
+    }
+
+    .description-toolbar {
+        grid-column: 1 / -1;
+        grid-row: 1;
+    }
+
+    .description-toolbar > #preview-button {
+        display: none;
+    }
+
+    .editor-textarea,
+    .markdown-preview,
+    .editor-textarea.hidden,
+    .markdown-preview.hidden {
+        display: block;
+        grid-row: 2;
+        min-width: 0;
+        min-height: 0;
+    }
+
+    .editor-textarea {
+        grid-column: 1;
+        border-right: 1px solid var(--win98-border-dark);
+    }
+
+    .markdown-preview {
+        grid-column: 2;
+    }
+}
+
 @container editor-shell (max-width: 839px) {
     .editor-layout {
         display: block;
