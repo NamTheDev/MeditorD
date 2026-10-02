@@ -225,7 +225,14 @@ function getYouTubeThumbnailUrl(value: string): string | null {
   return videoId ? `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg` : null;
 }
 
-function renderCard(post: DocumentRecord): string {
+function getMediaUrl(post: DocumentRecord): string {
+  const base = `/api/media/${encodeURIComponent(post.title)}`;
+  return post.mediaHash
+    ? `${base}?v=${encodeURIComponent(post.mediaHash)}`
+    : base;
+}
+
+function renderCard(post: DocumentRecord, index: number): string {
   const youtubeThumbnailUrl = getYouTubeThumbnailUrl(post.url);
   let mediaHtml = "";
   if (youtubeThumbnailUrl) {
@@ -233,9 +240,19 @@ function renderCard(post: DocumentRecord): string {
       <img src="${youtubeThumbnailUrl}" alt="YouTube thumbnail for ${escapeHtml(post.title)}" loading="lazy" />
     </div>`;
   } else if (post.hasMedia) {
-    mediaHtml = `<div class="gallery-media thin-sunken">
-      <img src="/api/media/${encodeURIComponent(post.title)}" alt="" loading="lazy" />
-    </div>`;
+    const mediaUrl = getMediaUrl(post);
+    if (post.mediaType?.startsWith("video/")) {
+      const preload = index < 2 ? "auto" : "metadata";
+      mediaHtml = `<div class="gallery-media thin-sunken">
+        <video src="${mediaUrl}" preload="${preload}" muted playsinline aria-label="${escapeHtml(post.title)}"></video>
+      </div>`;
+    } else {
+      const loading = index < 4 ? "eager" : "lazy";
+      const fetchPriority = index < 2 ? ' fetchpriority="high"' : "";
+      mediaHtml = `<div class="gallery-media thin-sunken">
+        <img src="${mediaUrl}" alt="" loading="${loading}"${fetchPriority} />
+      </div>`;
+    }
   }
 
   const formattedDate = formatPostDate(post.created_at);
@@ -309,7 +326,9 @@ async function renderPage(
     let content = rawContent;
     if (isArchive && archiveValidator) {
       const posts = getAllDocuments();
-      const cardsHtml = posts.map(renderCard).join("\n");
+      const cardsHtml = posts
+        .map((post, index) => renderCard(post, index))
+        .join("\n");
       const postsJson = JSON.stringify(posts);
       content = content
         .replace("{{archive_posts}}", () => cardsHtml)
