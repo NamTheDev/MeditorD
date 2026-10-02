@@ -3,7 +3,11 @@ const usernameInput = document.getElementById("doc-username");
 const urlInput = document.getElementById("doc-url");
 const contentInput = document.querySelector(".editor-textarea");
 const previewButton = document.getElementById("preview-button");
+const writeViewButton = document.getElementById("write-view-button");
+const previewViewButton = document.getElementById("preview-view-button");
 const markdownPreview = document.querySelector(".markdown-preview");
+const textareaWrapper = document.querySelector(".textarea-wrapper");
+const mobileMarkdownToolbar = document.querySelector(".mobile-markdown-toolbar");
 const mediaInput = document.getElementById("doc-media");
 const previewBox = document.querySelector(".preview-box");
 const saveButton = document.querySelector(".action-btn");
@@ -26,6 +30,52 @@ function updateMarkdownPreview() {
   markdownPreview.innerHTML = markdown.render(
     contentInput.value || "_Nothing to preview yet._",
   );
+}
+
+function setDescriptionView(view) {
+  const previewing = view === "preview";
+  if (previewing) updateMarkdownPreview();
+
+  contentInput.classList.toggle("hidden", previewing);
+  markdownPreview.classList.toggle("hidden", !previewing);
+  textareaWrapper.dataset.view = previewing ? "preview" : "write";
+  previewButton.textContent = previewing ? "Edit" : "Preview";
+
+  writeViewButton.classList.toggle("active", !previewing);
+  previewViewButton.classList.toggle("active", previewing);
+  writeViewButton.setAttribute("aria-selected", String(!previewing));
+  previewViewButton.setAttribute("aria-selected", String(previewing));
+}
+
+function applyMarkdownAction(action) {
+  const start = contentInput.selectionStart;
+  const end = contentInput.selectionEnd;
+  const selected = contentInput.value.slice(start, end);
+  const actions = {
+    heading: { prefix: "# ", suffix: "", fallback: "Heading" },
+    bold: { prefix: "**", suffix: "**", fallback: "bold text" },
+    italic: { prefix: "_", suffix: "_", fallback: "italic text" },
+    code: { prefix: "`", suffix: "`", fallback: "code" },
+    list: { prefix: "- ", suffix: "", fallback: "List item" },
+    link: { prefix: "[", suffix: "](https://)", fallback: "link text" },
+  };
+  const config = actions[action];
+  if (!config) return;
+
+  const body = selected || config.fallback;
+  const replacement = `${config.prefix}${body}${config.suffix}`;
+  contentInput.setRangeText(replacement, start, end, "end");
+  contentInput.focus();
+
+  if (!selected) {
+    const selectionStart = start + config.prefix.length;
+    contentInput.setSelectionRange(
+      selectionStart,
+      selectionStart + config.fallback.length,
+    );
+  }
+
+  updateMarkdownPreview();
 }
 
 function setStatus(message) {
@@ -140,16 +190,16 @@ archiveButton.addEventListener("click", () => {
 settingsButton.addEventListener("click", showSettingsNotice);
 previewButton.addEventListener("click", () => {
   const isPreviewing = !markdownPreview.classList.contains("hidden");
-  if (isPreviewing) {
-    markdownPreview.classList.add("hidden");
-    contentInput.classList.remove("hidden");
-    previewButton.textContent = "Preview";
-    return;
-  }
-  updateMarkdownPreview();
-  contentInput.classList.add("hidden");
-  markdownPreview.classList.remove("hidden");
-  previewButton.textContent = "Edit";
+  setDescriptionView(isPreviewing ? "write" : "preview");
+});
+writeViewButton.addEventListener("click", () => setDescriptionView("write"));
+previewViewButton.addEventListener("click", () =>
+  setDescriptionView("preview"),
+);
+mobileMarkdownToolbar.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-markdown-action]");
+  if (!button) return;
+  applyMarkdownAction(button.dataset.markdownAction);
 });
 contentInput.addEventListener("input", updateMarkdownPreview);
 featureModalClose.addEventListener("click", closeFeatureNotice);
@@ -166,3 +216,6 @@ window.addEventListener("keydown", (event) => {
     closeFeatureNotice();
   }
 });
+
+
+setDescriptionView("write");
