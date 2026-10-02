@@ -52,14 +52,62 @@ function generateMochaGraphic(type) {
 }
 
 let postsData = [];
-const CACHE_KEY = "meditord_archive_posts_v1";
-
+const CACHE_KEY = "meditord_archive";
 const initialPostsEl = document.getElementById("initialPosts");
+const POST_SCHEMA_VERSION =
+  Number.parseInt(initialPostsEl?.dataset.schemaVersion || "1", 10) || 1;
+let archiveEtag = initialPostsEl?.dataset.etag || "";
+
+function readArchiveCache() {
+  try {
+    const raw = sessionStorage.getItem(CACHE_KEY);
+    if (!raw) return null;
+    const cached = JSON.parse(raw);
+    if (
+      cached?.schema !== POST_SCHEMA_VERSION ||
+      !Array.isArray(cached?.posts)
+    ) {
+      sessionStorage.removeItem(CACHE_KEY);
+      return null;
+    }
+    return cached;
+  } catch {
+    return null;
+  }
+}
+
+function writeArchiveCache() {
+  try {
+    sessionStorage.setItem(
+      CACHE_KEY,
+      JSON.stringify({
+        schema: POST_SCHEMA_VERSION,
+        etag: archiveEtag,
+        posts: postsData,
+      }),
+    );
+  } catch {}
+}
+
+function clearArchiveCache() {
+  try {
+    sessionStorage.removeItem(CACHE_KEY);
+  } catch {}
+}
+
+const cachedArchive = readArchiveCache();
+let hydratedFromServer = false;
 if (initialPostsEl) {
   try {
     postsData = JSON.parse(initialPostsEl.textContent || "[]");
+    hydratedFromServer = true;
   } catch {}
 }
+if (!hydratedFromServer && cachedArchive) {
+  postsData = cachedArchive.posts;
+  archiveEtag = archiveEtag || cachedArchive.etag || "";
+}
+if (hydratedFromServer) writeArchiveCache();
 const markdown = window.markdownit({
   html: false,
   linkify: true,
@@ -311,19 +359,29 @@ function closeModalOnBg(event) {
 
 async function loadPosts() {
   try {
-    const response = await fetch("/api/documents?full=true");
+    const headers = {};
+    if (archiveEtag) headers["If-None-Match"] = archiveEtag;
+
+    const response = await fetch("/api/documents?full=true", {
+      headers,
+      cache: "no-cache",
+    });
+    if (response.status === 304) {
+      writeArchiveCache();
+      return;
+    }
     if (!response.ok) throw new Error("Failed to load posts");
+
     const freshPosts = await response.json();
     const freshKey = JSON.stringify(freshPosts);
     const currentKey = JSON.stringify(postsData);
+    archiveEtag = response.headers.get("etag") || archiveEtag;
 
     if (freshKey !== currentKey) {
       postsData = freshPosts;
-      try {
-        sessionStorage.setItem(CACHE_KEY, freshKey);
-      } catch {}
       renderPosts();
     }
+    writeArchiveCache();
   } catch (error) {
     if (!postsData.length) {
       const container = document.getElementById("postsContainer");
@@ -478,6 +536,8 @@ async function deletePost(post) {
   try {
     await window.database.deleteDocument(post.title);
     postsData = postsData.filter((entry) => entry.title !== post.title);
+    archiveEtag = "";
+    clearArchiveCache();
     renderPosts();
   } catch (error) {
     await window.showAppAlert(error.message || "Delete failed.");
@@ -562,3 +622,5 @@ document.addEventListener("click", (event) => {
 if (!postsContainer.children.length && postsData.length > 0) {
   renderPosts();
 }
+
+loadPosts();
