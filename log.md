@@ -68,4 +68,5 @@
 - Replaced the non-draggable mobile scrollbar indicator with a Win98-style touch-draggable scrollbar supporting pointer capture, arrow scrolling, track paging, keyboard controls, and synchronized thumb position.
 - Restyled the mobile Write/Preview controls with Catppuccin Mocha surfaces and Windows 95/98 raised/sunken bevel states after reviewing the documented design references.
 - Added the dated ChatGPT mobile UX feedback log and synchronized the README directory tree.
+- Removed the home-screen background image on narrow mobile layouts while preserving the desktop background and shared Catppuccin base color.
 
