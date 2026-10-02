@@ -57,5 +57,5 @@
 - Updated README and chat-log documentation, renamed `rules.md` to `guidelines.md`, documented the `log.md` update process and format, and corrected per-file commit and validation guidance.
 - Renamed Gemini chat logs to use the simplified LLM name, added the dated ChatGPT development log, documented ChatGPT in `RESOURCES.md`, and synchronized the README chat-log tree.
 - Extended the dated ChatGPT chat log with the license recommit and guideline-driven documentation maintenance.
-- Recommitted the unchanged MIT `LICENSE` under the standard project commit-message format without altering its terms.
+- Recommitted `LICENSE` using the standard project commit-message format and normalized line wrapping without changing the MIT license terms.
 
