@@ -37,6 +37,12 @@ The LLMs and AI tools used in this project are Gemini, DeepSeek, GitHub Copilot,
 
 For more information about AI-assisted design and development discussions, check out the [MeditorD/Design_Chat_Logs](https://github.com/NamTheDev/MeditorD/tree/main/design/chat-logs) folder. Chat logs are currently available for Gemini, GitHub Copilot, and ChatGPT.
 
+## Third-Party Licensing
+
+MeditorD's root MIT license applies to original MeditorD material only. Third-party software, design references, fonts, services, and assets keep their own licenses and terms.
+
+Licensing notes for Catppuccin, the Windows 95/98 design reference, markdown-it, Google Fonts, Canva-related files, project media, and user-provided content are documented in [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).
+
 ## Tech Stack
 
 The following technologies are used in this project:
