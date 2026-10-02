@@ -27,6 +27,42 @@
             </div>
         </div>
         {{body}}
+        <div
+            class="app-dialog-overlay"
+            id="appDialog"
+            role="presentation"
+            hidden
+        >
+            <section
+                class="app-dialog-window raised"
+                role="alertdialog"
+                aria-modal="true"
+                aria-labelledby="appDialogTitle"
+                aria-describedby="appDialogMessage"
+            >
+                <header class="app-dialog-titlebar">
+                    <h2 id="appDialogTitle">Message</h2>
+                    <button
+                        class="app-dialog-close"
+                        id="appDialogClose"
+                        type="button"
+                        aria-label="Close dialog"
+                    >×</button>
+                </header>
+                <div class="app-dialog-content">
+                    <p id="appDialogMessage"></p>
+                    <label class="app-dialog-input-wrap" id="appDialogInputWrap" hidden>
+                        <span class="app-dialog-visually-hidden" id="appDialogInputLabel">Value</span>
+                        <input id="appDialogInput" type="text" />
+                    </label>
+                    <div class="app-dialog-actions">
+                        <button id="appDialogCancel" type="button">Cancel</button>
+                        <button id="appDialogConfirm" type="button">OK</button>
+                    </div>
+                </div>
+            </section>
+        </div>
+        <script src="/js/app-dialog.js"></script>
         <script>
             (() => {
                 const isMobileDevice = () => {
