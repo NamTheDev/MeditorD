@@ -92,6 +92,7 @@ meditord/
 - Minimal database-management table for browsing saved posts.
 - Modal editing and creation for title, username, URL, date, media, and description.
 - JSON API for document, folder, and media operations.
+- Responsive phone, tablet, and desktop layouts with safe-area and virtual-keyboard handling.
 
 ## III. Installation
 
@@ -100,7 +101,7 @@ meditord/
 3. Run `bun install` to install dependencies.
 4. Optionally set `PORT`, `HOST`, and `ROOT` in `.env`.
 5. Start the server with `bun run index.ts`.
-6. Open `http://localhost:3000` in a desktop browser.
+6. Open `http://localhost:3000` in a modern browser.
 7. Open `http://localhost:3000/database.html` to access the database page.
 
 ## IV. Resources and License
