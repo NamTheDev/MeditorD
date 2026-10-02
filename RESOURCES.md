@@ -41,7 +41,7 @@ For more information about AI-assisted design and development discussions, check
 
 MeditorD's root MIT license applies to original MeditorD material only. Third-party software, design references, fonts, services, and assets keep their own licenses and terms.
 
-Licensing notes for Catppuccin, the Windows 95/98 design reference, markdown-it, Google Fonts, Canva-related files, project media, and user-provided content are documented in [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).
+Licensing notes for Catppuccin, the Windows 95/98 design reference, markdown-it, Google Fonts, Canva-related files, and project media are documented in [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).
 
 ## Tech Stack
 
