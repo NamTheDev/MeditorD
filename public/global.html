@@ -4,6 +4,7 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>{{title}}</title>
+        <meta name="meditord-build-id" content="{{build_id}}" />
         <link rel="icon" type="image/webp" href="/media/icon.webp" />
         <meta name="color-scheme" content="dark" />
         <meta name="darkreader-lock" />
@@ -62,6 +63,27 @@
                 </div>
             </section>
         </div>
+        <script>
+            (() => {
+                const buildId = document.querySelector(
+                    'meta[name="meditord-build-id"]',
+                )?.content;
+                if (!buildId) return;
+
+                try {
+                    const key = "meditord_app_state";
+                    const previous = JSON.parse(
+                        localStorage.getItem(key) || "{}",
+                    );
+                    if (previous.buildId !== buildId) {
+                        localStorage.setItem(
+                            key,
+                            JSON.stringify({ buildId }),
+                        );
+                    }
+                } catch {}
+            })();
+        </script>
         <script src="/js/app-dialog.js"></script>
         <script>
             (() => {
