@@ -382,3 +382,124 @@ button:active,
 .modal-actions {
     display: none;
 }
+
+.app-dialog-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    display: grid;
+    place-items: center;
+    padding: 20px;
+    background: rgba(17, 17, 27, 0.78);
+}
+
+.app-dialog-overlay[hidden],
+.app-dialog-input-wrap[hidden] {
+    display: none;
+}
+
+.app-dialog-visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.app-dialog-window {
+    width: min(420px, 100%);
+    padding: 3px;
+    background: var(--ctp-surface0);
+    color: var(--ctp-text);
+    font-family: "IBM Plex Sans", Tahoma, sans-serif;
+}
+
+.app-dialog-titlebar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 6px 8px;
+    background: var(--ctp-lavender);
+    color: var(--ctp-base);
+}
+
+.app-dialog-titlebar h2 {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 700;
+}
+
+.app-dialog-close {
+    padding: 0 5px;
+    border: 1px solid var(--bevel-darkest);
+    border-top-color: var(--bevel-lightest);
+    border-left-color: var(--bevel-lightest);
+    background: var(--ctp-surface0);
+    color: var(--ctp-text);
+    font: inherit;
+    font-weight: 700;
+    line-height: 1.2;
+    cursor: pointer;
+}
+
+.app-dialog-content {
+    padding: 14px;
+    background: var(--ctp-base);
+    border: 2px solid var(--bevel-darkest);
+    border-top-color: var(--bevel-lightest);
+    border-left-color: var(--bevel-lightest);
+}
+
+.app-dialog-content p {
+    margin: 0 0 12px;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.app-dialog-input-wrap {
+    display: block;
+    margin-bottom: 12px;
+}
+
+.app-dialog-input-wrap input {
+    width: 100%;
+    padding: 6px 8px;
+    border: 1px solid var(--ctp-overlay0);
+    background: var(--ctp-crust);
+    color: var(--ctp-text);
+    font: inherit;
+}
+
+.app-dialog-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.app-dialog-actions button {
+    min-width: 76px;
+    padding: 5px 12px;
+    border: 2px solid var(--bevel-darkest);
+    border-top-color: var(--bevel-lightest);
+    border-left-color: var(--bevel-lightest);
+    background: var(--ctp-surface0);
+    color: var(--ctp-text);
+    font: inherit;
+    cursor: pointer;
+}
+
+.app-dialog-actions button[hidden] {
+    display: none;
+}
+
+.app-dialog-actions button:focus-visible,
+.app-dialog-close:focus-visible,
+.app-dialog-input-wrap input:focus-visible {
+    outline: 2px solid var(--ctp-lavender);
+    outline-offset: 2px;
+}
