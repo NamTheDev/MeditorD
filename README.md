@@ -12,13 +12,16 @@ MeditorD is a nostalgic editor for securely saving linked documents.
 
 ```text
 meditord/
-├── database/
-│   └── meditord.sqlite
 ├── design/
 │   ├── canva/
 │   │   ├── 404.png
 │   │   ├── home-background.png
 │   │   └── home.png
+│   ├── chat-logs/
+│   │   ├── gemini-3.8-flash-11-09-2026.md
+│   │   ├── gemini-3.8-flash-28-09-2026.md
+│   │   ├── github-copilot-16-09-2026.md
+│   │   └── github-copilot-25-09-2026.md
 │   └── ideas/
 │       └── editor.png
 ├── functions/
@@ -41,6 +44,7 @@ meditord/
 │   │   ├── home.css
 │   │   └── not-found.css
 │   ├── js/
+│   │   ├── app-dialog.js
 │   │   ├── archive.js
 │   │   ├── database.js
 │   │   ├── document-api.js
@@ -50,7 +54,8 @@ meditord/
 │   ├── media/
 │   │   ├── grass-background.webp
 │   │   ├── green-arrow.webp
-│   │   └── home-background.webp
+│   │   ├── home-background.webp
+│   │   └── icon.webp
 │   ├── 404.html
 │   ├── archive.html
 │   ├── database.html
@@ -60,10 +65,6 @@ meditord/
 │   └── home.html
 ├── .dockerignore
 ├── .gitignore
-├── chat-logs/
-│   ├── gemini-flash-11-09-2026.md
-│   ├── github-copilot-16-09-2026.md
-│   └── github-copilot-25-09-2026.md
 ├── Dockerfile
 ├── LICENSE
 ├── README.md
@@ -71,6 +72,7 @@ meditord/
 ├── bun.lock
 ├── config.ts
 ├── index.ts
+├── log.md
 ├── package.json
 ├── rules.md
 └── tsconfig.json
