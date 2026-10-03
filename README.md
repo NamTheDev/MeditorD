@@ -87,7 +87,7 @@ meditord/
 - Docker containerization.
 - TypeScript.
 - Bun's SQLite with `database/meditord.sqlite`.
-- Gzip-compressed SQLite BLOBs for image and video uploads.
+- Raw SQLite BLOB storage for image and video uploads with fingerprinted browser caching and byte-range delivery.
 - markdown-it for rendering Markdown post descriptions.
 - HTML, CSS, and browser JavaScript.
 - Minimal database-management table for browsing saved posts.
