@@ -360,9 +360,15 @@ async function renderPage(
         );
     }
 
+    const pageStylesheetPath =
+      file === "404" ? "/css/not-found.css" : `/css/${file}.css`;
     let html = layout
       .replaceAll("{{title}}", () => title)
       .replaceAll("{{build_id}}", () => escapeHtml(BUILD_ID))
+      .replace(
+        "{{page_stylesheet}}",
+        () => `<link rel="stylesheet" href="${pageStylesheetPath}" />`,
+      )
       .replace("{{body}}", () => content);
     html = await fingerprintLocalAssets(html);
 
