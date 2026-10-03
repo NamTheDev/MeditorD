@@ -15,8 +15,8 @@ jobs:
       - uses: oven-sh/setup-bun@v2
       - run: bun install --frozen-lockfile
       - run: bunx tsc --noEmit --pretty false
-      - run: bun --check public/sw.js
-      - run: bun --check public/js/archive.js
+      - run: node --check public/sw.js
+      - run: node --check public/js/archive.js
       - run: git diff --check 301b6c9df50524f33cbc579dde0246540f1053c0 HEAD
       - name: Smoke test server
         run: |
