@@ -18,9 +18,6 @@
     aspect-ratio: 580 / 300;
     display: inline-block;
     text-decoration: none;
-    transition:
-        transform 0.2s ease,
-        filter 0.2s ease;
 }
 
 .return-btn-404:hover {
