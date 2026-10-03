@@ -73,5 +73,5 @@
 - Added SHA-256 fingerprints, immutable browser caching, strong ETags, and early 304 handling for SQLite-backed archive media so revisits can reuse cached images and videos without rereading or decompressing unchanged BLOBs.
 - Simplified Docker deployment by removing in-container Git installation, runtime pulls, and repeated dependency installs; source updates now happen on the host and pass the native Git revision into the image as `BUILD_ID`.
 - Reverted the rejected host deployment wrapper and returned to the simpler Git-free Docker image with host-managed source updates.
-- Changed the desktop archive to deterministic newest-first row ordering, flowing each row from right to left while preserving a single newest-first column on mobile.
+- Changed the desktop archive to deterministic newest-first row ordering, flowing each row from left to right while preserving a single newest-first column on mobile.
 
