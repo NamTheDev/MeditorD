@@ -37,9 +37,6 @@
     width: clamp(200px, 30.2vw, 580px);
     display: inline-block;
     text-decoration: none;
-    transition:
-        transform 0.2s ease,
-        filter 0.2s ease;
     cursor: pointer;
 }
 
