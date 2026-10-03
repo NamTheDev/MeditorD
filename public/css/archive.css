@@ -96,7 +96,7 @@ body {
     gap: clamp(12px, 1.5vw, 24px);
     width: 100%;
     align-items: start;
-    direction: rtl;
+    direction: ltr;
 }
 
 .reddit-gallery.compact {
