@@ -482,4 +482,3 @@ document.addEventListener("click", (event) => {
 });
 
 upgradeInitialMedia();
-
