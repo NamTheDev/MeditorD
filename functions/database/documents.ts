@@ -12,6 +12,14 @@ export const POST_SCHEMA_VERSION = 2;
 await mkdir(DB_DIRECTORY, { recursive: true });
 
 const database = new Database(DB_PATH, { create: true });
+
+database.run("PRAGMA journal_mode = WAL");
+database.run("PRAGMA synchronous = NORMAL");
+database.run("PRAGMA temp_store = MEMORY");
+database.run("PRAGMA cache_size = -32768");
+database.run("PRAGMA mmap_size = 268435456");
+database.run("PRAGMA busy_timeout = 5000");
+
 database.run(`
   CREATE TABLE IF NOT EXISTS documents (
     title TEXT PRIMARY KEY,
@@ -123,6 +131,12 @@ database.run(`
   END
 `);
 
+database.run(`
+  CREATE INDEX IF NOT EXISTS idx_documents_archive_order
+  ON documents (is_directory, created_at DESC, title ASC)
+`);
+database.run("PRAGMA optimize=0x10002");
+
 export interface FileRecord {
   title: string;
   isDirectory: boolean;
@@ -150,6 +164,43 @@ export interface MediaMetadataRecord {
   name: string | null;
   type: string;
   hash: string;
+}
+
+const MEDIA_CACHE_MAX_BYTES = 64 * 1024 * 1024;
+const mediaCache = new Map<string, Uint8Array>();
+let mediaCacheBytes = 0;
+
+function getCachedMedia(hash: string): Uint8Array | null {
+  const cached = mediaCache.get(hash);
+  if (!cached) return null;
+
+  mediaCache.delete(hash);
+  mediaCache.set(hash, cached);
+  return cached;
+}
+
+function cacheMedia(hash: string, data: Uint8Array): void {
+  if (!hash || data.byteLength > MEDIA_CACHE_MAX_BYTES) return;
+
+  const existing = mediaCache.get(hash);
+  if (existing) {
+    mediaCacheBytes -= existing.byteLength;
+    mediaCache.delete(hash);
+  }
+
+  while (
+    mediaCacheBytes + data.byteLength > MEDIA_CACHE_MAX_BYTES &&
+    mediaCache.size > 0
+  ) {
+    const oldestKey = mediaCache.keys().next().value;
+    if (!oldestKey) break;
+    const oldest = mediaCache.get(oldestKey);
+    if (oldest) mediaCacheBytes -= oldest.byteLength;
+    mediaCache.delete(oldestKey);
+  }
+
+  mediaCache.set(hash, data);
+  mediaCacheBytes += data.byteLength;
 }
 
 function normalizeTitle(title: string): string {
@@ -280,7 +331,21 @@ export function getDocumentMediaMetadata(
   };
 }
 
-export function getDocumentMedia(title: string): MediaRecord | null {
+export function getDocumentMedia(
+  title: string,
+  metadata?: MediaMetadataRecord,
+): MediaRecord | null {
+  if (metadata) {
+    const cached = getCachedMedia(metadata.hash);
+    if (cached) {
+      return {
+        data: cached,
+        name: metadata.name,
+        type: metadata.type,
+      };
+    }
+  }
+
   const normalizedTitle = normalizeTitle(title);
   const row = database
     .query<
@@ -288,16 +353,21 @@ export function getDocumentMedia(title: string): MediaRecord | null {
         media: Uint8Array | null;
         media_name: string | null;
         media_type: string | null;
+        media_hash: string | null;
       },
       [string]
     >(
-      "SELECT media, media_name, media_type FROM documents WHERE title = ? AND is_directory = 0",
+      "SELECT media, media_name, media_type, media_hash FROM documents WHERE title = ? AND is_directory = 0",
     )
     .get(normalizedTitle);
 
   if (!row?.media || !row.media_type) return null;
+
+  const data = new Uint8Array(gunzipSync(row.media));
+  if (row.media_hash) cacheMedia(row.media_hash, data);
+
   return {
-    data: new Uint8Array(gunzipSync(row.media)),
+    data,
     name: row.media_name,
     type: row.media_type,
   };
@@ -311,9 +381,10 @@ export async function saveDocument(
   media?: File,
 ): Promise<DocumentRecord> {
   const normalizedTitle = normalizeTitle(title);
-  const mediaData = media
-    ? gzipSync(new Uint8Array(await media.arrayBuffer()))
+  const mediaBytes = media
+    ? new Uint8Array(await media.arrayBuffer())
     : null;
+  const mediaData = mediaBytes ? gzipSync(mediaBytes) : null;
   const mediaHash = mediaData
     ? createHash("sha256").update(mediaData).digest("hex")
     : null;
@@ -346,6 +417,8 @@ export async function saveDocument(
       mediaHash,
     );
 
+  if (mediaBytes && mediaHash) cacheMedia(mediaHash, mediaBytes);
+
   return getDocumentByTitle(normalizedTitle)!;
 }
 
@@ -361,9 +434,10 @@ export async function updateDocument(
 ): Promise<DocumentRecord | null> {
   const normalizedOldTitle = normalizeTitle(oldTitle);
   const normalizedTitle = normalizeTitle(title);
-  const mediaData = media
-    ? gzipSync(new Uint8Array(await media.arrayBuffer()))
+  const mediaBytes = media
+    ? new Uint8Array(await media.arrayBuffer())
     : null;
+  const mediaData = mediaBytes ? gzipSync(mediaBytes) : null;
   const mediaName = media?.name ?? null;
   const mediaType = media?.type || null;
   const mediaHash = mediaData
@@ -401,6 +475,10 @@ export async function updateDocument(
       mediaHash,
       normalizedOldTitle,
     );
+
+  if (result.changes && mediaBytes && mediaHash) {
+    cacheMedia(mediaHash, mediaBytes);
+  }
 
   return result.changes ? getDocumentByTitle(normalizedTitle) : null;
 }
