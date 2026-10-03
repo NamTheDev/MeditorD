@@ -419,4 +419,3 @@ document.addEventListener("keydown", (event) => {
 document.addEventListener("click", (event) => {
   if (!event.target.closest(".card-actions")) closeAllMenus();
 });
-
