@@ -255,19 +255,20 @@ function renderCard(post: DocumentRecord, index: number): string {
   const youtubeThumbnailUrl = getYouTubeThumbnailUrl(post.url);
   let mediaHtml = "";
   if (youtubeThumbnailUrl) {
+    const loading = index < 3 ? "eager" : "lazy";
+    const fetchPriority = index === 0 ? ' fetchpriority="high"' : "";
     mediaHtml = `<div class="gallery-media thin-sunken embed-thumbnail youtube-thumbnail">
-      <img src="${youtubeThumbnailUrl}" alt="YouTube thumbnail for ${escapeHtml(post.title)}" loading="lazy" />
+      <img src="${youtubeThumbnailUrl}" alt="YouTube thumbnail for ${escapeHtml(post.title)}" loading="${loading}"${fetchPriority} />
     </div>`;
   } else if (post.hasMedia) {
     const mediaUrl = getMediaUrl(post);
     if (post.mediaType?.startsWith("video/")) {
-      const preload = index < 2 ? "auto" : "metadata";
       mediaHtml = `<div class="gallery-media thin-sunken">
-        <video src="${mediaUrl}" preload="${preload}" muted playsinline aria-label="${escapeHtml(post.title)}"></video>
+        <video src="${mediaUrl}" preload="metadata" muted playsinline aria-label="${escapeHtml(post.title)}"></video>
       </div>`;
     } else {
-      const loading = index < 4 ? "eager" : "lazy";
-      const fetchPriority = index < 2 ? ' fetchpriority="high"' : "";
+      const loading = index < 3 ? "eager" : "lazy";
+      const fetchPriority = index === 0 ? ' fetchpriority="high"' : "";
       mediaHtml = `<div class="gallery-media thin-sunken">
         <img src="${mediaUrl}" alt="" loading="${loading}"${fetchPriority} />
       </div>`;
