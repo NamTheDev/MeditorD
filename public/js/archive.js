@@ -122,6 +122,7 @@ function getMediaUrl(post, { download = false } = {}) {
 function setMediaPriority(element, index) {
   if (!(element instanceof HTMLImageElement)) return;
 
+  element.decoding = "async";
   if (index < 3) {
     element.loading = "eager";
   } else {
@@ -231,6 +232,7 @@ function openPostModal(post) {
       media.preload = "auto";
     } else {
       media.alt = post.title;
+      media.decoding = "async";
       media.loading = "eager";
       media.fetchPriority = "high";
     }
