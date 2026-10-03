@@ -82,67 +82,6 @@ function getMediaUrl(post, { download = false } = {}) {
   return query ? `${base}?${query}` : base;
 }
 
-function setMediaPriority(element, index) {
-  if (!(element instanceof HTMLImageElement)) return;
-
-  element.decoding = "async";
-  if (index < 3) {
-    element.loading = "eager";
-  } else {
-    element.loading = "lazy";
-  }
-
-  element.fetchPriority = index === 0 ? "high" : index >= 3 ? "low" : "auto";
-}
-
-function createUploadedMedia(post, index) {
-  const source = getMediaUrl(post);
-
-  if (post.mediaType?.startsWith("video/")) {
-    const video = document.createElement("video");
-    video.className = "gallery-media-element";
-    video.src = source;
-    video.preload = "metadata";
-    video.muted = true;
-    video.playsInline = true;
-    video.setAttribute("aria-label", post.title);
-    return video;
-  }
-
-  const image = document.createElement("img");
-  image.className = "gallery-media-element";
-  image.src = source;
-  image.alt = "";
-  setMediaPriority(image, index);
-  return image;
-}
-
-function upgradeInitialMedia() {
-  const cards = Array.from(document.querySelectorAll(".gallery-card"));
-
-  postsData.forEach((post, index) => {
-    const card = cards[index];
-    if (!card || card.dataset.title !== post.title) return;
-
-    const mediaContainer = card.querySelector(".gallery-media");
-    if (!mediaContainer) return;
-
-    if (post.hasMedia && post.mediaType?.startsWith("video/")) {
-      const current = mediaContainer.querySelector("img");
-      if (current) {
-        current.replaceWith(createUploadedMedia(post, index));
-      } else {
-        const video = mediaContainer.querySelector("video");
-        if (video) video.preload = "metadata";
-      }
-      return;
-    }
-
-    const image = mediaContainer.querySelector("img");
-    if (image) setMediaPriority(image, index);
-  });
-}
-
 function historyBack() {
   const modal = document.getElementById("postModal");
   if (modal.classList.contains("active")) {
@@ -481,4 +420,3 @@ document.addEventListener("click", (event) => {
   if (!event.target.closest(".card-actions")) closeAllMenus();
 });
 
-upgradeInitialMedia();
