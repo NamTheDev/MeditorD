@@ -151,6 +151,11 @@ function closeModal() {
   document.getElementById("modalBody").replaceChildren();
   modal.classList.remove("active");
   modal.setAttribute("aria-hidden", "true");
+
+  if (archiveRefreshPending) {
+    archiveRefreshPending = false;
+    window.location.reload();
+  }
 }
 
 function stopModalMedia(container) {
@@ -419,3 +424,36 @@ document.addEventListener("keydown", (event) => {
 document.addEventListener("click", (event) => {
   if (!event.target.closest(".card-actions")) closeAllMenus();
 });
+let archiveRefreshPending = false;
+
+function refreshArchiveFromCacheUpdate() {
+  const modal = document.getElementById("postModal");
+  if (
+    document.visibilityState !== "visible" ||
+    modal?.classList.contains("active")
+  ) {
+    archiveRefreshPending = true;
+    return;
+  }
+
+  window.location.reload();
+}
+
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.addEventListener("message", (event) => {
+    if (
+      event.data?.type === "meditord-page-cache-updated" &&
+      event.data.path === window.location.pathname
+    ) {
+      refreshArchiveFromCacheUpdate();
+    }
+  });
+
+  document.addEventListener("visibilitychange", () => {
+    if (archiveRefreshPending && document.visibilityState === "visible") {
+      archiveRefreshPending = false;
+      refreshArchiveFromCacheUpdate();
+    }
+  });
+}
+
