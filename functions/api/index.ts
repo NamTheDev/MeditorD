@@ -14,6 +14,45 @@ function ifNoneMatchMatches(header: string | null, etag: string): boolean {
     .some((value) => value === "*" || value.replace(/^W\//, "") === target);
 }
 
+interface ByteRange {
+  start: number;
+  end: number;
+}
+
+function parseSingleByteRange(
+  header: string | null,
+  size: number,
+): ByteRange | null | undefined {
+  if (!header) return undefined;
+  if (!header.startsWith("bytes=") || header.includes(",")) return null;
+
+  const value = header.slice("bytes=".length).trim();
+  const match = /^(\d*)-(\d*)$/.exec(value);
+  if (!match) return null;
+
+  const startText = match[1] ?? "";
+  const endText = match[2] ?? "";
+  if (!startText && !endText) return null;
+
+  let start: number;
+  let end: number;
+
+  if (!startText) {
+    const suffixLength = Number.parseInt(endText, 10);
+    if (!Number.isFinite(suffixLength) || suffixLength <= 0) return null;
+    start = Math.max(size - suffixLength, 0);
+    end = size - 1;
+  } else {
+    start = Number.parseInt(startText, 10);
+    if (!Number.isFinite(start) || start < 0 || start >= size) return null;
+    end = endText ? Number.parseInt(endText, 10) : size - 1;
+    if (!Number.isFinite(end) || end < start) return null;
+    end = Math.min(end, size - 1);
+  }
+
+  return { start, end };
+}
+
 export async function handleApi(
   req: Request,
   config: ApiConfig = { prefix: "/api" },
@@ -85,26 +124,48 @@ export async function handleApi(
         });
       }
 
-      const media = await db.getDocumentMedia(title);
+      const media = await db.getDocumentMedia(title, metadata);
       if (!media) {
         return Response.json({ error: "Media not found" }, { status: 404 });
       }
 
-      return new Response(media.data, {
-        headers: {
-          "Content-Type": media.type,
-          "Content-Disposition": [
-            url.searchParams.get("download") === "true" ? "attachment" : "inline",
-            media.name
-              ? `filename="${encodeURIComponent(media.name)}"`
-              : "",
-          ]
-            .filter(Boolean)
-            .join("; "),
-          ETag: etag,
-          "Cache-Control": cacheControl,
-        },
+      const disposition = [
+        url.searchParams.get("download") === "true" ? "attachment" : "inline",
+        media.name
+          ? `filename="${encodeURIComponent(media.name)}"`
+          : "",
+      ]
+        .filter(Boolean)
+        .join("; ");
+      const headers = new Headers({
+        "Content-Type": media.type,
+        "Content-Disposition": disposition,
+        ETag: etag,
+        "Cache-Control": cacheControl,
+        "Accept-Ranges": "bytes",
       });
+
+      const range = parseSingleByteRange(
+        req.headers.get("range"),
+        media.data.byteLength,
+      );
+      if (range === null) {
+        headers.set("Content-Range", `bytes */${media.data.byteLength}`);
+        return new Response(null, { status: 416, headers });
+      }
+
+      if (range) {
+        const body = media.data.subarray(range.start, range.end + 1);
+        headers.set(
+          "Content-Range",
+          `bytes ${range.start}-${range.end}/${media.data.byteLength}`,
+        );
+        headers.set("Content-Length", String(body.byteLength));
+        return new Response(body, { status: 206, headers });
+      }
+
+      headers.set("Content-Length", String(media.data.byteLength));
+      return new Response(media.data, { headers });
     }
 
     if (endpoint === "/documents" && method === "POST") {
