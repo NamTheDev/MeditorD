@@ -46,9 +46,6 @@
     text-decoration: none;
     width: clamp(140px, 18vw, 290px);
     flex-shrink: 0;
-    transition:
-        transform 0.2s ease,
-        filter 0.2s ease;
     cursor: pointer;
 }
 
