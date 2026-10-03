@@ -14,9 +14,17 @@
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
         <link
-            href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;600;700&family=Montserrat:wght@600;700;800&family=Pixelify+Sans:wght@400;600;700&family=Press+Start+2P&family=Silkscreen:wght@400;700&display=swap"
-            rel="stylesheet"
+            rel="preload"
+            as="style"
+            href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;600;700&family=Montserrat:wght@600;700;800&family=Pixelify+Sans:wght@400;600;700&family=Press+Start+2P&family=Silkscreen:wght@400;700&display=optional"
+            onload="this.onload=null;this.rel='stylesheet'"
         />
+        <noscript>
+            <link
+                rel="stylesheet"
+                href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;600;700&family=Montserrat:wght@600;700;800&family=Pixelify+Sans:wght@400;600;700&family=Press+Start+2P&family=Silkscreen:wght@400;700&display=optional"
+            />
+        </noscript>
         <link rel="stylesheet" href="/css/global.css" />
         {{page_stylesheet}}
     </head>
@@ -79,6 +87,31 @@
             })();
         </script>
         <script src="/js/app-dialog.js"></script>
+        <script>
+            (() => {
+                if (!("serviceWorker" in navigator) || !window.isSecureContext) {
+                    return;
+                }
+
+                const buildId = document.querySelector(
+                    'meta[name="meditord-build-id"]',
+                )?.content;
+                if (!buildId) return;
+
+                window.addEventListener(
+                    "load",
+                    () => {
+                        void navigator.serviceWorker
+                            .register(
+                                `/sw.js?v=${encodeURIComponent(buildId)}`,
+                                { scope: "/" },
+                            )
+                            .catch(() => {});
+                    },
+                    { once: true },
+                );
+            })();
+        </script>
         <script>
             (() => {
                 const viewport = window.visualViewport;
