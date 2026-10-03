@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import { gzipSync } from "node:zlib";
 import MarkdownIt from "markdown-it";
 import { ROOT } from "../config";
 import {
@@ -51,7 +52,7 @@ export async function getAssetFingerprint(
     /^\/+/,
     "",
   );
-  if (!/\.(?:js|css)$/i.test(normalizedPath)) return null;
+  if (!normalizedPath) return null;
 
   const cached = assetFingerprintCache.get(normalizedPath);
   if (cached) return cached;
@@ -75,7 +76,7 @@ function escapeRegex(value: string): string {
 async function fingerprintLocalAssets(html: string): Promise<string> {
   const assetPaths = new Set<string>();
   for (const match of html.matchAll(
-    /(?:src|href)="(\/[^"]+\.(?:js|css))(?:\?[^"]*)?"/gi,
+    /(?:src|href)="(\/[^"]+\.(?:js|css|webp|png|jpe?g|gif|svg|ico|woff2?|ttf))(?:\?[^"]*)?"/gi,
   )) {
     const assetPath = match[1];
     if (assetPath) assetPaths.add(assetPath);
@@ -103,6 +104,23 @@ function ifNoneMatchMatches(header: string | null, etag: string): boolean {
     .some((value) => value === "*" || value.replace(/^W\//, "") === target);
 }
 
+function acceptsGzip(header: string | null): boolean {
+  if (!header) return false;
+
+  return header.split(",").some((entry) => {
+    const [encoding, ...params] = entry.trim().split(";");
+    if (encoding?.trim().toLowerCase() !== "gzip") return false;
+
+    const quality = params
+      .map((param) => param.trim())
+      .find((param) => param.startsWith("q="));
+    if (!quality) return true;
+
+    const value = Number.parseFloat(quality.slice(2));
+    return Number.isFinite(value) && value > 0;
+  });
+}
+
 function getArchivePageEtag(archiveValidator: string): string {
   const validator = archiveValidator
     .replace(/^W\/"|"$/g, "")
@@ -118,6 +136,7 @@ const md = new MarkdownIt({
 
 interface CachedPage {
   html: string;
+  gzip: Uint8Array;
   etag: string;
 }
 
@@ -292,7 +311,7 @@ async function renderPage(
   const etag =
     isArchive && archiveValidator
       ? getArchivePageEtag(archiveValidator)
-      : `"${BUILD_ID}"`;
+      : `W/"b${BUILD_ID}"`;
 
   if (
     status === 200 &&
@@ -303,6 +322,7 @@ async function renderPage(
       headers: {
         ETag: etag,
         "Cache-Control": "no-cache",
+        Vary: "Accept-Encoding",
         "X-MeditorD-Build": BUILD_ID,
       },
     });
@@ -346,7 +366,11 @@ async function renderPage(
       .replace("{{body}}", () => content);
     html = await fingerprintLocalAssets(html);
 
-    cached = { html, etag };
+    cached = {
+      html,
+      gzip: new Uint8Array(gzipSync(html)),
+      etag,
+    };
     if (isArchive && archiveValidator) {
       archivePageCache = {
         ...cached,
@@ -357,12 +381,15 @@ async function renderPage(
     }
   }
 
-  return new Response(cached.html, {
+  const useGzip = acceptsGzip(req?.headers.get("accept-encoding") ?? null);
+  return new Response(useGzip ? cached.gzip : cached.html, {
     status,
     headers: {
       "Content-Type": "text/html; charset=utf-8",
       "Cache-Control": "no-cache",
       ETag: cached.etag,
+      Vary: "Accept-Encoding",
+      ...(useGzip ? { "Content-Encoding": "gzip" } : {}),
       "X-MeditorD-Build": BUILD_ID,
     },
   });
