@@ -117,15 +117,7 @@ function renderTable() {
 async function loadItems() {
   renderMessage("Loading database...");
   try {
-    const items = await request("/documents");
-    state.items = await Promise.all(
-      items.map(async (item) => ({
-        ...item,
-        document: item.isDirectory
-          ? null
-          : await request(`/documents/${encodeURIComponent(item.title)}`),
-      })),
-    );
+    state.items = await request("/documents?database=true");
     renderTable();
 
     const editTitle = new URLSearchParams(window.location.search).get("edit");
