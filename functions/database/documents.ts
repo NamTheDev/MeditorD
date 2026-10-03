@@ -171,8 +171,15 @@ export interface FileRecord {
   isDirectory: boolean;
 }
 
+export interface DatabaseDocumentSummary {
+  username: string;
+  url: string;
+  hasMedia: boolean;
+  created_at: string;
+}
+
 export interface DatabaseItemRecord extends FileRecord {
-  document: DocumentRecord | null;
+  document: DatabaseDocumentSummary | null;
 }
 
 export interface DocumentRecord {
@@ -319,11 +326,17 @@ export function listDocuments(): FileRecord[] {
 export function getDatabaseItems(): DatabaseItemRecord[] {
   const rows = database
     .query<
-      DocumentRow & { is_directory: number },
+      {
+        title: string;
+        is_directory: number;
+        username: string;
+        url: string;
+        media_type: string | null;
+        created_at: string;
+      },
       []
     >(
-      `SELECT title, is_directory, username, content, url,
-              media_name, media_type, media_hash, created_at
+      `SELECT title, is_directory, username, url, media_type, created_at
        FROM documents
        ORDER BY title`,
     )
@@ -334,7 +347,14 @@ export function getDatabaseItems(): DatabaseItemRecord[] {
     return {
       title: row.title,
       isDirectory,
-      document: isDirectory ? null : toDocumentRecord(row),
+      document: isDirectory
+        ? null
+        : {
+            username: row.username,
+            url: row.url,
+            hasMedia: row.media_type !== null,
+            created_at: row.created_at,
+          },
     };
   });
 }
