@@ -58,6 +58,7 @@ meditord/
 │   │   ├── green-arrow.webp
 │   │   ├── home-background.webp
 │   │   └── icon.webp
+│   ├── sw.js
 │   ├── 404.html
 │   ├── archive.html
 │   ├── database.html
@@ -89,7 +90,7 @@ meditord/
 - Bun's SQLite with `database/meditord.sqlite`.
 - Raw SQLite BLOB storage for image and video uploads with fingerprinted browser caching and byte-range delivery.
 - markdown-it for rendering Markdown post descriptions.
-- HTML, CSS, and browser JavaScript.
+- HTML, CSS, browser JavaScript, and a service worker for offline-first runtime caching.
 - Minimal database-management table for browsing saved posts.
 - Modal editing and creation for title, username, URL, date, media, and description.
 - JSON API for document, folder, and media operations.
