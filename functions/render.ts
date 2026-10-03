@@ -250,6 +250,19 @@ function getMediaUrl(post: DocumentRecord): string {
     : base;
 }
 
+function getArchivePreloadImageUrl(posts: DocumentRecord[]): string | null {
+  for (const post of posts.slice(0, 3)) {
+    const youtubeThumbnailUrl = getYouTubeThumbnailUrl(post.url);
+    if (youtubeThumbnailUrl) return youtubeThumbnailUrl;
+
+    if (post.hasMedia && !post.mediaType?.startsWith("video/")) {
+      return getMediaUrl(post);
+    }
+  }
+
+  return null;
+}
+
 function renderCard(post: DocumentRecord, index: number): string {
   const youtubeThumbnailUrl = getYouTubeThumbnailUrl(post.url);
   let mediaHtml = "";
@@ -262,7 +275,7 @@ function renderCard(post: DocumentRecord, index: number): string {
           ? ' fetchpriority="low"'
           : "";
     mediaHtml = `<div class="gallery-media thin-sunken embed-thumbnail youtube-thumbnail">
-      <img src="${youtubeThumbnailUrl}" alt="YouTube thumbnail for ${escapeHtml(post.title)}" loading="${loading}"${fetchPriority} />
+      <img src="${youtubeThumbnailUrl}" alt="YouTube thumbnail for ${escapeHtml(post.title)}" loading="${loading}" decoding="async"${fetchPriority} />
     </div>`;
   } else if (post.hasMedia) {
     const mediaUrl = getMediaUrl(post);
@@ -279,7 +292,7 @@ function renderCard(post: DocumentRecord, index: number): string {
             ? ' fetchpriority="low"'
             : "";
       mediaHtml = `<div class="gallery-media thin-sunken">
-        <img src="${mediaUrl}" alt="" loading="${loading}"${fetchPriority} />
+        <img src="${mediaUrl}" alt="" loading="${loading}" decoding="async"${fetchPriority} />
       </div>`;
     }
   }
@@ -354,8 +367,14 @@ async function renderPage(
     ]);
 
     let content = rawContent;
+    let pagePreloadHtml = "";
     if (isArchive && archiveValidator) {
       const posts = getAllDocuments();
+      const preloadImageUrl = getArchivePreloadImageUrl(posts);
+      if (preloadImageUrl) {
+        pagePreloadHtml =
+          `<link rel="preload" as="image" href="${escapeHtml(preloadImageUrl)}" fetchpriority="high" />`;
+      }
       const cardsHtml = posts
         .map((post, index) => renderCard(post, index))
         .join("\n");
@@ -375,6 +394,9 @@ async function renderPage(
         () => `<link rel="stylesheet" href="${pageStylesheetPath}" />`,
       )
       .replace("{{body}}", () => content);
+    if (pagePreloadHtml) {
+      html = html.replace("</head>", `${pagePreloadHtml}\n    </head>`);
+    }
     html = await fingerprintLocalAssets(html);
 
     cached = {
