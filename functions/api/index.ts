@@ -133,21 +133,16 @@ export async function handleApi(
         });
       }
 
-      const media = await db.getDocumentMedia(title, metadata);
-      if (!media) {
-        return Response.json({ error: "Media not found" }, { status: 404 });
-      }
-
       const disposition = [
         url.searchParams.get("download") === "true" ? "attachment" : "inline",
-        media.name
-          ? `filename="${encodeURIComponent(media.name)}"`
+        metadata.name
+          ? `filename="${encodeURIComponent(metadata.name)}"`
           : "",
       ]
         .filter(Boolean)
         .join("; ");
       const headers = new Headers({
-        "Content-Type": media.type,
+        "Content-Type": metadata.type,
         "Content-Disposition": disposition,
         ETag: etag,
         "Cache-Control": cacheControl,
@@ -156,24 +151,38 @@ export async function handleApi(
 
       const range = parseSingleByteRange(
         req.headers.get("range"),
-        media.data.byteLength,
+        metadata.size,
       );
       if (range === null) {
-        headers.set("Content-Range", `bytes */${media.data.byteLength}`);
+        headers.set("Content-Range", `bytes */${metadata.size}`);
         return new Response(null, { status: 416, headers });
       }
 
       if (range) {
-        const body = media.data.subarray(range.start, range.end + 1);
+        const body = db.getDocumentMediaRange(
+          title,
+          metadata,
+          range.start,
+          range.end,
+        );
+        if (!body) {
+          return Response.json({ error: "Media not found" }, { status: 404 });
+        }
+
         headers.set(
           "Content-Range",
-          `bytes ${range.start}-${range.end}/${media.data.byteLength}`,
+          `bytes ${range.start}-${range.end}/${metadata.size}`,
         );
         headers.set("Content-Length", String(body.byteLength));
         return new Response(body, { status: 206, headers });
       }
 
-      headers.set("Content-Length", String(media.data.byteLength));
+      const media = db.getDocumentMedia(title, metadata);
+      if (!media) {
+        return Response.json({ error: "Media not found" }, { status: 404 });
+      }
+
+      headers.set("Content-Length", String(metadata.size));
       return new Response(media.data, { headers });
     }
 
