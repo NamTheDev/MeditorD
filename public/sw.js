@@ -3,7 +3,7 @@ const buildId =
 
 const PAGE_CACHE = `meditord-pages-${buildId}`;
 const ASSET_CACHE = `meditord-assets-${buildId}`;
-const MEDIA_CACHE = `meditord-media-${buildId}`;
+const MEDIA_CACHE = "meditord-media-v1";
 const DATA_CACHE = `meditord-data-${buildId}`;
 const CACHE_PREFIX = "meditord-";
 
@@ -58,6 +58,26 @@ self.addEventListener("activate", (event) => {
       }
 
       const cacheNames = await caches.keys();
+      const legacyMediaCaches = cacheNames.filter(
+        (name) =>
+          name.startsWith("meditord-media-") &&
+          name !== MEDIA_CACHE,
+      );
+
+      if (legacyMediaCaches.length) {
+        const mediaCache = await caches.open(MEDIA_CACHE);
+        for (const name of legacyMediaCaches) {
+          const legacyCache = await caches.open(name);
+          const requests = await legacyCache.keys();
+          for (const request of requests) {
+            const response = await legacyCache.match(request);
+            if (response) {
+              await mediaCache.put(request, response);
+            }
+          }
+        }
+      }
+
       await Promise.all(
         cacheNames
           .filter(
@@ -168,7 +188,6 @@ async function invalidateDynamicCaches() {
     pageCache.delete("/archive.html"),
     pageCache.delete("/database.html"),
     caches.delete(DATA_CACHE),
-    caches.delete(MEDIA_CACHE),
   ]);
 }
 
