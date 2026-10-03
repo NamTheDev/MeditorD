@@ -456,4 +456,3 @@ if ("serviceWorker" in navigator) {
     }
   });
 }
-
