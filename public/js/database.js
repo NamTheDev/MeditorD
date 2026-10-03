@@ -158,7 +158,19 @@ async function editItem(item) {
     }
     return;
   }
-  const data = item.document;
+  let data = item.document;
+  if (!data || !Object.prototype.hasOwnProperty.call(data, "content")) {
+    try {
+      data = await request(`/documents/${encodeURIComponent(item.title)}`);
+      item.document = data;
+    } catch (error) {
+      await window.showAppAlert(error.message || "Failed to load post.", {
+        title: "Error",
+      });
+      return;
+    }
+  }
+
   state.editingTitle = item.title;
   document.getElementById("editModalTitle").textContent = `Edit ${item.title}`;
   document.getElementById("editTitle").value = item.title;
