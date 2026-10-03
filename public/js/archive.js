@@ -263,6 +263,44 @@ function setMediaPriority(element, index) {
   }
 }
 
+function prepareMediaReveal(element) {
+  if (
+    !(element instanceof HTMLImageElement) &&
+    !(element instanceof HTMLVideoElement)
+  ) {
+    return;
+  }
+  if (element.dataset.mediaRevealBound === "true") return;
+  element.dataset.mediaRevealBound = "true";
+
+  const isReady =
+    element instanceof HTMLImageElement
+      ? element.complete
+      : element.readyState >= 1;
+  if (isReady) return;
+
+  const container = element.closest(".gallery-media");
+  container?.classList.add("media-loading");
+  element.classList.add("media-pending");
+
+  const finish = () => {
+    container?.classList.remove("media-loading");
+    element.classList.remove("media-pending");
+    element.classList.add("media-ready");
+  };
+
+  const readyEvent =
+    element instanceof HTMLVideoElement ? "loadedmetadata" : "load";
+  element.addEventListener(readyEvent, finish, { once: true });
+  element.addEventListener("error", finish, { once: true });
+}
+
+function prepareMediaReveals(container = document) {
+  container
+    .querySelectorAll(".gallery-media img, .gallery-media video")
+    .forEach((element) => prepareMediaReveal(element));
+}
+
 function createUploadedMedia(post, index) {
   const source = getMediaUrl(post);
 
@@ -306,6 +344,8 @@ function upgradeInitialMedia() {
     const image = mediaContainer.querySelector("img");
     if (image) setMediaPriority(image, index);
   });
+
+  prepareMediaReveals(document.getElementById("postsContainer"));
 }
 
 function renderPosts() {
@@ -374,6 +414,7 @@ function renderPosts() {
     container.append(card);
   });
 
+  prepareMediaReveals(container);
 }
 
 function historyBack() {
