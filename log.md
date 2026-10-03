@@ -74,4 +74,5 @@
 - Simplified Docker deployment by removing in-container Git installation, runtime pulls, and repeated dependency installs; source updates now happen on the host and pass the native Git revision into the image as `BUILD_ID`.
 - Reverted the rejected host deployment wrapper and returned to the simpler Git-free Docker image with host-managed source updates.
 - Changed the desktop archive to deterministic newest-first row ordering, flowing each row from left to right while preserving a single newest-first column on mobile.
+- Added media-ready archive entrance motion using Anime.js: posts fade in while moving upward from below, with bounded CDN loading, native Web Animations fallback, failure recovery, and reduced-motion support.
 
