@@ -256,7 +256,12 @@ function renderCard(post: DocumentRecord, index: number): string {
   let mediaHtml = "";
   if (youtubeThumbnailUrl) {
     const loading = index < 3 ? "eager" : "lazy";
-    const fetchPriority = index === 0 ? ' fetchpriority="high"' : "";
+    const fetchPriority =
+      index === 0
+        ? ' fetchpriority="high"'
+        : index >= 3
+          ? ' fetchpriority="low"'
+          : "";
     mediaHtml = `<div class="gallery-media thin-sunken embed-thumbnail youtube-thumbnail">
       <img src="${youtubeThumbnailUrl}" alt="YouTube thumbnail for ${escapeHtml(post.title)}" loading="${loading}"${fetchPriority} />
     </div>`;
@@ -268,7 +273,12 @@ function renderCard(post: DocumentRecord, index: number): string {
       </div>`;
     } else {
       const loading = index < 3 ? "eager" : "lazy";
-      const fetchPriority = index === 0 ? ' fetchpriority="high"' : "";
+      const fetchPriority =
+        index === 0
+          ? ' fetchpriority="high"'
+          : index >= 3
+            ? ' fetchpriority="low"'
+            : "";
       mediaHtml = `<div class="gallery-media thin-sunken">
         <img src="${mediaUrl}" alt="" loading="${loading}"${fetchPriority} />
       </div>`;
