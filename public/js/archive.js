@@ -73,43 +73,6 @@ function getYouTubeEmbedUrl(value) {
   }
 }
 
-function getYouTubeThumbnailUrl(value) {
-  const embedUrl = getYouTubeEmbedUrl(value);
-  if (!embedUrl) return null;
-  const videoId = embedUrl.split("/").pop();
-  return videoId ? `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg` : null;
-}
-
-function getDownloadActions(post) {
-  const hasDescription = Boolean(post.content?.trim());
-  const hasMedia = Boolean(post.hasMedia);
-  const mediaAction = post.mediaType?.startsWith("video/")
-    ? "download-video"
-    : "download-image";
-  const mediaLabel = post.mediaType?.startsWith("video/")
-    ? "Download video"
-    : "Download image";
-  if (hasMedia && hasDescription) {
-    return `
-      <div class="card-menu-item">
-        <button type="button" data-action="toggle-download-menu">Download ›</button>
-        <div class="card-submenu hidden" role="menu" aria-label="Download options">
-          <button type="button" data-action="${mediaAction}">${mediaLabel}</button>
-          <button type="button" data-action="download-markdown">Download .md</button>
-          <button type="button" data-action="download-both">Download both</button>
-        </div>
-      </div>
-    `;
-  }
-  if (hasMedia) {
-    return `<button type="button" data-action="${mediaAction}">${mediaLabel}</button>`;
-  }
-  if (hasDescription) {
-    return `<button type="button" data-action="download-markdown">Download .md</button>`;
-  }
-  return "";
-}
-
 function getMediaUrl(post, { download = false } = {}) {
   const base = `/api/media/${encodeURIComponent(post.title)}`;
   const params = new URLSearchParams();
