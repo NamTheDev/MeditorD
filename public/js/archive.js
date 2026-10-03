@@ -69,6 +69,124 @@ function sortPostsNewestFirst(posts) {
   });
 }
 
+const ANIMEJS_MODULE_URL =
+  "https://cdn.jsdelivr.net/npm/animejs@4.5.0/+esm";
+const prefersReducedMotion = window.matchMedia(
+  "(prefers-reduced-motion: reduce)",
+).matches;
+let animeModulePromise;
+
+window.__meditordArchiveMotionReady = true;
+if (prefersReducedMotion) {
+  document.documentElement.classList.remove("archive-motion");
+}
+
+function loadAnimeMotion() {
+  if (prefersReducedMotion) return Promise.resolve(null);
+  if (!animeModulePromise) {
+    animeModulePromise = import(ANIMEJS_MODULE_URL).catch(() => null);
+  }
+  return animeModulePromise;
+}
+
+function waitForCardMedia(card) {
+  const media = card.querySelector(".gallery-media img, .gallery-media video");
+  if (!media) return Promise.resolve();
+
+  if (media instanceof HTMLImageElement && media.complete) {
+    if (media.naturalWidth > 0 && typeof media.decode === "function") {
+      return media.decode().catch(() => {});
+    }
+    return Promise.resolve();
+  }
+
+  if (media instanceof HTMLVideoElement && media.readyState >= 1) {
+    return Promise.resolve();
+  }
+
+  return new Promise((resolve) => {
+    let settled = false;
+    const finish = () => {
+      if (settled) return;
+      settled = true;
+      window.clearTimeout(timeout);
+      resolve();
+    };
+    const timeout = window.setTimeout(finish, 4000);
+    const readyEvent =
+      media instanceof HTMLVideoElement ? "loadedmetadata" : "load";
+
+    media.addEventListener(readyEvent, finish, { once: true });
+    media.addEventListener("error", finish, { once: true });
+  });
+}
+
+function finishCardReveal(card) {
+  card.classList.add("post-revealed");
+  card.dataset.revealState = "done";
+  card.style.removeProperty("opacity");
+  card.style.removeProperty("transform");
+}
+
+async function revealCard(card, index) {
+  if (card.dataset.revealState) return;
+  card.dataset.revealState = "pending";
+
+  await waitForCardMedia(card);
+  if (!card.isConnected) return;
+
+  if (prefersReducedMotion) {
+    finishCardReveal(card);
+    return;
+  }
+
+  const delay = Math.min(index * 45, 225);
+  const anime = await loadAnimeMotion();
+  if (!card.isConnected) return;
+
+  if (anime?.animate && anime?.cubicBezier) {
+    anime.animate(card, {
+      opacity: { from: 0 },
+      translateY: { from: 24 },
+      duration: 560,
+      delay,
+      ease: anime.cubicBezier(0.22, 0.72, 0.28, 1),
+      onComplete: () => finishCardReveal(card),
+    });
+    return;
+  }
+
+  if (typeof card.animate === "function") {
+    const animation = card.animate(
+      [
+        { opacity: 0, transform: "translateY(24px)" },
+        { opacity: 1, transform: "translateY(0)" },
+      ],
+      {
+        duration: 560,
+        delay,
+        easing: "cubic-bezier(0.22, 0.72, 0.28, 1)",
+        fill: "forwards",
+      },
+    );
+    animation.finished
+      .catch(() => {})
+      .then(() => finishCardReveal(card));
+    return;
+  }
+
+  finishCardReveal(card);
+}
+
+function revealPosts(container = document.getElementById("postsContainer")) {
+  if (!container) return;
+  Array.from(container.querySelectorAll(".gallery-card")).forEach(
+    (card, index) => {
+      void revealCard(card, index);
+    },
+  );
+}
+
 let postsData = [];
 const CACHE_KEY = "meditord_archive";
 const initialPostsEl = document.getElementById("initialPosts");
@@ -373,6 +491,8 @@ function renderPosts() {
     card.append(info);
     container.append(card);
   });
+
+  revealPosts(container);
 }
 
 function historyBack() {
@@ -716,6 +836,8 @@ if (!postsContainer.children.length && postsData.length > 0) {
   renderPosts();
 } else {
   upgradeInitialMedia();
+  revealPosts(postsContainer);
 }
 
+void loadAnimeMotion();
 loadPosts();
