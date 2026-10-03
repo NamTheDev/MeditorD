@@ -82,4 +82,5 @@
 - Validated the completed performance sweep on Bun 1.4.2 and TypeScript 7.0.2 with a clean compiler check, whitespace check across the optimization range, and live archive/database HTTP smoke tests.
 - Added a build-versioned service worker that serves cached app pages immediately on repeat navigation, revalidates them in the background, caches fingerprinted UI/media resources, supports offline page availability, and invalidates dynamic caches after successful API mutations.
 - Reduced first-paint and media startup work by loading web fonts non-blockingly with optional swapping, preloading the first likely visible archive image from the document head, and removing the redundant client-side media configuration scan.
+- Validated the persistent-cache performance pass with TypeScript compilation, browser-script syntax checks, whitespace validation, and live archive/database/service-worker HTTP smoke tests.
 
