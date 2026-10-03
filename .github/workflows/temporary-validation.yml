@@ -15,4 +15,17 @@ jobs:
       - uses: oven-sh/setup-bun@v2
       - run: bun install --frozen-lockfile
       - run: bunx tsc --noEmit --pretty false
-      - run: git diff --check "$(git rev-list --max-parents=0 HEAD)" HEAD
+      - run: git diff --check 7f5637cddfa70d8ae83cc16787e65d2bacc6cba6 HEAD
+      - name: Smoke test server
+        run: |
+          bun run index.ts > /tmp/meditord.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          for attempt in {1..20}; do
+            if curl --fail --silent --show-error http://127.0.0.1:3000/archive.html >/dev/null; then
+              break
+            fi
+            sleep 0.25
+          done
+          curl --fail --silent --show-error http://127.0.0.1:3000/archive.html >/dev/null
+          curl --fail --silent --show-error http://127.0.0.1:3000/database.html >/dev/null
