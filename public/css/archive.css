@@ -118,42 +118,6 @@ body {
     cursor: pointer;
 }
 
-.gallery-card {
-    animation: archive-card-enter 680ms cubic-bezier(0.22, 0.72, 0.28, 1) both;
-}
-
-.reddit-gallery .gallery-card:nth-child(2) {
-    animation-delay: 55ms;
-}
-
-.reddit-gallery .gallery-card:nth-child(3) {
-    animation-delay: 110ms;
-}
-
-.reddit-gallery .gallery-card:nth-child(4) {
-    animation-delay: 165ms;
-}
-
-.reddit-gallery .gallery-card:nth-child(5) {
-    animation-delay: 220ms;
-}
-
-.reddit-gallery .gallery-card:nth-child(n + 6) {
-    animation-delay: 275ms;
-}
-
-@keyframes archive-card-enter {
-    from {
-        opacity: 0;
-        transform: translate3d(0, 44px, 0);
-    }
-
-    to {
-        opacity: 1;
-        transform: translate3d(0, 0, 0);
-    }
-}
-
 .gallery-card:has(.card-menu:not(.hidden)) {
     z-index: 100;
 }
@@ -192,30 +156,6 @@ body {
 
 .gallery-media video {
     background: var(--ctp-crust);
-}
-
-.gallery-media.media-loading {
-    min-height: clamp(180px, 24vw, 280px);
-}
-
-.gallery-media img.media-pending,
-.gallery-media video.media-pending {
-    opacity: 0;
-}
-
-.gallery-media img.media-ready,
-.gallery-media video.media-ready {
-    animation: archive-media-enter 240ms ease-out both;
-}
-
-@keyframes archive-media-enter {
-    from {
-        opacity: 0;
-    }
-
-    to {
-        opacity: 1;
-    }
 }
 
 .gallery-media.embed-thumbnail {
@@ -552,16 +492,6 @@ select:focus {
         var(--ctp-surface1) 75%
     );
     background-size: 200% 100%;
-    animation: skeleton-shimmer 1.4s infinite ease-in-out;
-}
-
-@keyframes skeleton-shimmer {
-    0% {
-        background-position: 200% 0;
-    }
-    100% {
-        background-position: -200% 0;
-    }
 }
 
 .skeleton-media {
