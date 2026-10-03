@@ -7,7 +7,6 @@ import { ROOT } from "../config";
 import {
   getAllDocuments,
   getArchiveValidator,
-  POST_SCHEMA_VERSION,
   type DocumentRecord,
 } from "./database/documents";
 
@@ -363,12 +362,7 @@ async function renderPage(
       const postsJson = JSON.stringify(posts);
       content = content
         .replace("{{archive_posts}}", () => cardsHtml)
-        .replace("{{archive_posts_json}}", () => postsJson)
-        .replace("{{archive_etag}}", () => escapeHtml(archiveValidator))
-        .replace(
-          "{{post_schema_version}}",
-          () => String(POST_SCHEMA_VERSION),
-        );
+        .replace("{{archive_posts_json}}", () => postsJson);
     }
 
     const pageStylesheetPath =
