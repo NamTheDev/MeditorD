@@ -58,8 +58,7 @@ if (initialPostsEl) {
     postsData = JSON.parse(initialPostsEl.textContent || "[]");
   } catch {}
 }
-const MARKDOWN_IT_URL =
-  "https://cdn.jsdelivr.net/npm/markdown-it@14.1.0/dist/markdown-it.min.js";
+const MARKDOWN_IT_URL = "/vendor/markdown-it.js?v=15.0.2";
 let markdownPromise;
 
 function getMarkdown() {
