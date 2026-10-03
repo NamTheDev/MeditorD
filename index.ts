@@ -46,6 +46,59 @@ const server = Bun.serve({
       return Response.redirect("/home.html", 302);
     }
 
+    if (path === "/vendor/markdown-it.js") {
+      const vendorVersion = "15.0.2";
+      const vendorAsset = Bun.file(
+        join(
+          process.cwd(),
+          "node_modules",
+          "markdown-it",
+          "dist",
+          "browser",
+          "markdown-it.umd.min.js",
+        ),
+      );
+
+      if (await vendorAsset.exists()) {
+        const cacheControl =
+          url.searchParams.get("v") === vendorVersion
+            ? "public, max-age=31536000, immutable"
+            : "no-cache";
+        const etag = `W/"markdown-it-${vendorVersion}"`;
+        const headers = new Headers({
+          "Cache-Control": cacheControl,
+          "Content-Type": "application/javascript; charset=utf-8",
+          ETag: etag,
+          Vary: "Accept-Encoding",
+        });
+
+        if (
+          req.headers
+            .get("if-none-match")
+            ?.split(",")
+            .map((value) => value.trim().replace(/^W\//, ""))
+            .includes(etag.replace(/^W\//, ""))
+        ) {
+          return new Response(null, { status: 304, headers });
+        }
+
+        if (acceptsGzip(req.headers.get("accept-encoding"))) {
+          const cacheKey = `vendor:markdown-it:${vendorVersion}`;
+          let compressed = compressedStaticAssetCache.get(cacheKey);
+          if (!compressed) {
+            compressed = new Uint8Array(
+              gzipSync(new Uint8Array(await vendorAsset.arrayBuffer())),
+            );
+            compressedStaticAssetCache.set(cacheKey, compressed);
+          }
+          headers.set("Content-Encoding", "gzip");
+          return new Response(compressed, { headers });
+        }
+
+        return new Response(vendorAsset, { headers });
+      }
+    }
+
     const relativePath = path.replace(/^\/+/, "");
 
     if (!path.endsWith(".html")) {
