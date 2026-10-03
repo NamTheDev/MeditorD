@@ -1,13 +1,13 @@
 import { createHash } from "node:crypto";
 import { mkdir } from "node:fs/promises";
 import { join, posix } from "node:path";
-import { gzipSync, gunzipSync } from "node:zlib";
+import { gunzipSync } from "node:zlib";
 import { Database } from "bun:sqlite";
 
 const DB_DIRECTORY = join(process.cwd(), "database");
 const DB_PATH = join(DB_DIRECTORY, "meditord.sqlite");
 
-export const POST_SCHEMA_VERSION = 2;
+export const POST_SCHEMA_VERSION = 3;
 
 await mkdir(DB_DIRECTORY, { recursive: true });
 
@@ -31,6 +31,7 @@ database.run(`
     media_name TEXT,
     media_type TEXT,
     media_hash TEXT,
+    media_storage TEXT NOT NULL DEFAULT 'identity',
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
   )
@@ -55,23 +56,51 @@ if (
   database.run("ALTER TABLE documents ADD COLUMN media_hash TEXT");
 }
 
-const mediaRowsMissingHash = database
-  .query<{ title: string; media: Uint8Array }, []>(
-    "SELECT title, media FROM documents WHERE media IS NOT NULL AND media_hash IS NULL",
+if (
+  !database
+    .query<{ name: string }, []>("PRAGMA table_info(documents)")
+    .all()
+    .some((column) => column.name === "media_storage")
+) {
+  database.run(
+    "ALTER TABLE documents ADD COLUMN media_storage TEXT NOT NULL DEFAULT 'gzip'",
+  );
+}
+
+const mediaRowsToNormalize = database
+  .query<
+    {
+      title: string;
+      media: Uint8Array;
+      media_hash: string | null;
+      media_storage: string;
+    },
+    []
+  >(
+    `SELECT title, media, media_hash, media_storage
+     FROM documents
+     WHERE media IS NOT NULL
+       AND (media_hash IS NULL OR media_storage != 'identity')`,
   )
   .all();
 
-if (mediaRowsMissingHash.length) {
-  const updateMediaHash = database.query(
-    "UPDATE documents SET media_hash = ? WHERE title = ?",
+if (mediaRowsToNormalize.length) {
+  const updateMediaStorage = database.query(
+    `UPDATE documents
+     SET media = ?, media_hash = ?, media_storage = 'identity'
+     WHERE title = ?`,
   );
-  const backfillMediaHashes = database.transaction(() => {
-    for (const row of mediaRowsMissingHash) {
-      const mediaHash = createHash("sha256").update(row.media).digest("hex");
-      updateMediaHash.run(mediaHash, row.title);
+  const normalizeMediaStorage = database.transaction(() => {
+    for (const row of mediaRowsToNormalize) {
+      const rawMedia =
+        row.media_storage === "identity"
+          ? row.media
+          : new Uint8Array(gunzipSync(row.media));
+      const mediaHash = createHash("sha256").update(rawMedia).digest("hex");
+      updateMediaStorage.run(rawMedia, mediaHash, row.title);
     }
   });
-  backfillMediaHashes();
+  normalizeMediaStorage();
 }
 
 database.run(`
@@ -354,16 +383,20 @@ export function getDocumentMedia(
         media_name: string | null;
         media_type: string | null;
         media_hash: string | null;
+        media_storage: string;
       },
       [string]
     >(
-      "SELECT media, media_name, media_type, media_hash FROM documents WHERE title = ? AND is_directory = 0",
+      "SELECT media, media_name, media_type, media_hash, media_storage FROM documents WHERE title = ? AND is_directory = 0",
     )
     .get(normalizedTitle);
 
   if (!row?.media || !row.media_type) return null;
 
-  const data = new Uint8Array(gunzipSync(row.media));
+  const data =
+    row.media_storage === "identity"
+      ? row.media
+      : new Uint8Array(gunzipSync(row.media));
   if (row.media_hash) cacheMedia(row.media_hash, data);
 
   return {
@@ -384,18 +417,18 @@ export async function saveDocument(
   const mediaBytes = media
     ? new Uint8Array(await media.arrayBuffer())
     : null;
-  const mediaData = mediaBytes ? gzipSync(mediaBytes) : null;
-  const mediaHash = mediaData
-    ? createHash("sha256").update(mediaData).digest("hex")
+  const mediaData = mediaBytes;
+  const mediaHash = mediaBytes
+    ? createHash("sha256").update(mediaBytes).digest("hex")
     : null;
 
   database
     .query(
       `INSERT INTO documents (
          title, is_directory, username, content, url,
-         media, media_name, media_type, media_hash
+         media, media_name, media_type, media_hash, media_storage
        )
-       VALUES (?, 0, ?, ?, ?, ?, ?, ?, ?)
+       VALUES (?, 0, ?, ?, ?, ?, ?, ?, ?, 'identity')
        ON CONFLICT(title) DO UPDATE SET
          username = excluded.username,
          content = excluded.content,
@@ -404,6 +437,7 @@ export async function saveDocument(
          media_name = excluded.media_name,
          media_type = excluded.media_type,
          media_hash = excluded.media_hash,
+         media_storage = excluded.media_storage,
          updated_at = CURRENT_TIMESTAMP`,
     )
     .run(
@@ -437,11 +471,11 @@ export async function updateDocument(
   const mediaBytes = media
     ? new Uint8Array(await media.arrayBuffer())
     : null;
-  const mediaData = mediaBytes ? gzipSync(mediaBytes) : null;
+  const mediaData = mediaBytes;
   const mediaName = media?.name ?? null;
   const mediaType = media?.type || null;
-  const mediaHash = mediaData
-    ? createHash("sha256").update(mediaData).digest("hex")
+  const mediaHash = mediaBytes
+    ? createHash("sha256").update(mediaBytes).digest("hex")
     : null;
 
   const result = database
@@ -452,6 +486,11 @@ export async function updateDocument(
         media_name = CASE WHEN ? THEN NULL WHEN ? THEN ? ELSE media_name END,
         media_type = CASE WHEN ? THEN NULL WHEN ? THEN ? ELSE media_type END,
         media_hash = CASE WHEN ? THEN NULL WHEN ? THEN ? ELSE media_hash END,
+        media_storage = CASE
+          WHEN ? THEN 'identity'
+          WHEN ? THEN 'identity'
+          ELSE media_storage
+        END,
         updated_at = CURRENT_TIMESTAMP
        WHERE title = ? AND is_directory = 0`,
     )
@@ -473,6 +512,8 @@ export async function updateDocument(
       removeMedia ? 1 : 0,
       media ? 1 : 0,
       mediaHash,
+      removeMedia ? 1 : 0,
+      media ? 1 : 0,
       normalizedOldTitle,
     );
 
