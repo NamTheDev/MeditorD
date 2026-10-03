@@ -80,4 +80,6 @@
 - Migrated uploaded media from gzip-at-rest to raw SQLite BLOBs, retained content fingerprints, added a bounded in-memory media cache, and implemented byte-range responses for faster image/video delivery and seeking.
 - Reduced initial browser work by prioritizing only visible archive media, lowering offscreen image priority, decoding images asynchronously, removing redundant archive refresh/render passes, self-hosting and lazy-loading markdown-it, deferring noncritical scripts, trimming unused fonts/scripts, and batching database-page records with lazy full-record loading.
 - Validated the completed performance sweep on Bun 1.4.2 and TypeScript 7.0.2 with a clean compiler check, whitespace check across the optimization range, and live archive/database HTTP smoke tests.
+- Added a build-versioned service worker that serves cached app pages immediately on repeat navigation, revalidates them in the background, caches fingerprinted UI/media resources, supports offline page availability, and invalidates dynamic caches after successful API mutations.
+- Reduced first-paint and media startup work by loading web fonts non-blockingly with optional swapping, preloading the first likely visible archive image from the document head, and removing the redundant client-side media configuration scan.
 
