@@ -76,9 +76,6 @@
     --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.45);
     --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.65);
 
-    --transition-fast: 0.15s ease;
-    --transition-normal: 0.2s ease;
-
     --unsaved-dot-unselected: var(--ctp-text);
     --unsaved-dot-selected: var(--ctp-base);
 
