@@ -41,7 +41,7 @@ For more information about AI-assisted design and development discussions, check
 
 MeditorD's root MIT license applies to original MeditorD material only. Third-party software, design references, fonts, services, and assets keep their own licenses and terms.
 
-Licensing notes for Catppuccin, the Windows 95/98 design reference, markdown-it, Anime.js, Google Fonts, Canva-related files, and project media are documented in [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).
+Licensing notes for Catppuccin, the Windows 95/98 design reference, markdown-it, Google Fonts, Canva-related files, and project media are documented in [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).
 
 ## Tech Stack
 
@@ -56,4 +56,3 @@ The following technologies are used in this project:
 - **Gzip compression** — Uploaded image and video files are compressed before being stored as SQLite BLOBs.
 - **Bun and Node.js standard APIs** — Filesystem, path, and zlib utilities support static file serving and media storage.
 - **markdown-it** — Renders Markdown post descriptions in the archive and editor preview.
-- **Anime.js** — Animates archive posts into view after their media is ready, with reduced-motion and native-browser fallbacks.
