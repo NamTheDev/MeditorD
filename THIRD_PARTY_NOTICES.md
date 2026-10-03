@@ -38,7 +38,7 @@ MeditorD loads Anime.js 4.5.0 from jsDelivr for archive post entrance animations
 
 - Upstream: https://github.com/juliangarnier/anime
 - License: MIT
-- Copyright: Copyright (c) 2010-2026 Julian Garnier
+- Copyright: Julian Garnier
 
 Anime.js remains subject to its upstream MIT license and copyright notice.
 
