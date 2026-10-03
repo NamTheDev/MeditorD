@@ -51,38 +51,44 @@ function generateMochaGraphic(type) {
   }
 }
 
-function getPostTimestamp(post) {
-  const value = post?.createdAt || post?.created_at || "";
-  const normalizedValue =
-    typeof value === "string" && value.includes(" ")
-      ? value.replace(" ", "T") + "Z"
-      : value;
-  const timestamp = Date.parse(normalizedValue);
-  return Number.isNaN(timestamp) ? 0 : timestamp;
-}
-
-function sortPostsNewestFirst(posts) {
-  return [...posts].sort((left, right) => {
-    const dateOrder = getPostTimestamp(right) - getPostTimestamp(left);
-    if (dateOrder !== 0) return dateOrder;
-    return String(left.title || "").localeCompare(String(right.title || ""));
-  });
-}
-
 let postsData = [];
 const initialPostsEl = document.getElementById("initialPosts");
 if (initialPostsEl) {
   try {
-    postsData = sortPostsNewestFirst(
-      JSON.parse(initialPostsEl.textContent || "[]"),
-    );
+    postsData = JSON.parse(initialPostsEl.textContent || "[]");
   } catch {}
 }
-const markdown = window.markdownit({
-  html: false,
-  linkify: true,
-  typographer: true,
-});
+const MARKDOWN_IT_URL =
+  "https://cdn.jsdelivr.net/npm/markdown-it@14.1.0/dist/markdown-it.min.js";
+let markdownPromise;
+
+function getMarkdown() {
+  if (markdownPromise) return markdownPromise;
+
+  markdownPromise = new Promise((resolve, reject) => {
+    const createInstance = () =>
+      window.markdownit({
+        html: false,
+        linkify: true,
+        typographer: true,
+      });
+
+    if (typeof window.markdownit === "function") {
+      resolve(createInstance());
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.src = MARKDOWN_IT_URL;
+    script.async = true;
+    script.onload = () => resolve(createInstance());
+    script.onerror = () =>
+      reject(new Error("Markdown renderer could not be loaded."));
+    document.head.append(script);
+  });
+
+  return markdownPromise;
+}
 
 function formatPostDate(value) {
   if (!value) return "";
@@ -126,38 +132,6 @@ function getYouTubeThumbnailUrl(value) {
   if (!embedUrl) return null;
   const videoId = embedUrl.split("/").pop();
   return videoId ? `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg` : null;
-}
-
-function stripMarkdownForPlainText(value) {
-  return (value || "")
-    .replace(/!\[[^\]]*\]\([^)]*\)/g, "")
-    .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")
-    .replace(/[#>*_`~\-]+/g, " ")
-    .replace(/\r?\n+/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-}
-
-function buildCollapsedDescription(content) {
-  const source = content || "_No description._";
-  const plainText = stripMarkdownForPlainText(source);
-  const words = plainText.split(/\s+/).filter(Boolean);
-
-  if (words.length <= 200) {
-    return markdown.render(source);
-  }
-
-  const excerpt = words.slice(0, 200).join(" ");
-  return `<p>${escapeHtml(excerpt)} … <button type="button" class="read-more-toggle" data-action="toggle-description">more</button></p>`;
-}
-
-function escapeHtml(value) {
-  return String(value)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/\"/g, "&quot;")
-    .replace(/'/g, "&#039;");
 }
 
 function getDownloadActions(post) {
@@ -208,9 +182,7 @@ function setMediaPriority(element, index) {
     element.loading = "lazy";
   }
 
-  if (index === 0) {
-    element.fetchPriority = "high";
-  }
+  element.fetchPriority = index === 0 ? "high" : index >= 3 ? "low" : "auto";
 }
 
 function createUploadedMedia(post, index) {
@@ -236,11 +208,11 @@ function createUploadedMedia(post, index) {
 }
 
 function upgradeInitialMedia() {
+  const cards = Array.from(document.querySelectorAll(".gallery-card"));
+
   postsData.forEach((post, index) => {
-    const card = Array.from(
-      document.querySelectorAll(".gallery-card"),
-    ).find((entry) => entry.dataset.title === post.title);
-    if (!card) return;
+    const card = cards[index];
+    if (!card || card.dataset.title !== post.title) return;
 
     const mediaContainer = card.querySelector(".gallery-media");
     if (!mediaContainer) return;
@@ -249,6 +221,9 @@ function upgradeInitialMedia() {
       const current = mediaContainer.querySelector("img");
       if (current) {
         current.replaceWith(createUploadedMedia(post, index));
+      } else {
+        const video = mediaContainer.querySelector("video");
+        if (video) video.preload = "metadata";
       }
       return;
     }
@@ -256,75 +231,6 @@ function upgradeInitialMedia() {
     const image = mediaContainer.querySelector("img");
     if (image) setMediaPriority(image, index);
   });
-
-}
-
-function renderPosts() {
-  const container = document.getElementById("postsContainer");
-  container.replaceChildren();
-
-  postsData.forEach((post, index) => {
-    const card = document.createElement("article");
-    card.className = "gallery-card raised";
-    card.dataset.title = post.title;
-
-    const actions = document.createElement("div");
-    actions.className = "card-actions";
-    const menuButton = document.createElement("button");
-    menuButton.type = "button";
-    menuButton.className = "card-menu-button";
-    menuButton.setAttribute("aria-label", `Open actions for ${post.title}`);
-    menuButton.textContent = "⋯";
-    menuButton.dataset.action = "toggle-menu";
-    const menu = document.createElement("div");
-    menu.className = "card-menu hidden";
-    menu.setAttribute("role", "menu");
-    menu.innerHTML = `<button type="button" data-action="edit">Edit</button>
-      ${getDownloadActions(post)}
-      <button type="button" data-action="delete">Delete</button>`;
-    actions.append(menuButton, menu);
-    card.append(actions);
-
-    const youtubeThumbnailUrl = getYouTubeThumbnailUrl(post.url);
-    if (youtubeThumbnailUrl) {
-      const media = document.createElement("div");
-      media.className = "gallery-media thin-sunken";
-      const thumbnail = document.createElement("img");
-      thumbnail.src = youtubeThumbnailUrl;
-      thumbnail.alt = `YouTube thumbnail for ${post.title}`;
-      setMediaPriority(thumbnail, index);
-      media.append(thumbnail);
-      media.classList.add("embed-thumbnail", "youtube-thumbnail");
-      card.append(media);
-    } else if (post.hasMedia) {
-      const media = document.createElement("div");
-      media.className = "gallery-media thin-sunken";
-      media.append(createUploadedMedia(post, index));
-      card.append(media);
-    }
-
-    const info = document.createElement("div");
-    info.className = "card-info";
-    const title = document.createElement("div");
-    title.className = "card-title";
-    title.textContent = post.title;
-    const meta = document.createElement("div");
-    meta.className = "card-meta";
-    const username = document.createElement("span");
-    username.textContent = post.username ? `@${post.username}` : "";
-    const dateAdded = document.createElement("span");
-    dateAdded.className = "card-date";
-    dateAdded.textContent = formatPostDate(post.createdAt || post.created_at);
-    meta.append(username, dateAdded);
-    const excerpt = document.createElement("div");
-    excerpt.className = "card-description";
-    excerpt.dataset.title = post.title;
-    excerpt.innerHTML = buildCollapsedDescription(post.content || "");
-    info.append(title, excerpt, meta);
-    card.append(info);
-    container.append(card);
-  });
-
 }
 
 function historyBack() {
@@ -343,10 +249,17 @@ function openPostModal(post) {
   body.replaceChildren();
   const description = document.createElement("div");
   description.className = "modal-post-description";
-  description.innerHTML = markdown.render(
-    post.content || "_This post has no description._",
-  );
+  description.textContent = post.content || "This post has no description.";
   body.append(description);
+
+  void getMarkdown()
+    .then((markdown) => {
+      if (!description.isConnected) return;
+      description.innerHTML = markdown.render(
+        post.content || "_This post has no description._",
+      );
+    })
+    .catch(() => {});
   const youtubeEmbedUrl = getYouTubeEmbedUrl(post.url);
   if (youtubeEmbedUrl) {
     const embed = document.createElement("iframe");
@@ -419,28 +332,47 @@ function closeAllMenus() {
   });
 }
 
-function toggleDescription(card, description) {
-  const post = postsData.find((p) => p.title === card.dataset.title);
-  if (!post) return;
-
-  const plainText = stripMarkdownForPlainText(post.content || "");
-  const words = plainText.split(/\s+/).filter(Boolean);
-  if (words.length <= 200) return;
-
-  if (description.dataset.expanded === "true") {
-    description.dataset.expanded = "false";
-    description.innerHTML = buildCollapsedDescription(post.content || "");
-    return;
-  }
-
-  description.dataset.expanded = "true";
-  description.innerHTML = markdown.render(post.content || "_No description._");
+function appendLessButton(description) {
   const less = document.createElement("button");
   less.type = "button";
   less.className = "read-more-toggle";
   less.dataset.action = "toggle-description";
   less.textContent = "less";
   description.append(less);
+}
+
+function toggleDescription(card, description) {
+  const post = postsData.find((p) => p.title === card.dataset.title);
+  if (!post) return;
+
+  if (description.dataset.expanded === "true") {
+    description.dataset.expanded = "false";
+    if (description.dataset.collapsedHtml) {
+      description.innerHTML = description.dataset.collapsedHtml;
+    }
+    return;
+  }
+
+  description.dataset.collapsedHtml ||= description.innerHTML;
+  description.dataset.expanded = "true";
+  description.textContent = post.content || "No description.";
+  appendLessButton(description);
+
+  void getMarkdown()
+    .then((markdown) => {
+      if (
+        !description.isConnected ||
+        description.dataset.expanded !== "true"
+      ) {
+        return;
+      }
+
+      description.innerHTML = markdown.render(
+        post.content || "_No description._",
+      );
+      appendLessButton(description);
+    })
+    .catch(() => {});
 }
 
 function exportMarkdown(post) {
@@ -539,16 +471,25 @@ function toggleDownloadMenu(button) {
   }
 }
 
-async function deletePost(post) {
+async function deletePost(post, card) {
   const confirmed = await window.showAppConfirm(`Delete "${post.title}"?`, {
     confirmLabel: "Delete",
     title: "Delete post",
   });
   if (!confirmed) return;
+
   try {
-    await window.database.deleteDocument(post.title);
+    const response = await fetch(
+      `/api/documents/${encodeURIComponent(post.title)}`,
+      { method: "DELETE" },
+    );
+    const body = await response.json().catch(() => null);
+    if (!response.ok) {
+      throw new Error(body?.error || `Delete failed (${response.status}).`);
+    }
+
     postsData = postsData.filter((entry) => entry.title !== post.title);
-    renderPosts();
+    card.remove();
   } catch (error) {
     await window.showAppAlert(error.message || "Delete failed.");
   }
@@ -601,7 +542,7 @@ postsContainer.addEventListener("click", async (event) => {
 
     if (action === "delete") {
       closeAllMenus();
-      await deletePost(post);
+      await deletePost(post, card);
       return;
     }
     return;
@@ -629,9 +570,5 @@ document.addEventListener("click", (event) => {
   if (!event.target.closest(".card-actions")) closeAllMenus();
 });
 
-if (!postsContainer.children.length && postsData.length > 0) {
-  renderPosts();
-} else {
-  upgradeInitialMedia();
-}
+upgradeInitialMedia();
 
