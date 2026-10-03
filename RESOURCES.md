@@ -53,6 +53,6 @@ The following technologies are used in this project:
 - **SQLite** — Local document storage through Bun's built-in `bun:sqlite` driver.
 - **HTML, CSS, and browser JavaScript** — Framework-free frontend pages, styling, editor behavior, and API client.
 - **HTTP/JSON API** — Document, folder, and media operations exposed under `/api`.
-- **Gzip compression** — Uploaded image and video files are compressed before being stored as SQLite BLOBs.
+- **SQLite media caching** — Uploaded image and video files are stored as raw SQLite BLOBs with content fingerprints, immutable browser caching, RAM reuse, and byte-range delivery.
 - **Bun and Node.js standard APIs** — Filesystem, path, and zlib utilities support static file serving and media storage.
 - **markdown-it** — Renders Markdown post descriptions in the archive and editor preview.
