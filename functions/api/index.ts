@@ -69,6 +69,15 @@ export async function handleApi(
 
   try {
     if (endpoint === "/documents" && method === "GET") {
+      if (url.searchParams.get("database") === "true") {
+        const items = db.getDatabaseItems();
+        return Response.json(items, {
+          headers: {
+            "Cache-Control": "no-cache",
+          },
+        });
+      }
+
       if (url.searchParams.get("full") === "true") {
         const etag = db.getArchiveValidator();
         if (ifNoneMatchMatches(req.headers.get("if-none-match"), etag)) {
