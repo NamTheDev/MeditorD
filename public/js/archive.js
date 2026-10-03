@@ -70,64 +70,14 @@ function sortPostsNewestFirst(posts) {
 }
 
 let postsData = [];
-const CACHE_KEY = "meditord_archive";
 const initialPostsEl = document.getElementById("initialPosts");
-const POST_SCHEMA_VERSION =
-  Number.parseInt(initialPostsEl?.dataset.schemaVersion || "1", 10) || 1;
-let archiveEtag = initialPostsEl?.dataset.etag || "";
-
-function readArchiveCache() {
-  try {
-    const raw = sessionStorage.getItem(CACHE_KEY);
-    if (!raw) return null;
-    const cached = JSON.parse(raw);
-    if (
-      cached?.schema !== POST_SCHEMA_VERSION ||
-      !Array.isArray(cached?.posts)
-    ) {
-      sessionStorage.removeItem(CACHE_KEY);
-      return null;
-    }
-    return cached;
-  } catch {
-    return null;
-  }
-}
-
-function writeArchiveCache() {
-  try {
-    sessionStorage.setItem(
-      CACHE_KEY,
-      JSON.stringify({
-        schema: POST_SCHEMA_VERSION,
-        etag: archiveEtag,
-        posts: postsData,
-      }),
-    );
-  } catch {}
-}
-
-function clearArchiveCache() {
-  try {
-    sessionStorage.removeItem(CACHE_KEY);
-  } catch {}
-}
-
-const cachedArchive = readArchiveCache();
-let hydratedFromServer = false;
 if (initialPostsEl) {
   try {
     postsData = sortPostsNewestFirst(
       JSON.parse(initialPostsEl.textContent || "[]"),
     );
-    hydratedFromServer = true;
   } catch {}
 }
-if (!hydratedFromServer && cachedArchive) {
-  postsData = sortPostsNewestFirst(cachedArchive.posts);
-  archiveEtag = archiveEtag || cachedArchive.etag || "";
-}
-if (hydratedFromServer) writeArchiveCache();
 const markdown = window.markdownit({
   html: false,
   linkify: true,
@@ -252,53 +202,15 @@ function getMediaUrl(post, { download = false } = {}) {
 function setMediaPriority(element, index) {
   if (!(element instanceof HTMLImageElement)) return;
 
-  if (index < 4) {
+  if (index < 3) {
     element.loading = "eager";
   } else {
     element.loading = "lazy";
   }
 
-  if (index < 2) {
+  if (index === 0) {
     element.fetchPriority = "high";
   }
-}
-
-function prepareMediaReveal(element) {
-  if (
-    !(element instanceof HTMLImageElement) &&
-    !(element instanceof HTMLVideoElement)
-  ) {
-    return;
-  }
-  if (element.dataset.mediaRevealBound === "true") return;
-  element.dataset.mediaRevealBound = "true";
-
-  const isReady =
-    element instanceof HTMLImageElement
-      ? element.complete
-      : element.readyState >= 1;
-  if (isReady) return;
-
-  const container = element.closest(".gallery-media");
-  container?.classList.add("media-loading");
-  element.classList.add("media-pending");
-
-  const finish = () => {
-    container?.classList.remove("media-loading");
-    element.classList.remove("media-pending");
-    element.classList.add("media-ready");
-  };
-
-  const readyEvent =
-    element instanceof HTMLVideoElement ? "loadedmetadata" : "load";
-  element.addEventListener(readyEvent, finish, { once: true });
-  element.addEventListener("error", finish, { once: true });
-}
-
-function prepareMediaReveals(container = document) {
-  container
-    .querySelectorAll(".gallery-media img, .gallery-media video")
-    .forEach((element) => prepareMediaReveal(element));
 }
 
 function createUploadedMedia(post, index) {
@@ -308,7 +220,7 @@ function createUploadedMedia(post, index) {
     const video = document.createElement("video");
     video.className = "gallery-media-element";
     video.src = source;
-    video.preload = index < 2 ? "auto" : "metadata";
+    video.preload = "metadata";
     video.muted = true;
     video.playsInline = true;
     video.setAttribute("aria-label", post.title);
@@ -345,7 +257,6 @@ function upgradeInitialMedia() {
     if (image) setMediaPriority(image, index);
   });
 
-  prepareMediaReveals(document.getElementById("postsContainer"));
 }
 
 function renderPosts() {
@@ -414,7 +325,6 @@ function renderPosts() {
     container.append(card);
   });
 
-  prepareMediaReveals(container);
 }
 
 function historyBack() {
@@ -492,39 +402,6 @@ function stopModalMedia(container) {
 
 function closeModalOnBg(event) {
   if (event.target.id === "postModal") closeModal();
-}
-
-async function loadPosts() {
-  try {
-    const headers = {};
-    if (archiveEtag) headers["If-None-Match"] = archiveEtag;
-
-    const response = await fetch("/api/documents?full=true", {
-      headers,
-      cache: "no-cache",
-    });
-    if (response.status === 304) {
-      writeArchiveCache();
-      return;
-    }
-    if (!response.ok) throw new Error("Failed to load posts");
-
-    const freshPosts = sortPostsNewestFirst(await response.json());
-    const freshKey = JSON.stringify(freshPosts);
-    const currentKey = JSON.stringify(postsData);
-    archiveEtag = response.headers.get("etag") || archiveEtag;
-
-    if (freshKey !== currentKey) {
-      postsData = freshPosts;
-      renderPosts();
-    }
-    writeArchiveCache();
-  } catch (error) {
-    if (!postsData.length) {
-      const container = document.getElementById("postsContainer");
-      container.textContent = error.message;
-    }
-  }
 }
 
 document.getElementById("backButton").addEventListener("click", historyBack);
@@ -671,8 +548,6 @@ async function deletePost(post) {
   try {
     await window.database.deleteDocument(post.title);
     postsData = postsData.filter((entry) => entry.title !== post.title);
-    archiveEtag = "";
-    clearArchiveCache();
     renderPosts();
   } catch (error) {
     await window.showAppAlert(error.message || "Delete failed.");
@@ -760,4 +635,3 @@ if (!postsContainer.children.length && postsData.length > 0) {
   upgradeInitialMedia();
 }
 
-loadPosts();
