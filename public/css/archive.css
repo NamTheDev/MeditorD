@@ -118,6 +118,16 @@ body {
     cursor: pointer;
 }
 
+.archive-motion .gallery-card:not(.post-revealed) {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.archive-motion .gallery-card.post-revealed {
+    opacity: 1;
+    pointer-events: auto;
+}
+
 .gallery-card:has(.card-menu:not(.hidden)) {
     z-index: 100;
 }
@@ -637,6 +647,16 @@ select:focus {
     .modal-media {
         max-height: 46dvh;
         padding: 8px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .archive-motion .gallery-card,
+    .archive-motion .gallery-card:not(.post-revealed),
+    .archive-motion .gallery-card.post-revealed {
+        opacity: 1;
+        transform: none;
+        pointer-events: auto;
     }
 }
 
