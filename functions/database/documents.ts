@@ -204,6 +204,7 @@ export interface MediaMetadataRecord {
   name: string | null;
   type: string;
   hash: string;
+  size: number;
 }
 
 const MEDIA_CACHE_MAX_BYTES = 64 * 1024 * 1024;
@@ -392,18 +393,28 @@ export function getDocumentMediaMetadata(
         media_name: string | null;
         media_type: string | null;
         media_hash: string | null;
+        media_size: number | null;
       },
       [string]
     >(
-      "SELECT media_name, media_type, media_hash FROM documents WHERE title = ? AND is_directory = 0",
+      "SELECT media_name, media_type, media_hash, length(media) AS media_size FROM documents WHERE title = ? AND is_directory = 0",
     )
     .get(normalizedTitle);
 
-  if (!row?.media_type || !row.media_hash) return null;
+  if (
+    !row?.media_type ||
+    !row.media_hash ||
+    row.media_size === null ||
+    row.media_size < 0
+  ) {
+    return null;
+  }
+
   return {
     name: row.media_name,
     type: row.media_type,
     hash: row.media_hash,
+    size: Number(row.media_size),
   };
 }
 
@@ -451,6 +462,48 @@ export function getDocumentMedia(
     name: row.media_name,
     type: row.media_type,
   };
+}
+
+export function getDocumentMediaRange(
+  title: string,
+  metadata: MediaMetadataRecord,
+  start: number,
+  end: number,
+): Uint8Array | null {
+  if (
+    start < 0 ||
+    end < start ||
+    end >= metadata.size
+  ) {
+    return null;
+  }
+
+  const cached = getCachedMedia(metadata.hash);
+  if (cached) {
+    return cached.subarray(start, end + 1);
+  }
+
+  const normalizedTitle = normalizeTitle(title);
+  const byteLength = end - start + 1;
+  const row = database
+    .query<
+      {
+        media: Uint8Array | null;
+      },
+      [number, number, string]
+    >(
+      `SELECT substr(media, ?, ?) AS media
+       FROM documents
+       WHERE title = ?
+         AND is_directory = 0
+         AND media_storage = 'identity'`,
+    )
+    .get(start + 1, byteLength, normalizedTitle);
+
+  if (row?.media) return row.media;
+
+  const media = getDocumentMedia(title, metadata);
+  return media?.data.subarray(start, end + 1) ?? null;
 }
 
 export async function saveDocument(
