@@ -1,13 +1,34 @@
 import { join } from "path";
+import { gzipSync } from "node:zlib";
 import { PORT, HOST, ROOT } from "./config";
 import { getFile } from "./functions/file";
 import { getAssetFingerprint, renderPage } from "./functions/render";
 import { clean } from "./functions/string";
 import { handleApi } from "./functions/api";
 
+const compressedStaticAssetCache = new Map<string, Uint8Array>();
+
+function acceptsGzip(header: string | null): boolean {
+  if (!header) return false;
+
+  return header.split(",").some((entry) => {
+    const [encoding, ...params] = entry.trim().split(";");
+    if (encoding?.trim().toLowerCase() !== "gzip") return false;
+
+    const quality = params
+      .map((param) => param.trim())
+      .find((param) => param.startsWith("q="));
+    if (!quality) return true;
+
+    const value = Number.parseFloat(quality.slice(2));
+    return Number.isFinite(value) && value > 0;
+  });
+}
+
 const server = Bun.serve({
   port: PORT,
   hostname: HOST,
+  development: false,
   async fetch(req) {
     const url = new URL(req.url);
     const path = decodeURIComponent(url.pathname);
@@ -31,19 +52,18 @@ const server = Bun.serve({
       const rootAsset = Bun.file(join(process.cwd(), ROOT, relativePath));
       if (await rootAsset.exists()) {
         const extension = relativePath.split(".").pop()?.toLowerCase();
-        const isFingerprintedAsset = extension === "js" || extension === "css";
-        const fingerprint = isFingerprintedAsset
-          ? await getAssetFingerprint(`/${relativePath}`)
-          : null;
+        const isCompressibleText =
+          extension === "js" || extension === "css";
+        const fingerprint = await getAssetFingerprint(`/${relativePath}`);
         const requestedVersion = url.searchParams.get("v");
         const hasCurrentFingerprint =
           Boolean(fingerprint) && requestedVersion === fingerprint;
-        const cacheControl = isFingerprintedAsset
-          ? hasCurrentFingerprint
-            ? "public, max-age=31536000, immutable"
-            : "no-cache"
-          : "public, max-age=86400";
-        const etag = fingerprint ? `"${fingerprint}"` : null;
+        const cacheControl = hasCurrentFingerprint
+          ? "public, max-age=31536000, immutable"
+          : isCompressibleText
+            ? "no-cache"
+            : "public, max-age=86400, stale-while-revalidate=604800";
+        const etag = fingerprint ? `W/"${fingerprint}"` : null;
 
         if (
           etag &&
@@ -51,22 +71,40 @@ const server = Bun.serve({
             .get("if-none-match")
             ?.split(",")
             .map((value) => value.trim().replace(/^W\//, ""))
-            .includes(etag)
+            .includes(etag.replace(/^W\//, ""))
         ) {
-          return new Response(null, {
-            status: 304,
-            headers: {
-              ETag: etag,
-              "Cache-Control": cacheControl,
-            },
+          const headers = new Headers({
+            ETag: etag,
+            "Cache-Control": cacheControl,
           });
+          if (isCompressibleText) headers.set("Vary", "Accept-Encoding");
+          return new Response(null, { status: 304, headers });
         }
 
         const headers = new Headers({
           "Cache-Control": cacheControl,
         });
         if (etag) headers.set("ETag", etag);
+        if (rootAsset.type) headers.set("Content-Type", rootAsset.type);
 
+        if (
+          isCompressibleText &&
+          acceptsGzip(req.headers.get("accept-encoding"))
+        ) {
+          const cacheKey = `${relativePath}:${fingerprint ?? "unversioned"}`;
+          let compressed = compressedStaticAssetCache.get(cacheKey);
+          if (!compressed) {
+            compressed = new Uint8Array(
+              gzipSync(new Uint8Array(await rootAsset.arrayBuffer())),
+            );
+            compressedStaticAssetCache.set(cacheKey, compressed);
+          }
+          headers.set("Content-Encoding", "gzip");
+          headers.set("Vary", "Accept-Encoding");
+          return new Response(compressed, { headers });
+        }
+
+        if (isCompressibleText) headers.set("Vary", "Accept-Encoding");
         return new Response(rootAsset, { headers });
       }
     }
