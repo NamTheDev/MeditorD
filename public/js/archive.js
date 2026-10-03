@@ -84,7 +84,10 @@ if (prefersReducedMotion) {
 function loadAnimeMotion() {
   if (prefersReducedMotion) return Promise.resolve(null);
   if (!animeModulePromise) {
-    animeModulePromise = import(ANIMEJS_MODULE_URL).catch(() => null);
+    animeModulePromise = Promise.race([
+      import(ANIMEJS_MODULE_URL).catch(() => null),
+      new Promise((resolve) => window.setTimeout(() => resolve(null), 900)),
+    ]);
   }
   return animeModulePromise;
 }
