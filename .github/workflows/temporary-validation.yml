@@ -1,0 +1,18 @@
+name: Temporary validation
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - run: bunx tsc --noEmit --pretty false
+      - run: git diff --check "$(git rev-list --max-parents=0 HEAD)" HEAD
