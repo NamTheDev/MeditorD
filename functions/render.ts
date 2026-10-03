@@ -250,26 +250,43 @@ function getMediaUrl(post: DocumentRecord): string {
     : base;
 }
 
-function getArchivePreloadImageUrl(posts: DocumentRecord[]): string | null {
-  for (const post of posts.slice(0, 3)) {
+interface ArchivePriorityImage {
+  index: number;
+  url: string;
+}
+
+function getArchivePriorityImage(
+  posts: DocumentRecord[],
+): ArchivePriorityImage | null {
+  const visiblePosts = posts.slice(0, 3);
+  for (let index = 0; index < visiblePosts.length; index += 1) {
+    const post = visiblePosts[index];
+    if (!post) continue;
+
     const youtubeThumbnailUrl = getYouTubeThumbnailUrl(post.url);
-    if (youtubeThumbnailUrl) return youtubeThumbnailUrl;
+    if (youtubeThumbnailUrl) {
+      return { index, url: youtubeThumbnailUrl };
+    }
 
     if (post.hasMedia && !post.mediaType?.startsWith("video/")) {
-      return getMediaUrl(post);
+      return { index, url: getMediaUrl(post) };
     }
   }
 
   return null;
 }
 
-function renderCard(post: DocumentRecord, index: number): string {
+function renderCard(
+  post: DocumentRecord,
+  index: number,
+  priorityImageIndex: number,
+): string {
   const youtubeThumbnailUrl = getYouTubeThumbnailUrl(post.url);
   let mediaHtml = "";
   if (youtubeThumbnailUrl) {
     const loading = index < 3 ? "eager" : "lazy";
     const fetchPriority =
-      index === 0
+      index === priorityImageIndex
         ? ' fetchpriority="high"'
         : index >= 3
           ? ' fetchpriority="low"'
@@ -286,7 +303,7 @@ function renderCard(post: DocumentRecord, index: number): string {
     } else {
       const loading = index < 3 ? "eager" : "lazy";
       const fetchPriority =
-        index === 0
+        index === priorityImageIndex
           ? ' fetchpriority="high"'
           : index >= 3
             ? ' fetchpriority="low"'
@@ -370,13 +387,16 @@ async function renderPage(
     let pagePreloadHtml = "";
     if (isArchive && archiveValidator) {
       const posts = getAllDocuments();
-      const preloadImageUrl = getArchivePreloadImageUrl(posts);
-      if (preloadImageUrl) {
+      const priorityImage = getArchivePriorityImage(posts);
+      if (priorityImage) {
         pagePreloadHtml =
-          `<link rel="preload" as="image" href="${escapeHtml(preloadImageUrl)}" fetchpriority="high" />`;
+          `<link rel="preload" as="image" href="${escapeHtml(priorityImage.url)}" fetchpriority="high" />`;
       }
+      const priorityImageIndex = priorityImage?.index ?? -1;
       const cardsHtml = posts
-        .map((post, index) => renderCard(post, index))
+        .map((post, index) =>
+          renderCard(post, index, priorityImageIndex),
+        )
         .join("\n");
       const postsJson = JSON.stringify(posts);
       content = content
