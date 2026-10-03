@@ -89,7 +89,6 @@ meditord/
 - Bun's SQLite with `database/meditord.sqlite`.
 - Gzip-compressed SQLite BLOBs for image and video uploads.
 - markdown-it for rendering Markdown post descriptions.
-- Anime.js for archive post entrance animations after media readiness.
 - HTML, CSS, and browser JavaScript.
 - Minimal database-management table for browsing saved posts.
 - Modal editing and creation for title, username, URL, date, media, and description.
