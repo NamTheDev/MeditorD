@@ -32,16 +32,6 @@ MeditorD uses `markdown-it` as a runtime dependency.
 
 The dependency's own distributed license remains applicable to `markdown-it`.
 
-## Anime.js
-
-MeditorD loads Anime.js 4.5.0 from jsDelivr for archive post entrance animations.
-
-- Upstream: https://github.com/juliangarnier/anime
-- License: MIT
-- Copyright: Julian Garnier
-
-Anime.js remains subject to its upstream MIT license and copyright notice.
-
 ## Google Fonts
 
 MeditorD loads fonts through Google Fonts rather than vendoring font files in this repository. Each font remains subject to its own upstream font license. If fonts are later bundled or self-hosted, their applicable license files and notices must be preserved.
