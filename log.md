@@ -74,5 +74,9 @@
 - Simplified Docker deployment by removing in-container Git installation, runtime pulls, and repeated dependency installs; source updates now happen on the host and pass the native Git revision into the image as `BUILD_ID`.
 - Reverted the rejected host deployment wrapper and returned to the simpler Git-free Docker image with host-managed source updates.
 - Changed the desktop archive to deterministic newest-first row ordering, flowing each row from left to right while preserving a single newest-first column on mobile.
-- Added deterministic archive entrance motion using local CSS so posts fade in while moving upward on every device without waiting for media or external animation libraries; slow media now reserves space and fades in independently.
+- Removed archive and remaining page motion transitions so rendering no longer waits on visual effects or animation libraries.
+- Optimized HTTP delivery with fingerprinted immutable static assets, cached gzip HTML/JavaScript/CSS responses, ETag revalidation, early 304 responses, and page stylesheets discovered from the document head.
+- Tuned SQLite for read-heavy use with WAL, NORMAL synchronization, memory-backed temporary storage, a larger page cache, memory-mapped reads, an archive ordering index, and startup optimization.
+- Migrated uploaded media from gzip-at-rest to raw SQLite BLOBs, retained content fingerprints, added a bounded in-memory media cache, and implemented byte-range responses for faster image/video delivery and seeking.
+- Reduced initial browser work by prioritizing only visible archive media, lowering offscreen image priority, removing redundant archive refresh/render passes, self-hosting and lazy-loading markdown-it, trimming unused fonts/scripts, and batching database-page records with lazy full-record loading.
 
