@@ -221,7 +221,10 @@ self.addEventListener("fetch", (event) => {
   }
 
   if (
-    url.pathname.startsWith("/api/media/") &&
+    (
+      url.pathname.startsWith("/api/media/") ||
+      url.pathname.startsWith("/api/media-thumbnail/")
+    ) &&
     url.searchParams.has("v") &&
     !url.searchParams.has("download") &&
     !request.headers.has("range")
