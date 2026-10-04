@@ -255,12 +255,18 @@ async function saveCurrentDocument() {
   }
 
   try {
+    const thumbnail =
+      media?.type?.startsWith("image/") && window.mediaThumbnail
+        ? await window.mediaThumbnail.fromFile(media)
+        : null;
+
     await window.database.saveDocument(
       title,
       username,
       contentInput.value,
       url,
       media,
+      thumbnail,
     );
     showFeatureNotice(
       "Upload Complete",
