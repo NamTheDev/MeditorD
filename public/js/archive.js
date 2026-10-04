@@ -297,6 +297,122 @@ async function downloadPost(post, action) {
 }
 
 const postsContainer = document.getElementById("postsContainer");
+
+let masonryFrame = 0;
+
+function layoutMasonry() {
+  masonryFrame = 0;
+  if (!postsContainer || getComputedStyle(postsContainer).display !== "grid") {
+    return;
+  }
+
+  const styles = getComputedStyle(postsContainer);
+  const rowHeight = Number.parseFloat(styles.gridAutoRows) || 8;
+  const rowGap = Number.parseFloat(styles.rowGap) || 0;
+
+  postsContainer.querySelectorAll(".gallery-card").forEach((card) => {
+    const height = card.getBoundingClientRect().height;
+    const span = Math.max(
+      1,
+      Math.ceil((height + rowGap) / (rowHeight + rowGap)),
+    );
+    card.style.gridRowEnd = `span ${span}`;
+  });
+}
+
+function queueMasonryLayout() {
+  if (masonryFrame) return;
+  masonryFrame = requestAnimationFrame(layoutMasonry);
+}
+
+function initializeMasonry() {
+  const cards = postsContainer?.querySelectorAll(".gallery-card") ?? [];
+  queueMasonryLayout();
+
+  if ("ResizeObserver" in window) {
+    const observer = new ResizeObserver(queueMasonryLayout);
+    cards.forEach((card) => observer.observe(card));
+  } else {
+    postsContainer?.querySelectorAll("img, video").forEach((media) => {
+      media.addEventListener("load", queueMasonryLayout, { passive: true });
+      media.addEventListener("loadedmetadata", queueMasonryLayout, {
+        passive: true,
+      });
+    });
+  }
+
+  window.addEventListener("resize", queueMasonryLayout, { passive: true });
+}
+
+const thumbnailBackfills = new WeakSet();
+
+function scheduleThumbnailBackfill(image) {
+  if (
+    !image ||
+    thumbnailBackfills.has(image) ||
+    image.dataset.thumbnailBackfill !== "true"
+  ) {
+    return;
+  }
+
+  thumbnailBackfills.add(image);
+  const run = async () => {
+    if (
+      !image.isConnected ||
+      !image.complete ||
+      image.naturalWidth <= 0 ||
+      !window.mediaThumbnail
+    ) {
+      return;
+    }
+
+    const card = image.closest(".gallery-card");
+    const title = card?.dataset.title;
+    const sourceHash = image.dataset.mediaHash;
+    if (!title || !sourceHash) return;
+
+    try {
+      const thumbnail = await window.mediaThumbnail.fromImage(image);
+      if (!thumbnail) return;
+
+      const form = new FormData();
+      form.set("thumbnail", thumbnail);
+      const response = await fetch(
+        `/api/media-thumbnail/${encodeURIComponent(title)}?source=${encodeURIComponent(sourceHash)}`,
+        {
+          method: "PUT",
+          body: form,
+        },
+      );
+      if (response.ok) {
+        image.dataset.thumbnailBackfill = "false";
+      }
+    } catch {}
+  };
+
+  if ("requestIdleCallback" in window) {
+    requestIdleCallback(() => void run(), { timeout: 2500 });
+  } else {
+    window.setTimeout(() => void run(), 250);
+  }
+}
+
+function initializeThumbnailBackfill() {
+  postsContainer
+    ?.querySelectorAll('img[data-thumbnail-backfill="true"]')
+    .forEach((image) => {
+      if (image.complete && image.naturalWidth > 0) {
+        scheduleThumbnailBackfill(image);
+      } else {
+        image.addEventListener(
+          "load",
+          () => scheduleThumbnailBackfill(image),
+          { once: true, passive: true },
+        );
+      }
+    });
+}
+
 function toggleCardMenu(card) {
   const menu = card.querySelector(".card-menu");
   if (!menu) return;
@@ -424,6 +540,10 @@ document.addEventListener("keydown", (event) => {
 document.addEventListener("click", (event) => {
   if (!event.target.closest(".card-actions")) closeAllMenus();
 });
+
+initializeMasonry();
+initializeThumbnailBackfill();
+
 let archiveRefreshPending = false;
 
 function refreshArchiveFromCacheUpdate() {
