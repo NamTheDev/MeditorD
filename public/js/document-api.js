@@ -23,13 +23,14 @@ async function getDocument(title) {
   return request(`/documents/${encodeURIComponent(title)}`);
 }
 
-async function saveDocument(title, username, content, url, media) {
+async function saveDocument(title, username, content, url, media, thumbnail) {
   const form = new FormData();
   form.set("title", title);
   form.set("username", username);
   form.set("content", content);
   form.set("url", url);
   if (media) form.set("media", media);
+  if (thumbnail) form.set("thumbnail", thumbnail);
 
   return request("/documents", {
     method: "POST",
