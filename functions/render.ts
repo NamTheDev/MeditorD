@@ -250,6 +250,13 @@ function getMediaUrl(post: DocumentRecord): string {
     : base;
 }
 
+function getThumbnailUrl(post: DocumentRecord): string {
+  const base = `/api/media-thumbnail/${encodeURIComponent(post.title)}`;
+  return post.thumbnailHash
+    ? `${base}?v=${encodeURIComponent(post.thumbnailHash)}`
+    : base;
+}
+
 interface ArchivePriorityImage {
   index: number;
   url: string;
@@ -269,7 +276,10 @@ function getArchivePriorityImage(
     }
 
     if (post.hasMedia && !post.mediaType?.startsWith("video/")) {
-      return { index, url: getMediaUrl(post) };
+      return {
+        index,
+        url: post.hasThumbnail ? getThumbnailUrl(post) : getMediaUrl(post),
+      };
     }
   }
 
@@ -308,8 +318,15 @@ function renderCard(
           : index >= 3
             ? ' fetchpriority="low"'
             : "";
+      const displayUrl = post.hasThumbnail
+        ? getThumbnailUrl(post)
+        : mediaUrl;
+      const backfillAttributes =
+        !post.hasThumbnail && post.mediaHash
+          ? ` data-thumbnail-backfill="true" data-media-hash="${escapeHtml(post.mediaHash)}"`
+          : "";
       mediaHtml = `<div class="gallery-media thin-sunken">
-        <img src="${mediaUrl}" alt="" loading="${loading}" decoding="async"${fetchPriority} />
+        <img src="${displayUrl}" alt="" loading="${loading}" decoding="async" data-gallery-image="true"${backfillAttributes}${fetchPriority} />
       </div>`;
     }
   }
