@@ -109,6 +109,90 @@ export async function handleApi(
       return Response.json(doc);
     }
 
+    if (endpoint.startsWith("/media-thumbnail/")) {
+      const title = decodeURIComponent(
+        endpoint.slice("/media-thumbnail/".length),
+      );
+
+      if (method === "GET" || method === "HEAD") {
+        const metadata = db.getDocumentThumbnailMetadata(title);
+        if (!metadata) {
+          return Response.json(
+            { error: "Thumbnail not found" },
+            { status: 404, headers: { "Cache-Control": "no-store" } },
+          );
+        }
+
+        const etag = `"t${metadata.hash}"`;
+        const requestedVersion = url.searchParams.get("v");
+        const cacheControl =
+          requestedVersion === metadata.hash
+            ? "public, max-age=31536000, immutable"
+            : "no-cache";
+
+        if (ifNoneMatchMatches(req.headers.get("if-none-match"), etag)) {
+          return new Response(null, {
+            status: 304,
+            headers: { ETag: etag, "Cache-Control": cacheControl },
+          });
+        }
+
+        const headers = new Headers({
+          "Content-Type": metadata.type,
+          "Content-Length": String(metadata.size),
+          ETag: etag,
+          "Cache-Control": cacheControl,
+        });
+
+        if (method === "HEAD") return new Response(null, { headers });
+
+        const thumbnail = db.getDocumentThumbnail(title, metadata);
+        if (!thumbnail) {
+          return Response.json(
+            { error: "Thumbnail not found" },
+            { status: 404, headers: { "Cache-Control": "no-store" } },
+          );
+        }
+        return new Response(thumbnail, { headers });
+      }
+
+      if (method === "PUT") {
+        const sourceHash = url.searchParams.get("source") ?? "";
+        if (!sourceHash) {
+          return Response.json(
+            { error: "Source media hash is required" },
+            { status: 400 },
+          );
+        }
+
+        const form = await req.formData();
+        const uploadedThumbnail = form.get("thumbnail");
+        if (
+          !(uploadedThumbnail instanceof File) ||
+          uploadedThumbnail.size <= 0 ||
+          !uploadedThumbnail.type.startsWith("image/")
+        ) {
+          return Response.json(
+            { error: "A valid image thumbnail is required" },
+            { status: 415 },
+          );
+        }
+
+        const saved = await db.saveDocumentThumbnail(
+          title,
+          uploadedThumbnail,
+          sourceHash,
+        );
+        if (!saved) {
+          return Response.json(
+            { error: "Post or matching source media not found" },
+            { status: 404 },
+          );
+        }
+        return Response.json({ success: true });
+      }
+    }
+
     if (endpoint.startsWith("/media/") && method === "GET") {
       const title = decodeURIComponent(endpoint.slice("/media/".length));
       const metadata = db.getDocumentMediaMetadata(title);
@@ -193,6 +277,7 @@ export async function handleApi(
       let content = "";
       let url = "";
       let media: File | undefined;
+      let thumbnail: File | undefined;
       let isFolder = false;
 
       if (contentType.includes("multipart/form-data")) {
@@ -214,6 +299,14 @@ export async function handleApi(
             );
           }
           media = uploadedMedia;
+        }
+        const uploadedThumbnail = form.get("thumbnail");
+        if (
+          uploadedThumbnail instanceof File &&
+          uploadedThumbnail.size > 0 &&
+          uploadedThumbnail.type.startsWith("image/")
+        ) {
+          thumbnail = uploadedThumbnail;
         }
       } else {
         const body = (await req.json()) as {
@@ -256,7 +349,14 @@ export async function handleApi(
         );
       }
 
-      const saved = await db.saveDocument(title, username, content, url, media);
+      const saved = await db.saveDocument(
+        title,
+        username,
+        content,
+        url,
+        media,
+        thumbnail,
+      );
       return Response.json(saved, { status: 201 });
     }
 
@@ -297,6 +397,13 @@ export async function handleApi(
         uploadedMedia instanceof File && uploadedMedia.size > 0
           ? uploadedMedia
           : undefined;
+      const uploadedThumbnail = form.get("thumbnail");
+      const thumbnail =
+        uploadedThumbnail instanceof File &&
+        uploadedThumbnail.size > 0 &&
+        uploadedThumbnail.type.startsWith("image/")
+          ? uploadedThumbnail
+          : undefined;
       if (
         media &&
         !media.type.startsWith("image/") &&
@@ -332,6 +439,7 @@ export async function handleApi(
         url,
         form.get("createdAt")?.toString() ?? "",
         media,
+        thumbnail,
         form.get("removeMedia") === "true",
       );
       if (!updated) {
