@@ -7,7 +7,7 @@ import { Database } from "bun:sqlite";
 const DB_DIRECTORY = join(process.cwd(), "database");
 const DB_PATH = join(DB_DIRECTORY, "meditord.sqlite");
 
-export const POST_SCHEMA_VERSION = 3;
+export const POST_SCHEMA_VERSION = 4;
 
 await mkdir(DB_DIRECTORY, { recursive: true });
 
@@ -31,7 +31,12 @@ database.run(`
     media_name TEXT,
     media_type TEXT,
     media_hash TEXT,
+    media_size INTEGER,
     media_storage TEXT NOT NULL DEFAULT 'identity',
+    media_thumbnail BLOB,
+    media_thumbnail_type TEXT,
+    media_thumbnail_hash TEXT,
+    media_thumbnail_size INTEGER,
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
   )
@@ -67,6 +72,32 @@ if (
   );
 }
 
+const documentColumns = new Set(
+  database
+    .query<{ name: string }, []>("PRAGMA table_info(documents)")
+    .all()
+    .map((column) => column.name),
+);
+
+for (const [column, definition] of [
+  ["media_size", "INTEGER"],
+  ["media_thumbnail", "BLOB"],
+  ["media_thumbnail_type", "TEXT"],
+  ["media_thumbnail_hash", "TEXT"],
+  ["media_thumbnail_size", "INTEGER"],
+] as const) {
+  if (!documentColumns.has(column)) {
+    database.run(`ALTER TABLE documents ADD COLUMN ${column} ${definition}`);
+  }
+}
+
+database.run(
+  `UPDATE documents
+   SET media_size = length(media)
+   WHERE media IS NOT NULL
+     AND (media_size IS NULL OR media_size < 0)`,
+);
+
 const mediaRowsToNormalize = database
   .query<
     {
@@ -87,7 +118,7 @@ const mediaRowsToNormalize = database
 if (mediaRowsToNormalize.length) {
   const updateMediaStorage = database.query(
     `UPDATE documents
-     SET media = ?, media_hash = ?, media_storage = 'identity'
+     SET media = ?, media_hash = ?, media_size = ?, media_storage = 'identity'
      WHERE title = ?`,
   );
   const normalizeMediaStorage = database.transaction(() => {
@@ -97,7 +128,7 @@ if (mediaRowsToNormalize.length) {
           ? row.media
           : new Uint8Array(gunzipSync(row.media));
       const mediaHash = createHash("sha256").update(rawMedia).digest("hex");
-      updateMediaStorage.run(rawMedia, mediaHash, row.title);
+      updateMediaStorage.run(rawMedia, mediaHash, rawMedia.byteLength, row.title);
     }
   });
   normalizeMediaStorage();
@@ -140,6 +171,7 @@ database.run(`
       OR OLD.media_name IS NOT NEW.media_name
       OR OLD.media_type IS NOT NEW.media_type
       OR OLD.media_hash IS NOT NEW.media_hash
+      OR OLD.media_thumbnail_hash IS NOT NEW.media_thumbnail_hash
       OR OLD.created_at IS NOT NEW.created_at
     )
   BEGIN
@@ -190,7 +222,10 @@ export interface DocumentRecord {
   mediaName: string | null;
   mediaType: string | null;
   mediaHash: string | null;
+  thumbnailType: string | null;
+  thumbnailHash: string | null;
   hasMedia: boolean;
+  hasThumbnail: boolean;
   created_at: string;
 }
 
@@ -202,6 +237,12 @@ export interface MediaRecord {
 
 export interface MediaMetadataRecord {
   name: string | null;
+  type: string;
+  hash: string;
+  size: number;
+}
+
+export interface ThumbnailMetadataRecord {
   type: string;
   hash: string;
   size: number;
@@ -267,6 +308,8 @@ function toDocumentRecord(row: {
   media_name: string | null;
   media_type: string | null;
   media_hash: string | null;
+  media_thumbnail_type: string | null;
+  media_thumbnail_hash: string | null;
   created_at: string;
 }): DocumentRecord {
   return {
@@ -277,7 +320,10 @@ function toDocumentRecord(row: {
     mediaName: row.media_name,
     mediaType: row.media_type,
     mediaHash: row.media_hash,
+    thumbnailType: row.media_thumbnail_type,
+    thumbnailHash: row.media_thumbnail_hash,
     hasMedia: row.media_type !== null,
+    hasThumbnail: row.media_thumbnail_hash !== null,
     created_at: row.created_at,
   };
 }
@@ -305,7 +351,7 @@ export function getArchiveValidator(): string {
 export function getAllDocuments(): DocumentRecord[] {
   const rows = database
     .query<DocumentRow, []>(
-      "SELECT title, username, content, url, media_name, media_type, media_hash, created_at FROM documents WHERE is_directory = 0 ORDER BY created_at DESC, title ASC",
+      "SELECT title, username, content, url, media_name, media_type, media_hash, media_thumbnail_type, media_thumbnail_hash, created_at FROM documents WHERE is_directory = 0 ORDER BY datetime(created_at) DESC, title ASC",
     )
     .all();
   return rows.map(toDocumentRecord);
@@ -372,11 +418,13 @@ export function getDocumentByTitle(title: string): DocumentRecord | null {
         media_name: string | null;
         media_type: string | null;
         media_hash: string | null;
+        media_thumbnail_type: string | null;
+        media_thumbnail_hash: string | null;
         created_at: string;
       },
       [string]
     >(
-      "SELECT title, username, content, url, media_name, media_type, media_hash, created_at FROM documents WHERE title = ? AND is_directory = 0",
+      "SELECT title, username, content, url, media_name, media_type, media_hash, media_thumbnail_type, media_thumbnail_hash, created_at FROM documents WHERE title = ? AND is_directory = 0",
     )
     .get(normalizedTitle);
 
@@ -397,7 +445,7 @@ export function getDocumentMediaMetadata(
       },
       [string]
     >(
-      "SELECT media_name, media_type, media_hash, length(media) AS media_size FROM documents WHERE title = ? AND is_directory = 0",
+      "SELECT media_name, media_type, media_hash, COALESCE(media_size, length(media)) AS media_size FROM documents WHERE title = ? AND is_directory = 0",
     )
     .get(normalizedTitle);
 
@@ -506,53 +554,127 @@ export function getDocumentMediaRange(
   return media?.data.subarray(start, end + 1) ?? null;
 }
 
+export function getDocumentThumbnailMetadata(
+  title: string,
+): ThumbnailMetadataRecord | null {
+  const normalizedTitle = normalizeTitle(title);
+  const row = database
+    .query<
+      {
+        media_thumbnail_type: string | null;
+        media_thumbnail_hash: string | null;
+        media_thumbnail_size: number | null;
+      },
+      [string]
+    >(
+      `SELECT media_thumbnail_type, media_thumbnail_hash,
+              COALESCE(media_thumbnail_size, length(media_thumbnail)) AS media_thumbnail_size
+       FROM documents
+       WHERE title = ? AND is_directory = 0`,
+    )
+    .get(normalizedTitle);
+
+  if (!row?.media_thumbnail_type || !row.media_thumbnail_hash ||
+      row.media_thumbnail_size === null || row.media_thumbnail_size < 0) return null;
+
+  return {
+    type: row.media_thumbnail_type,
+    hash: row.media_thumbnail_hash,
+    size: Number(row.media_thumbnail_size),
+  };
+}
+
+export function getDocumentThumbnail(
+  title: string,
+  metadata?: ThumbnailMetadataRecord,
+): Uint8Array | null {
+  if (metadata) {
+    const cached = getCachedMedia(metadata.hash);
+    if (cached) return cached;
+  }
+
+  const normalizedTitle = normalizeTitle(title);
+  const row = database
+    .query<{ media_thumbnail: Uint8Array | null; media_thumbnail_hash: string | null }, [string]>(
+      "SELECT media_thumbnail, media_thumbnail_hash FROM documents WHERE title = ? AND is_directory = 0",
+    )
+    .get(normalizedTitle);
+
+  if (!row?.media_thumbnail) return null;
+  if (row.media_thumbnail_hash) cacheMedia(row.media_thumbnail_hash, row.media_thumbnail);
+  return row.media_thumbnail;
+}
+
+export async function saveDocumentThumbnail(
+  title: string,
+  thumbnail: File,
+  expectedMediaHash: string,
+): Promise<boolean> {
+  if (!thumbnail.type.startsWith("image/")) return false;
+  const normalizedTitle = normalizeTitle(title);
+  const bytes = new Uint8Array(await thumbnail.arrayBuffer());
+  const hash = createHash("sha256").update(bytes).digest("hex");
+  const result = database
+    .query(
+      `UPDATE documents SET
+         media_thumbnail = ?, media_thumbnail_type = ?,
+         media_thumbnail_hash = ?, media_thumbnail_size = ?
+       WHERE title = ? AND is_directory = 0
+         AND media_type LIKE 'image/%' AND media_hash = ?`,
+    )
+    .run(bytes, thumbnail.type || "image/webp", hash, bytes.byteLength, normalizedTitle, expectedMediaHash);
+  if (result.changes) cacheMedia(hash, bytes);
+  return result.changes > 0;
+}
+
 export async function saveDocument(
   title: string,
   username = "",
   content = "",
   url = "",
   media?: File,
+  thumbnail?: File,
 ): Promise<DocumentRecord> {
   const normalizedTitle = normalizeTitle(title);
-  const mediaBytes = media
-    ? new Uint8Array(await media.arrayBuffer())
-    : null;
-  const mediaData = mediaBytes;
-  const mediaHash = mediaBytes
-    ? createHash("sha256").update(mediaBytes).digest("hex")
+  const mediaBytes = media ? new Uint8Array(await media.arrayBuffer()) : null;
+  const mediaHash = mediaBytes ? createHash("sha256").update(mediaBytes).digest("hex") : null;
+  const thumbnailBytes =
+    thumbnail && thumbnail.type.startsWith("image/")
+      ? new Uint8Array(await thumbnail.arrayBuffer())
+      : null;
+  const thumbnailHash = thumbnailBytes
+    ? createHash("sha256").update(thumbnailBytes).digest("hex")
     : null;
 
   database
     .query(
       `INSERT INTO documents (
          title, is_directory, username, content, url,
-         media, media_name, media_type, media_hash, media_storage
+         media, media_name, media_type, media_hash, media_size, media_storage,
+         media_thumbnail, media_thumbnail_type, media_thumbnail_hash, media_thumbnail_size
        )
-       VALUES (?, 0, ?, ?, ?, ?, ?, ?, ?, 'identity')
+       VALUES (?, 0, ?, ?, ?, ?, ?, ?, ?, ?, 'identity', ?, ?, ?, ?)
        ON CONFLICT(title) DO UPDATE SET
-         username = excluded.username,
-         content = excluded.content,
-         url = excluded.url,
-         media = excluded.media,
-         media_name = excluded.media_name,
-         media_type = excluded.media_type,
-         media_hash = excluded.media_hash,
-         media_storage = excluded.media_storage,
+         username = excluded.username, content = excluded.content, url = excluded.url,
+         media = excluded.media, media_name = excluded.media_name,
+         media_type = excluded.media_type, media_hash = excluded.media_hash,
+         media_size = excluded.media_size, media_storage = excluded.media_storage,
+         media_thumbnail = excluded.media_thumbnail,
+         media_thumbnail_type = excluded.media_thumbnail_type,
+         media_thumbnail_hash = excluded.media_thumbnail_hash,
+         media_thumbnail_size = excluded.media_thumbnail_size,
          updated_at = CURRENT_TIMESTAMP`,
     )
     .run(
-      normalizedTitle,
-      username,
-      content,
-      url,
-      mediaData,
-      media?.name ?? null,
-      media?.type || null,
-      mediaHash,
+      normalizedTitle, username, content, url,
+      mediaBytes, media?.name ?? null, media?.type || null, mediaHash,
+      mediaBytes?.byteLength ?? null,
+      thumbnailBytes, thumbnailBytes ? thumbnail?.type || "image/webp" : null,
+      thumbnailHash, thumbnailBytes?.byteLength ?? null,
     );
 
   if (mediaBytes && mediaHash) cacheMedia(mediaHash, mediaBytes);
-
+  if (thumbnailBytes && thumbnailHash) cacheMedia(thumbnailHash, thumbnailBytes);
   return getDocumentByTitle(normalizedTitle)!;
 }
 
@@ -564,64 +686,63 @@ export async function updateDocument(
   url: string,
   createdAt: string,
   media?: File,
+  thumbnail?: File,
   removeMedia = false,
 ): Promise<DocumentRecord | null> {
   const normalizedOldTitle = normalizeTitle(oldTitle);
   const normalizedTitle = normalizeTitle(title);
-  const mediaBytes = media
-    ? new Uint8Array(await media.arrayBuffer())
+  const mediaBytes = media ? new Uint8Array(await media.arrayBuffer()) : null;
+  const mediaHash = mediaBytes ? createHash("sha256").update(mediaBytes).digest("hex") : null;
+  const thumbnailBytes =
+    thumbnail && thumbnail.type.startsWith("image/")
+      ? new Uint8Array(await thumbnail.arrayBuffer())
+      : null;
+  const thumbnailHash = thumbnailBytes
+    ? createHash("sha256").update(thumbnailBytes).digest("hex")
     : null;
-  const mediaData = mediaBytes;
-  const mediaName = media?.name ?? null;
-  const mediaType = media?.type || null;
-  const mediaHash = mediaBytes
-    ? createHash("sha256").update(mediaBytes).digest("hex")
-    : null;
 
-  const result = database
-    .query(
-      `UPDATE documents SET
-        title = ?, username = ?, content = ?, url = ?, created_at = ?,
-        media = CASE WHEN ? THEN NULL WHEN ? THEN ? ELSE media END,
-        media_name = CASE WHEN ? THEN NULL WHEN ? THEN ? ELSE media_name END,
-        media_type = CASE WHEN ? THEN NULL WHEN ? THEN ? ELSE media_type END,
-        media_hash = CASE WHEN ? THEN NULL WHEN ? THEN ? ELSE media_hash END,
-        media_storage = CASE
-          WHEN ? THEN 'identity'
-          WHEN ? THEN 'identity'
-          ELSE media_storage
-        END,
-        updated_at = CURRENT_TIMESTAMP
-       WHERE title = ? AND is_directory = 0`,
-    )
-    .run(
-      normalizedTitle,
-      username,
-      content,
-      url,
-      createdAt || new Date().toISOString(),
-      removeMedia ? 1 : 0,
-      media ? 1 : 0,
-      mediaData,
-      removeMedia ? 1 : 0,
-      media ? 1 : 0,
-      mediaName,
-      removeMedia ? 1 : 0,
-      media ? 1 : 0,
-      mediaType,
-      removeMedia ? 1 : 0,
-      media ? 1 : 0,
-      mediaHash,
-      removeMedia ? 1 : 0,
-      media ? 1 : 0,
-      normalizedOldTitle,
-    );
+  const transaction = database.transaction(() => {
+    const result = database
+      .query(
+        `UPDATE documents SET
+          title = ?, username = ?, content = ?, url = ?, created_at = ?,
+          updated_at = CURRENT_TIMESTAMP
+         WHERE title = ? AND is_directory = 0`,
+      )
+      .run(normalizedTitle, username, content, url, createdAt || new Date().toISOString(), normalizedOldTitle);
+    if (!result.changes) return 0;
 
-  if (result.changes && mediaBytes && mediaHash) {
-    cacheMedia(mediaHash, mediaBytes);
-  }
+    if (removeMedia) {
+      database.query(
+        `UPDATE documents SET
+           media = NULL, media_name = NULL, media_type = NULL, media_hash = NULL,
+           media_size = NULL, media_storage = 'identity',
+           media_thumbnail = NULL, media_thumbnail_type = NULL,
+           media_thumbnail_hash = NULL, media_thumbnail_size = NULL
+         WHERE title = ? AND is_directory = 0`,
+      ).run(normalizedTitle);
+    } else if (media && mediaBytes && mediaHash) {
+      database.query(
+        `UPDATE documents SET
+           media = ?, media_name = ?, media_type = ?, media_hash = ?, media_size = ?,
+           media_storage = 'identity',
+           media_thumbnail = ?, media_thumbnail_type = ?,
+           media_thumbnail_hash = ?, media_thumbnail_size = ?
+         WHERE title = ? AND is_directory = 0`,
+      ).run(
+        mediaBytes, media.name, media.type || null, mediaHash, mediaBytes.byteLength,
+        thumbnailBytes, thumbnailBytes ? thumbnail?.type || "image/webp" : null,
+        thumbnailHash, thumbnailBytes?.byteLength ?? null, normalizedTitle,
+      );
+    }
+    return result.changes;
+  });
 
-  return result.changes ? getDocumentByTitle(normalizedTitle) : null;
+  const changes = transaction();
+  if (!changes) return null;
+  if (mediaBytes && mediaHash) cacheMedia(mediaHash, mediaBytes);
+  if (thumbnailBytes && thumbnailHash) cacheMedia(thumbnailHash, thumbnailBytes);
+  return getDocumentByTitle(normalizedTitle);
 }
 
 export function createFolder(folderPath: string): boolean {
