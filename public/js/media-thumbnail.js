@@ -27,7 +27,7 @@ async function thumbnailFromDrawable(drawable, width, height) {
   canvas.height = dimensions.height;
 
   const context = canvas.getContext("2d", {
-    alpha: false,
+    alpha: true,
     desynchronized: true,
   });
   if (!context) return null;
