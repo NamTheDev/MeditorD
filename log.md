@@ -84,3 +84,13 @@
 - Reduced first-paint and media startup work by loading web fonts non-blockingly with optional swapping, preloading and prioritizing the first actual visible archive image from the document head, removing the redundant client-side media configuration scan, and refreshing cached archive HTML only after its ETag changes.
 - Validated the persistent-cache performance pass with TypeScript compilation, browser-script syntax checks, whitespace validation, and live archive/database/service-worker HTTP smoke tests.
 
+# 04-10-2026
+- Reworked the archive into a Pinterest-style variable-height masonry grid while preserving newest-to-oldest post ordering and the existing single-column mobile flow.
+- Added persistent gallery thumbnails for uploaded images, including SQLite thumbnail metadata, content hashes, stored byte sizes, thumbnail-first server rendering, and client-side thumbnail generation for new or replaced images.
+- Added an immutable thumbnail media endpoint and extended the persistent service-worker media cache so versioned gallery thumbnails are reused across repeat visits and deployments while original media remains available for inspection and downloads.
+- Added idle thumbnail backfilling for legacy database images after their first successful full-image load and preserved transparent image content during generated thumbnail conversion.
+- Replaced repeated SQLite BLOB length work with persisted media-size metadata while retaining direct byte-range reads and the existing bounded in-memory media cache for original media.
+- Audited the repository against `guidelines.md`, synchronized the README directory tree with the new thumbnail helper and dated ChatGPT log, and confirmed ignored database, dependency, and runtime paths remain untracked.
+- Validated the 04-10-2026 code state with `bunx tsc --noEmit --pretty false`, browser/service-worker JavaScript syntax checks, `git diff --check`, and live archive, database, editor, thumbnail-helper, and service-worker HTTP smoke tests.
+- Identified that the initial 04-10-2026 implementation commits used abbreviated one-line messages instead of the full documented commit-message template; the published history was left intact rather than force-rewritten during the guideline audit.
+
