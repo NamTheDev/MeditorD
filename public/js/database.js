@@ -241,6 +241,11 @@ async function saveEdit(event) {
     return;
   }
   try {
+    if (media?.type?.startsWith("image/") && window.mediaThumbnail) {
+      const thumbnail = await window.mediaThumbnail.fromFile(media);
+      if (thumbnail) form.set("thumbnail", thumbnail);
+    }
+
     if (oldTitle) {
       await request(`/documents/${encodeURIComponent(oldTitle)}`, {
         method: "PUT",
