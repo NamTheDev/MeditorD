@@ -20,6 +20,7 @@ meditord/
 │   ├── chat-logs/
 │   │   ├── chatgpt-02-10-2026.md
 │   │   ├── chatgpt-03-10-2026.md
+│   │   ├── chatgpt-04-10-2026.md
 │   │   ├── gemini-11-09-2026.md
 │   │   ├── gemini-28-09-2026.md
 │   │   ├── github-copilot-16-09-2026.md
@@ -52,6 +53,7 @@ meditord/
 │   │   ├── document-api.js
 │   │   ├── edit.js
 │   │   ├── home-navigation.js
+│   │   ├── media-thumbnail.js
 │   │   └── url-validation.js
 │   ├── media/
 │   │   ├── grass-background.webp
@@ -88,7 +90,7 @@ meditord/
 - Docker containerization.
 - TypeScript.
 - Bun's SQLite with `database/meditord.sqlite`.
-- Raw SQLite BLOB storage for image and video uploads with fingerprinted browser caching and byte-range delivery.
+- Raw SQLite BLOB storage for original image and video uploads with generated gallery thumbnails, fingerprinted browser caching, and byte-range delivery.
 - markdown-it for rendering Markdown post descriptions.
 - HTML, CSS, browser JavaScript, and a service worker for offline-first runtime caching.
 - Minimal database-management table for browsing saved posts.
