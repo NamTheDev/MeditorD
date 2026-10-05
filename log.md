@@ -94,3 +94,8 @@
 - Validated the 04-10-2026 code state with `bunx tsc --noEmit --pretty false`, browser/service-worker JavaScript syntax checks, `git diff --check`, and live archive, database, editor, thumbnail-helper, and service-worker HTTP smoke tests.
 - Identified that the initial 04-10-2026 implementation commits used abbreviated one-line messages instead of the full documented commit-message template; the published history was left intact rather than force-rewritten during the guideline audit.
 
+# 05-10-2026
+- Documented the remaining archive reload flicker risk after the masonry and thumbnail performance pass, identifying post-paint masonry row-span measurement and image decoding without intrinsic dimensions as the primary residual causes.
+- Identified the next anti-flicker optimization path: persist image dimensions or aspect ratios with thumbnail metadata, emit size hints during SSR, and establish final masonry geometry earlier so cached thumbnails paint into reserved space with less reflow.
+- Added the dated ChatGPT log and synchronized the README directory tree for the 05-10-2026 discussion.
+
