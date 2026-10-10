@@ -40,7 +40,9 @@ meditord/
 │   └── url.ts
 ├── public/
 │   ├── css/
+│   │   ├── archive-explorer.css
 │   │   ├── archive.css
+│   │   ├── database-folder.css
 │   │   ├── database.css
 │   │   ├── edit.css
 │   │   ├── exit.css
@@ -94,7 +96,8 @@ meditord/
 - Raw SQLite BLOB storage for original image and video uploads with generated gallery thumbnails, fingerprinted browser caching, and byte-range delivery.
 - markdown-it for rendering Markdown post descriptions.
 - HTML, CSS, browser JavaScript, and a service worker for offline-first runtime caching.
-- Minimal database-management table for browsing saved posts.
+- Database-management table with folder properties for organizing saved posts.
+- Archive folder explorer with contextual folder actions and drag-and-drop organization.
 - Modal editing and creation for title, username, URL, date, media, and description.
 - JSON API for document, folder, and media operations.
 - Responsive phone, tablet, and desktop layouts with safe-area and virtual-keyboard handling.
