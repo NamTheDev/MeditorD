@@ -340,6 +340,7 @@ function renderCard(
       <button type="button" class="card-menu-button" aria-label="Open actions for ${escapeHtml(post.title)}" data-action="toggle-menu">⋯</button>
       <div class="card-menu hidden" role="menu" aria-label="Post actions">
         <button type="button" data-action="edit">Edit</button>
+        <button type="button" data-action="add-to-folder">Add to folder...</button>
         ${downloadActions}
         <button type="button" data-action="delete">Delete</button>
       </div>
