@@ -76,7 +76,20 @@ function renderArchiveFolders() {
     button.textContent=(path?"▰ ":"⌂ ")+label;
     button.title=path||"All posts";
     button.addEventListener("click",()=>chooseArchiveFolder(path));
-    row.append(button);archiveTree.append(row);
+    row.append(button);
+    row.addEventListener("dragover", event => {
+      if (!event.dataTransfer?.types.includes("application/x-meditord-post")) return;
+      event.preventDefault();
+      event.dataTransfer.dropEffect="move";
+      row.classList.add("drop-target");
+    });
+    row.addEventListener("dragleave", () => row.classList.remove("drop-target"));
+    row.addEventListener("drop", async event => {
+      event.preventDefault();row.classList.remove("drop-target");
+      const title=event.dataTransfer?.getData("application/x-meditord-post");
+      if(title) await moveArchivePost(title,path);
+    });
+    archiveTree.append(row);
   };
   appendRow("All posts","",0,false);
   function appendChildren(parent,depth) {
@@ -510,6 +523,61 @@ function initializeThumbnailBackfill() {
     });
 }
 
+
+async function moveArchivePost(title,folder) {
+  const post=postsData.find(item=>item.title===title);
+  if(!post) return;
+  const leaf=title.split("/").pop();
+  const destination=folder?folder+"/"+leaf:leaf;
+  if(destination===title) return;
+  if(postsData.some(item=>item.title===destination)||archiveFolderRows.some(item=>item.title===destination)){
+    await window.showAppAlert("An item with that name already exists in this folder.",{title:"Move failed"});return;
+  }
+  try {
+    const response=await fetch("/api/documents/"+encodeURIComponent(title),{
+      method:"PUT",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({newTitle:destination})
+    });
+    const body=await response.json().catch(()=>null);
+    if(!response.ok)throw new Error(body?.error||"Move failed.");
+    window.location.reload();
+  } catch(error) {await window.showAppAlert(error.message||"Move failed.",{title:"Move failed"});}
+}
+function showArchiveFolderPicker(post) {
+  closeAllMenus();
+  const overlay=document.createElement("div");overlay.className="archive-folder-picker";
+  const panel=document.createElement("div");panel.className="archive-folder-picker-window";
+  panel.setAttribute("role","dialog");panel.setAttribute("aria-modal","true");panel.setAttribute("aria-label","Move post to folder");
+  const heading=document.createElement("h2");heading.className="archive-folder-picker-title";heading.textContent="ADD TO FOLDER";
+  const select=document.createElement("select");select.setAttribute("aria-label","Destination folder");
+  for(const folder of ["",...archiveFolders(archiveFolderRows)]) {
+    const option=document.createElement("option");option.value=folder;option.textContent=folder||"(Unfiled)";select.append(option);
+  }
+  select.value=archiveParent(post.title);
+  const actions=document.createElement("div");actions.className="archive-folder-picker-actions";
+  const cancel=document.createElement("button");cancel.type="button";cancel.textContent="Cancel";
+  const move=document.createElement("button");move.type="button";move.textContent="Move";
+  const close=()=>{overlay.remove();document.removeEventListener("keydown",onKey);};
+  const onKey=event=>{if(event.key==="Escape")close();};
+  cancel.addEventListener("click",close);
+  move.addEventListener("click",()=>{const destination=select.value;close();void moveArchivePost(post.title,destination);});
+  overlay.addEventListener("click",event=>{if(event.target===overlay)close();});
+  document.addEventListener("keydown",onKey);
+  actions.append(cancel,move);panel.append(heading,select,actions);overlay.append(panel);document.body.append(overlay);select.focus();
+}
+postsContainer.querySelectorAll(".gallery-card").forEach(card=>card.draggable=true);
+postsContainer.addEventListener("dragstart",event=>{
+  const card=event.target.closest(".gallery-card");
+  if(!card||event.target.closest(".card-actions")){event.preventDefault();return;}
+  if(!event.dataTransfer)return;
+  event.dataTransfer.setData("application/x-meditord-post",card.dataset.title);
+  event.dataTransfer.effectAllowed="move";card.classList.add("is-dragging");
+});
+postsContainer.addEventListener("dragend",()=>{
+  postsContainer.querySelectorAll(".is-dragging").forEach(card=>card.classList.remove("is-dragging"));
+  archiveTree.querySelectorAll(".drop-target").forEach(row=>row.classList.remove("drop-target"));
+});
+
 function toggleCardMenu(card) {
   const menu = card.querySelector(".card-menu");
   if (!menu) return;
@@ -592,6 +660,7 @@ postsContainer.addEventListener("click", async (event) => {
       return;
     }
 
+    if (action === "add-to-folder") { showArchiveFolderPicker(post); return; }
     if (action === "edit") {
       closeAllMenus();
       window.location.href = `/database.html?edit=${encodeURIComponent(post.title)}`;
