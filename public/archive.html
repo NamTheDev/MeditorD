@@ -6,11 +6,20 @@
     </div>
     <div class="archive-explorer-layout">
       <aside class="archive-explorer-sidebar sunken" aria-label="Archive folders">
-        <div class="archive-explorer-heading">EXPLORER</div>
+        <div class="archive-explorer-heading raised">
+          <span>EXPLORER</span>
+          <button id="archiveNewFolderButton" class="archive-new-folder-button raised"
+                  type="button" aria-label="Create folder" title="New folder">
+            <svg viewBox="0 0 20 20" width="20" height="20" aria-hidden="true" focusable="false">
+              <path d="M2 5h6l2 2h8v10H2z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="miter"/>
+              <path d="M13 9v6M10 12h6" fill="none" stroke="currentColor" stroke-width="1.5"/>
+            </svg>
+          </button>
+        </div>
         <nav id="archiveFolderTree" aria-label="Archive folder navigation"></nav>
       </aside>
       <div class="archive-explorer-main">
-        <nav id="archiveBreadcrumbs" class="archive-breadcrumbs" aria-label="Folder location"></nav>
+        <nav id="archiveBreadcrumbs" class="archive-breadcrumbs raised" aria-label="Folder location"></nav>
     <div class="gallery-viewport sunken" id="galleryViewport">
         <div class="reddit-gallery" id="postsContainer">{{archive_posts}}</div>
         <script id="initialPosts" type="application/json">
@@ -19,6 +28,11 @@
     </div>
       </div>
     </div>
+</div>
+<div id="archiveFolderContextMenu" class="card-menu archive-folder-context-menu" role="menu" aria-label="Folder actions" hidden>
+  <button type="button" role="menuitem" data-folder-action="new-folder">New folder</button>
+  <button type="button" role="menuitem" data-folder-action="new-subfolder">New subfolder</button>
+  <button type="button" role="menuitem" data-folder-action="delete-folder">Delete folder</button>
 </div>
 <div class="modal-overlay" id="postModal">
     <div class="modal-window raised">
