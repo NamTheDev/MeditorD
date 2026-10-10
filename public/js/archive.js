@@ -531,65 +531,96 @@ async function downloadPost(post, action) {
 const postsContainer = document.getElementById("postsContainer");
 
 let masonryFrame = 0;
-
-// Pinterest-style: fill the available space when there are many posts;
-// center a capped set of columns when a folder contains only a few.
-function sizeMasonryColumns(cards) {
-  const viewport = document.getElementById("galleryViewport");
-  const viewportStyle = getComputedStyle(viewport);
-  const containerStyle = getComputedStyle(postsContainer);
-  const padding =
-    (Number.parseFloat(viewportStyle.paddingLeft) || 0) +
-    (Number.parseFloat(viewportStyle.paddingRight) || 0);
-  const availableWidth = Math.max(0, viewport.clientWidth - padding);
-  const gap = Number.parseFloat(containerStyle.columnGap) || 0;
-  const visibleCount = cards.filter(
-    (card) => !card.hidden && card.style.display !== "none",
-  ).length;
-
-  // Keep columns readable and never stretch a sparse folder into giant cards.
-  // Set concrete tracks rather than a custom property inside CSS repeat().
-  const minCardWidth = 260;
-  const maxCardWidth = 340;
-  const possibleColumns = Math.max(
-    1,
-    Math.floor((availableWidth + gap) / (minCardWidth + gap)),
-  );
-  const columns = Math.max(1, Math.min(visibleCount, possibleColumns));
-  const width = Math.min(
-    availableWidth,
-    columns * maxCardWidth + (columns - 1) * gap,
-  );
-
-  postsContainer.style.gridTemplateColumns = `repeat(${columns}, minmax(0, 1fr))`;
-  postsContainer.style.maxWidth = `${width}px`;
-}
+let lastMasonryGeometry = "";
+const masonryCards = [...postsContainer.querySelectorAll(".gallery-card")];
 
 function layoutMasonry() {
   masonryFrame = 0;
   if (!postsContainer) return;
-  if (getComputedStyle(postsContainer).display !== "grid") {
-    // Mobile keeps the existing full-width, single-column list.
+
+  const viewport = document.getElementById("galleryViewport");
+  const viewportStyle = getComputedStyle(viewport);
+  const galleryStyle = getComputedStyle(postsContainer);
+  const mobile = galleryStyle.display !== "grid";
+  const availableWidth = Math.max(
+    0,
+    viewport.clientWidth -
+      (Number.parseFloat(viewportStyle.paddingLeft) || 0) -
+      (Number.parseFloat(viewportStyle.paddingRight) || 0),
+  );
+  const gap = Number.parseFloat(galleryStyle.columnGap) || 0;
+  const visibleCards = masonryCards.filter(
+    (card) => card.isConnected && !card.hidden && card.style.display !== "none",
+  );
+  const columns = mobile
+    ? 1
+    : Math.max(
+        1,
+        Math.min(
+          visibleCards.length,
+          Math.floor((availableWidth + gap) / (260 + gap)) || 1,
+        ),
+      );
+  const maxWidth = mobile
+    ? availableWidth
+    : Math.min(availableWidth, columns * 340 + (columns - 1) * gap);
+
+  // A native CSS grid with tall row-spanning items can leave large empty
+  // tracks. Build true independent columns instead, filling the shortest.
+  const geometry = [
+    mobile,
+    Math.round(availableWidth),
+    columns,
+    ...visibleCards.map(
+      (card) =>
+        card.dataset.title + ":" + Math.round(card.getBoundingClientRect().height),
+    ),
+  ].join("|");
+  if (geometry === lastMasonryGeometry) return;
+
+  if (mobile) {
     postsContainer.style.removeProperty("grid-template-columns");
     postsContainer.style.removeProperty("max-width");
-    return;
+  } else {
+    postsContainer.style.gridTemplateColumns = `repeat(${columns}, minmax(0, 1fr))`;
+    postsContainer.style.maxWidth = `${maxWidth}px`;
   }
 
-  const cards = [...postsContainer.querySelectorAll(".gallery-card")];
-  sizeMasonryColumns(cards);
-  const styles = getComputedStyle(postsContainer);
-  const rowHeight = Number.parseFloat(styles.gridAutoRows) || 8;
-  const rowGap = Number.parseFloat(styles.rowGap) || 0;
-
-  cards.forEach((card) => {
-    if (card.hidden || card.style.display === "none") return;
-    const height = card.getBoundingClientRect().height;
-    const span = Math.max(
-      1,
-      Math.ceil((height + rowGap) / (rowHeight + rowGap)),
-    );
-    card.style.gridRowEnd = `span ${span}`;
+  const stacks = Array.from({ length: columns }, () => {
+    const stack = document.createElement("div");
+    stack.className = "gallery-column";
+    return stack;
   });
+  const parking = document.createElement("div");
+  parking.className = "gallery-parking";
+  parking.hidden = true;
+  postsContainer.replaceChildren(...stacks, parking);
+
+  const heights = new Array(columns).fill(0);
+  for (const card of masonryCards) {
+    if (!card.isConnected && !masonryCards.includes(card)) continue;
+    card.style.removeProperty("grid-row-end");
+    if (card.hidden || card.style.display === "none" || !visibleCards.includes(card)) {
+      parking.append(card);
+      continue;
+    }
+    let column = 0;
+    for (let i = 1; i < columns; i += 1) {
+      if (heights[i] < heights[column]) column = i;
+    }
+    stacks[column].append(card);
+    heights[column] += card.getBoundingClientRect().height + gap;
+  }
+
+  lastMasonryGeometry = [
+    mobile,
+    Math.round(availableWidth),
+    columns,
+    ...visibleCards.map(
+      (card) =>
+        card.dataset.title + ":" + Math.round(card.getBoundingClientRect().height),
+    ),
+  ].join("|");
 }
 
 function queueMasonryLayout() {
@@ -598,15 +629,14 @@ function queueMasonryLayout() {
 }
 
 function initializeMasonry() {
-  const cards = postsContainer?.querySelectorAll(".gallery-card") ?? [];
   queueMasonryLayout();
 
   if ("ResizeObserver" in window) {
     const observer = new ResizeObserver(queueMasonryLayout);
-    cards.forEach((card) => observer.observe(card));
+    masonryCards.forEach((card) => observer.observe(card));
     observer.observe(document.getElementById("galleryViewport"));
   } else {
-    postsContainer?.querySelectorAll("img, video").forEach((media) => {
+    postsContainer.querySelectorAll("img, video").forEach((media) => {
       media.addEventListener("load", queueMasonryLayout, { passive: true });
       media.addEventListener("loadedmetadata", queueMasonryLayout, {
         passive: true,
