@@ -4,11 +4,20 @@
         <div class="gallery-title">GALLERY</div>
         <button class="action-btn" id="newPostButton">NEW SUBMISSION</button>
     </div>
+    <div class="archive-explorer-layout">
+      <aside class="archive-explorer-sidebar sunken" aria-label="Archive folders">
+        <div class="archive-explorer-heading">EXPLORER</div>
+        <nav id="archiveFolderTree" aria-label="Archive folder navigation"></nav>
+      </aside>
+      <div class="archive-explorer-main">
+        <nav id="archiveBreadcrumbs" class="archive-breadcrumbs" aria-label="Folder location"></nav>
     <div class="gallery-viewport sunken" id="galleryViewport">
         <div class="reddit-gallery" id="postsContainer">{{archive_posts}}</div>
         <script id="initialPosts" type="application/json">
             {{archive_posts_json}}
         </script>
+    </div>
+      </div>
     </div>
 </div>
 <div class="modal-overlay" id="postModal">
@@ -28,4 +37,5 @@
     </div>
 </div>
 <script src="/js/media-thumbnail.js" defer></script>
+<link rel="stylesheet" href="/css/archive-explorer.css" />
 <script src="/js/archive.js" defer></script>
