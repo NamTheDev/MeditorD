@@ -84,7 +84,7 @@ async function createFolder() {
     title:"New folder", inputLabel:"Folder path", confirmLabel:"Create"
   });
   if (!name?.trim()) return;
-  const title = name.trim().replaceAll("\\\\", "/").replace(/^\\/+|\\/+$/g, "");
+  const title = name.trim().split(String.fromCharCode(92)).join("/").replace(/^\/+|\/+$/g, "");
   if (!title || title.split("/").some(s => !s || s === "." || s === "..")) {
     await window.showAppAlert("Invalid folder path.", { title:"Invalid folder" }); return;
   }
@@ -119,7 +119,7 @@ function renderTable() {
 
     if (item.isDirectory) {
       const folder = document.createElement("td");
-      folder.colSpan = 2;
+      folder.colSpan = 4;
       folder.textContent = "Folder";
       row.append(folder);
     } else {
