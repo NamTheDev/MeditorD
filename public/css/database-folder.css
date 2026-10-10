@@ -1,0 +1,2 @@
+#editFolder{width:100%;padding:6px 8px;background:var(--ctp-base);color:var(--ctp-text);border:1px solid var(--ctp-surface2);font:inherit}
+@media(max-width:700px){#editFolder{font-size:16px}}
