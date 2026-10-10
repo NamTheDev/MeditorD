@@ -746,14 +746,16 @@ export async function updateDocument(
 }
 
 export function createFolder(folderPath: string): boolean {
-  const normalizedPath = normalizeTitle(folderPath);
-  database
-    .query(
-      `INSERT INTO documents (title, is_directory)
-       VALUES (?, 1)
-       ON CONFLICT(title) DO UPDATE SET is_directory = 1, updated_at = CURRENT_TIMESTAMP`,
+  const title = normalizeTitle(folderPath);
+  const existing = database
+    .query<{ is_directory: number }, [string]>(
+      "SELECT is_directory FROM documents WHERE title = ?",
     )
-    .run(normalizedPath);
+    .get(title);
+  if (existing) throw new Error("An item with that name already exists");
+  database
+    .query("INSERT INTO documents (title, is_directory) VALUES (?, 1)")
+    .run(title);
   return true;
 }
 
@@ -781,11 +783,15 @@ export function renameItem(oldPath: string, newPath: string): boolean {
           "UPDATE documents SET title = ?, updated_at = CURRENT_TIMESTAMP WHERE title = ?",
         )
         .run(newTitle, oldTitle);
+      const prefix = oldTitle + "/";
       database
         .query(
-          "UPDATE documents SET title = replace(title, ?, ?), updated_at = CURRENT_TIMESTAMP WHERE title LIKE ?",
+          `UPDATE documents
+           SET title = ? || substr(title, length(?) + 1),
+               updated_at = CURRENT_TIMESTAMP
+           WHERE substr(title, 1, length(?)) = ?`,
         )
-        .run(`${oldTitle}/`, `${newTitle}/`, `${oldTitle}/%`);
+        .run(newTitle, oldTitle, prefix, prefix);
     } else {
       database
         .query(
@@ -800,8 +806,21 @@ export function renameItem(oldPath: string, newPath: string): boolean {
 
 export function deleteDocument(title: string): boolean {
   const normalizedTitle = normalizeTitle(title);
+  const item = database
+    .query<{ is_directory: number }, [string]>(
+      "SELECT is_directory FROM documents WHERE title = ?",
+    )
+    .get(normalizedTitle);
+  if (item?.is_directory === 0) {
+    return database
+      .query("DELETE FROM documents WHERE title = ?")
+      .run(normalizedTitle).changes > 0;
+  }
+  const prefix = normalizedTitle + "/";
   const result = database
-    .query("DELETE FROM documents WHERE title = ? OR title LIKE ?")
-    .run(normalizedTitle, `${normalizedTitle}/%`);
+    .query(
+      "DELETE FROM documents WHERE title = ? OR substr(title, 1, length(?)) = ?",
+    )
+    .run(normalizedTitle, prefix, prefix);
   return result.changes > 0;
 }
