@@ -111,3 +111,4 @@
 - Simplified the Archive Explorer hierarchy using compact tree rows, muted CSS folder icons, 16px indenting, and restrained folder-selection styling based on the supplied tree-view reference.
 - Capped Archive masonry cards to 360px with auto-fill CSS Grid tracks, preserving variable-height cards even when a folder contains just one post.
 - Recorded Pinterest, the minimalist folder-tree reference, and MDN CSS Grid and HTML drag-and-drop documentation in RESOURCES.md.
+- Rebalanced Pinterest-style Archive masonry by computing column counts from visible posts and viewport width, centering sparse folders and distributing larger galleries across available space without exceeding 360px per card.
