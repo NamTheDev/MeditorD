@@ -576,6 +576,7 @@ select:focus {
     }
 
     .gallery-card {
+        max-width: none;
         margin-bottom: 14px;
     }
 
