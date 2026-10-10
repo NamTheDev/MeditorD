@@ -549,8 +549,11 @@ function layoutMasonry() {
       (Number.parseFloat(viewportStyle.paddingRight) || 0),
   );
   const gap = Number.parseFloat(galleryStyle.columnGap) || 0;
-  const visibleCards = masonryCards.filter(
-    (card) => card.isConnected && !card.hidden && card.style.display !== "none",
+  const existingCards = masonryCards.filter((card) =>
+    postsContainer.contains(card),
+  );
+  const visibleCards = existingCards.filter(
+    (card) => !card.hidden && card.style.display !== "none",
   );
   const columns = mobile
     ? 1
@@ -597,10 +600,10 @@ function layoutMasonry() {
   postsContainer.replaceChildren(...stacks, parking);
 
   const heights = new Array(columns).fill(0);
-  for (const card of masonryCards) {
-    if (!card.isConnected && !masonryCards.includes(card)) continue;
+  const visibleSet = new Set(visibleCards);
+  for (const card of existingCards) {
     card.style.removeProperty("grid-row-end");
-    if (card.hidden || card.style.display === "none" || !visibleCards.includes(card)) {
+    if (!visibleSet.has(card)) {
       parking.append(card);
       continue;
     }
