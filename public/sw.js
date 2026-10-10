@@ -132,6 +132,17 @@ async function handleNavigation(event) {
   const cache = await caches.open(PAGE_CACHE);
   const cached = await cache.match(key);
 
+  // Explicitly bypass stale-while-revalidate for layout diagnostics or
+  // troubleshooting. Normal navigation keeps the offline-first behavior.
+  if (url.searchParams.get("fresh") === "1") {
+    try {
+      const response = await fetch(new Request(request, { cache: "reload" }));
+      return await putIfCacheable(cache, key, response);
+    } catch {
+      if (cached) return cached;
+    }
+  }
+
   if (cached) {
     event.waitUntil(revalidatePage(event, request, key, cached));
     return cached;
