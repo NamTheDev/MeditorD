@@ -107,3 +107,4 @@
 - Prevented image-only drag previews by disabling native media dragging and using the whole post card as the drag representation.
 - Consolidated document API request handling and reused existing theme primitives, removed obsolete explorer styles, and strengthened collision and literal-path protections for folder creation, rename, and recursive deletion.
 - Validated changed browser JavaScript syntax; full Bun TypeScript and live browser smoke tests remain to be run locally.
+- Corrected Explorer right-click menu visibility by excluding the folder context menu from gallery-menu dismissal and clearing stale hidden state when opening it.
