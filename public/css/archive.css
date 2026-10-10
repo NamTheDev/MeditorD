@@ -90,28 +90,24 @@ body {
 }
 
 .reddit-gallery {
+    /* Until JS measures cards, use a compact responsive grid fallback. */
+    position: relative;
     display: grid;
-    /* CSS-only fallback; JS sets an explicit responsive column count. */
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 340px));
-    justify-content: center;
-    margin-inline: auto;
-    /* Each grid child is a vertical masonry stack, not a row-spanning card. */
-    gap: clamp(12px, 1.5vw, 24px);
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 236px), 1fr));
+    gap: 16px;
     width: 100%;
+    flex: 0 0 auto;
     align-items: start;
     direction: ltr;
 }
 
-.gallery-column {
-    display: flex;
-    min-width: 0;
-    flex-direction: column;
-    align-items: stretch;
-    gap: clamp(12px, 1.5vw, 24px);
+.reddit-gallery.masonry-ready {
+    display: block;
 }
 
-.gallery-parking {
-    display: none !important;
+.reddit-gallery.masonry-ready > .gallery-card {
+    position: absolute;
+    margin: 0;
 }
 
 .reddit-gallery.compact {
@@ -121,7 +117,7 @@ body {
 .gallery-card {
     display: block;
     width: 100%;
-    max-width: 340px;
+    max-width: 300px;
     min-width: 0;
     direction: ltr;
     margin-bottom: 0;
@@ -586,13 +582,9 @@ select:focus {
         direction: ltr;
     }
 
-    .gallery-column {
-        gap: 14px;
-    }
-
     .gallery-card {
         max-width: none;
-        margin-bottom: 0;
+        margin-bottom: 14px;
     }
 
     .card-menu-button {
