@@ -188,6 +188,7 @@ function openFolderContextMenu(event, row) {
   const canUseFolder = Boolean(folderMenuPath || activeArchiveFolder);
   folderMenu.querySelector('[data-folder-action="new-subfolder"]').disabled = !canUseFolder;
   folderMenu.querySelector('[data-folder-action="delete-folder"]').disabled = !folderMenuPath;
+  folderMenu.classList.remove("hidden");
   folderMenu.hidden = false;
   const width = folderMenu.offsetWidth, height = folderMenu.offsetHeight;
   folderMenu.style.left = Math.max(5, Math.min(event.clientX, window.innerWidth - width - 5)) + "px";
@@ -405,7 +406,7 @@ document
 document.getElementById("postModal").addEventListener("click", closeModalOnBg);
 
 function closeAllMenus() {
-  document.querySelectorAll(".card-menu").forEach((menu) => {
+  document.querySelectorAll(".gallery-card .card-menu").forEach((menu) => {
     menu.classList.add("hidden");
   });
 }
