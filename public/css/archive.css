@@ -92,7 +92,7 @@ body {
 .reddit-gallery {
     display: grid;
     /* Fallback grid before JS sizes visible Pinterest-style masonry columns. */
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 270px), 1fr));
+    grid-template-columns: repeat(var(--gallery-columns, auto-fill), minmax(min(100%, 270px), 1fr));
     justify-content: center;
     margin-inline: auto;
     grid-auto-flow: row;
