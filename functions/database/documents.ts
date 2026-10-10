@@ -766,6 +766,13 @@ export function renameItem(oldPath: string, newPath: string): boolean {
     )
     .get(oldTitle);
   if (!item) return false;
+  if (newTitle === oldTitle) return true;
+  if (database.query("SELECT 1 FROM documents WHERE title = ?").get(newTitle)) {
+    throw new Error("An item already exists at the destination");
+  }
+  if (item.is_directory === 1 && newTitle.startsWith(oldTitle + "/")) {
+    throw new Error("Cannot move a folder into itself");
+  }
 
   const transaction = database.transaction(() => {
     if (item.is_directory === 1) {
