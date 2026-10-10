@@ -7,13 +7,20 @@
                 <button id="archiveButton" type="button">Archive</button>
             </div>
             <div class="database-actions-right">
+                <button id="newFolderButton" type="button">New folder</button>
                 <button id="newPostButton" type="button">New post</button>
                 <button id="refreshButton" type="button">Refresh</button>
             </div>
         </div>
     </header>
 
-    <main>
+    <main class="explorer-layout">
+        <aside class="explorer-sidebar" aria-label="Folder explorer">
+            <div class="explorer-heading">EXPLORER</div>
+            <nav id="folderTree" aria-label="Folders"></nav>
+        </aside>
+        <section class="explorer-content" aria-label="Folder contents">
+        <nav id="folderBreadcrumbs" class="folder-breadcrumbs" aria-label="Breadcrumb"></nav>
         <label class="search">
             <span class="visually-hidden">Search posts</span>
             <input
@@ -46,6 +53,7 @@
                 </tbody>
             </table>
         </div>
+        </section>
     </main>
 </div>
 
@@ -104,4 +112,5 @@
 </div>
 
 <script src="/js/media-thumbnail.js" defer></script>
+<link rel="stylesheet" href="/css/folder-explorer.css" />
 <script src="/js/database.js" defer></script>
