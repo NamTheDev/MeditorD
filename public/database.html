@@ -14,13 +14,7 @@
         </div>
     </header>
 
-    <main class="explorer-layout">
-        <aside class="explorer-sidebar" aria-label="Folder explorer">
-            <div class="explorer-heading">EXPLORER</div>
-            <nav id="folderTree" aria-label="Folders"></nav>
-        </aside>
-        <section class="explorer-content" aria-label="Folder contents">
-        <nav id="folderBreadcrumbs" class="folder-breadcrumbs" aria-label="Breadcrumb"></nav>
+    <main>
         <label class="search">
             <span class="visually-hidden">Search posts</span>
             <input
@@ -40,6 +34,7 @@
                         <th scope="col">Title</th>
                         <th scope="col">Username</th>
                         <th scope="col">URL</th>
+                        <th scope="col">Folder</th>
                         <th scope="col">Created</th>
                         <th scope="col">
                             <span class="visually-hidden">Actions</span>
@@ -48,12 +43,11 @@
                 </thead>
                 <tbody id="databaseList">
                     <tr>
-                        <td colspan="5">Loading database...</td>
+                        <td colspan="6">Loading database...</td>
                     </tr>
                 </tbody>
             </table>
         </div>
-        </section>
     </main>
 </div>
 
@@ -77,6 +71,7 @@
             </button>
         </div>
         <label>Title<input id="editTitle" name="title" required /></label>
+        <label>Folder<select id="editFolder" name="folder"></select></label>
         <label>Username<input id="editUsername" name="username" /></label>
         <label>URL<input id="editUrl" name="url" type="url" /></label>
         <label
@@ -112,5 +107,4 @@
 </div>
 
 <script src="/js/media-thumbnail.js" defer></script>
-<link rel="stylesheet" href="/css/folder-explorer.css" />
 <script src="/js/database.js" defer></script>
