@@ -5,6 +5,103 @@ if (initialPostsEl) {
     postsData = JSON.parse(initialPostsEl.textContent || "[]");
   } catch {}
 }
+
+const archiveTree = document.getElementById("archiveFolderTree");
+const archiveCrumbs = document.getElementById("archiveBreadcrumbs");
+let activeArchiveFolder = "";
+const openArchiveFolders = new Set();
+function archiveParent(path) {
+  const index = path.lastIndexOf("/");
+  return index < 0 ? "" : path.slice(0,index);
+}
+function archiveFolders(rows) {
+  const paths = new Set(rows.filter(row=>row.isDirectory).map(row=>row.title));
+  for (const post of postsData) {
+    let folder = archiveParent(post.title);
+    while(folder) { paths.add(folder); folder = archiveParent(folder); }
+  }
+  return [...paths].sort((a,b)=>a.localeCompare(b));
+}
+function refreshArchiveFolderView() {
+  const cards = [...postsContainer.querySelectorAll(".gallery-card")];
+  for (const card of cards) {
+    const path = card.dataset.title || "";
+    card.hidden = Boolean(activeArchiveFolder && !path.startsWith(activeArchiveFolder + "/"));
+    if (card.hidden) card.style.display = "none";
+    else card.style.removeProperty("display");
+  }
+  archiveCrumbs.replaceChildren();
+  const crumbs = [{label:"All posts", path:""}];
+  let path = "";
+  for(const part of activeArchiveFolder.split("/").filter(Boolean)) {
+    path = path ? path + "/" + part : part;
+    crumbs.push({label:part,path});
+  }
+  crumbs.forEach((entry,index)=>{
+    if(index) { const separator=document.createElement("span"); separator.textContent=" / "; archiveCrumbs.append(separator); }
+    const btn=document.createElement("button");
+    btn.type="button";btn.textContent=entry.label;
+    btn.addEventListener("click",()=>chooseArchiveFolder(entry.path));
+    archiveCrumbs.append(btn);
+  });
+  queueMasonryLayout();
+}
+function chooseArchiveFolder(folder) {
+  activeArchiveFolder = folder;
+  let path = folder;
+  while(path) { openArchiveFolders.add(path); path=archiveParent(path); }
+  renderArchiveFolders();
+  refreshArchiveFolderView();
+}
+let archiveFolderRows = [];
+function renderArchiveFolders() {
+  if (!archiveTree) return;
+  archiveTree.replaceChildren();
+  const folders=archiveFolders(archiveFolderRows);
+  const appendRow=(label,path,depth,children)=>{
+    const row=document.createElement("div");row.className="archive-folder-row";
+    row.style.paddingLeft=(depth*13+5)+"px";
+    if(children) {
+      const toggle=document.createElement("button");toggle.type="button";
+      toggle.className="archive-folder-toggle";
+      toggle.textContent=openArchiveFolders.has(path)?"▾":"▸";
+      toggle.setAttribute("aria-label",(openArchiveFolders.has(path)?"Collapse ":"Expand ")+label);
+      toggle.addEventListener("click",()=>{if(openArchiveFolders.has(path))openArchiveFolders.delete(path);else openArchiveFolders.add(path);renderArchiveFolders();});
+      row.append(toggle);
+    } else {
+      const spacer=document.createElement("span");spacer.className="archive-folder-spacer";row.append(spacer);
+    }
+    const button=document.createElement("button");button.type="button";
+    button.className="archive-folder-button"+(activeArchiveFolder===path?" active":"");
+    button.textContent=(path?"▰ ":"⌂ ")+label;
+    button.title=path||"All posts";
+    button.addEventListener("click",()=>chooseArchiveFolder(path));
+    row.append(button);archiveTree.append(row);
+  };
+  appendRow("All posts","",0,false);
+  function appendChildren(parent,depth) {
+    for (const folder of folders.filter(path=>archiveParent(path)===parent)) {
+      const hasChildren=folders.some(path=>archiveParent(path)===folder);
+      appendRow(folder.split("/").pop(),folder,depth,hasChildren);
+      if (hasChildren && openArchiveFolders.has(folder)) appendChildren(folder,depth+1);
+    }
+  }
+  appendChildren("",1);
+}
+async function loadArchiveFolders() {
+  try {
+    const response=await fetch("/api/documents?database=true",{cache:"no-store"});
+    if(!response.ok)throw new Error("Folder list could not be loaded.");
+    archiveFolderRows=await response.json();
+  } catch(error) {
+    archiveFolderRows=[];
+    console.warn(error);
+  }
+  renderArchiveFolders();
+  refreshArchiveFolderView();
+}
+void loadArchiveFolders();
+
 const MARKDOWN_IT_URL = "/vendor/markdown-it.js?v=15.0.2";
 let markdownPromise;
 
@@ -461,6 +558,8 @@ async function deletePost(post, card) {
 
     postsData = postsData.filter((entry) => entry.title !== post.title);
     card.remove();
+    renderArchiveFolders();
+    refreshArchiveFolderView();
   } catch (error) {
     await window.showAppAlert(error.message || "Delete failed.");
   }
