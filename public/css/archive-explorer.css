@@ -11,88 +11,142 @@
   min-width: 0;
   min-height: 0;
   overflow: auto;
-  padding: 6px;
+  padding: 6px 4px;
   background: var(--ctp-mantle);
-  border: 2px solid var(--bevel-darkest);
+  border: 1px solid var(--bevel-darkest);
 }
 .archive-explorer-heading {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 6px;
-  padding: 4px 5px 4px 8px;
-  margin-bottom: 8px;
-  background: var(--ctp-surface0);
-  color: var(--ctp-lavender);
-  font: 1rem "Pixelify Sans", "IBM Plex Sans", sans-serif;
-  letter-spacing: .11em;
+  padding: 5px 7px 9px;
+  margin-bottom: 4px;
+  color: var(--ctp-subtext0);
+  background: transparent;
+  font: 0.85rem "IBM Plex Sans", sans-serif;
+  letter-spacing: .09em;
+}
+.archive-explorer-heading.raised {
+  box-shadow: none;
 }
 .archive-new-folder-button {
   display: grid;
   place-items: center;
   flex: none;
-  width: 30px;
-  height: 28px;
+  width: 26px;
+  height: 26px;
   padding: 2px;
-  color: var(--ctp-lavender);
-  background: var(--ctp-surface1);
+  color: var(--ctp-subtext1);
+  background: transparent;
   border: 0;
   cursor: pointer;
 }
-.archive-new-folder-button:focus-visible,
-.archive-folder-button:focus-visible {
-  outline: 1px dotted var(--ctp-lavender);
-  outline-offset: -2px;
+.archive-new-folder-button:hover,
+.archive-new-folder-button:focus-visible {
+  color: var(--ctp-lavender);
+  background: var(--ctp-surface1);
 }
 .archive-new-folder-button:active {
-  box-shadow: inset 1px 1px 0 var(--bevel-darkest), inset -1px -1px 0 var(--bevel-lightest);
+  box-shadow: inset 1px 1px 0 var(--bevel-darkest);
 }
 .archive-folder-row {
   display: flex;
   align-items: center;
-  min-height: 33px;
+  min-width: 0;
+  min-height: 28px;
+}
+.archive-folder-row:hover {
+  background: var(--ctp-surface0);
+}
+.archive-folder-row.selected {
+  background: var(--ctp-surface1);
 }
 .archive-folder-toggle,
 .archive-folder-button {
-  border: 1px solid transparent;
+  color: var(--ctp-subtext1);
   background: transparent;
-  color: var(--ctp-text);
+  border: 0;
+  box-shadow: none;
   font: inherit;
   cursor: pointer;
-  box-shadow: none;
 }
 .archive-folder-toggle,
 .archive-folder-spacer {
-  flex: 0 0 22px;
+  flex: 0 0 17px;
+  padding: 0;
+  font-size: 12px;
   text-align: center;
-  padding: 1px;
+  color: var(--ctp-overlay1);
 }
 .archive-folder-button {
+  display: flex;
+  align-items: center;
   flex: 1;
+  gap: 7px;
   min-width: 0;
-  padding: 5px 4px;
+  min-height: 28px;
+  padding: 2px 5px 2px 0;
   text-align: left;
+  font-size: .87rem;
+}
+.archive-folder-label {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: .86rem;
 }
-.archive-folder-button:hover,
-.archive-folder-button:focus-visible {
-  background: var(--ctp-surface1);
-  border-color: var(--ctp-lavender);
-  border-style: dotted;
+.archive-folder-glyph,
+.archive-all-glyph {
+  position: relative;
+  display: inline-block;
+  flex: 0 0 15px;
+  width: 15px;
+  height: 13px;
+  color: var(--ctp-subtext0);
+}
+.archive-folder-glyph::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 1px;
+  width: 7px;
+  height: 4px;
+  background: currentColor;
+}
+.archive-folder-glyph::after {
+  content: "";
+  position: absolute;
+  inset: 3px 0 0;
+  background: currentColor;
+}
+.archive-all-glyph {
+  border: 1px solid currentColor;
+  height: 12px;
+}
+.archive-all-glyph::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 7px;
+  border-top: 1px solid currentColor;
+  box-shadow: 0 3px 0 currentColor;
 }
 .archive-folder-button.active {
-  background: var(--ctp-surface1);
-  color: var(--ctp-lavender);
-  box-shadow: inset 1px 1px 0 var(--bevel-darkest);
+  color: var(--ctp-text);
+  font-weight: 600;
+}
+.archive-folder-toggle:focus-visible,
+.archive-folder-button:focus-visible,
+.archive-new-folder-button:focus-visible {
+  outline: 1px dotted var(--ctp-lavender);
+  outline-offset: -1px;
 }
 .archive-folder-row.drop-target,
 .archive-folder-row.context-target {
   background: var(--ctp-surface2);
-  outline: 2px dashed var(--ctp-lavender);
-  outline-offset: -2px;
+  outline: 1px dashed var(--ctp-lavender);
+  outline-offset: -1px;
 }
 .archive-explorer-main {
   min-width: 0;
@@ -191,5 +245,5 @@
 @media (max-width: 700px) {
   .archive-explorer-layout { grid-template-columns: 1fr; }
   .archive-explorer-sidebar { max-height: 165px; }
-  .archive-folder-row { min-height: 40px; }
+  .archive-folder-row, .archive-folder-button { min-height: 36px; }
 }
