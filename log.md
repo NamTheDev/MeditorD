@@ -113,3 +113,4 @@
 - Recorded Pinterest, the minimalist folder-tree reference, and MDN CSS Grid and HTML drag-and-drop documentation in RESOURCES.md.
 - Rebalanced Pinterest-style Archive masonry by computing column counts from visible posts and viewport width, centering sparse folders and distributing larger galleries across available space without exceeding 360px per card.
 - Replaced the variable-based masonry track count with explicit responsive CSS Grid tracks, using a 260px minimum and 340px maximum card width so sparse folders center naturally and fuller galleries use the available width; preserved full-width mobile cards.
+- Replaced row-span-based Archive masonry with independent responsive flex-column stacks, assigning posts to the shortest column; verified variable-height packing, filtered single/two-post centering, resizing, and deleted-post handling in headless Chromium.
