@@ -108,3 +108,6 @@
 - Consolidated document API request handling and reused existing theme primitives, removed obsolete explorer styles, and strengthened collision and literal-path protections for folder creation, rename, and recursive deletion.
 - Validated changed browser JavaScript syntax; full Bun TypeScript and live browser smoke tests remain to be run locally.
 - Corrected Explorer right-click menu visibility by excluding the folder context menu from gallery-menu dismissal and clearing stale hidden state when opening it.
+- Simplified the Archive Explorer hierarchy using compact tree rows, muted CSS folder icons, 16px indenting, and restrained folder-selection styling based on the supplied tree-view reference.
+- Capped Archive masonry cards to 360px with auto-fill CSS Grid tracks, preserving variable-height cards even when a folder contains just one post.
+- Recorded Pinterest, the minimalist folder-tree reference, and MDN CSS Grid and HTML drag-and-drop documentation in RESOURCES.md.
