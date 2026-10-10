@@ -63,11 +63,13 @@ function renderArchiveFolders() {
   const appendRow=(label,path,depth,children)=>{
     const row=document.createElement("div");row.className="archive-folder-row";
     row.dataset.folder = path;
-    row.style.paddingLeft=(depth*13+5)+"px";
+    row.style.paddingLeft=(depth * 16 + 4) + "px";
+    row.classList.toggle("selected", activeArchiveFolder === path);
     if(children) {
       const toggle=document.createElement("button");toggle.type="button";
       toggle.className="archive-folder-toggle";
-      toggle.textContent=openArchiveFolders.has(path)?"▾":"▸";
+      toggle.textContent = openArchiveFolders.has(path) ? "▾" : "▸";
+      toggle.setAttribute("aria-expanded", String(openArchiveFolders.has(path)));
       toggle.setAttribute("aria-label",(openArchiveFolders.has(path)?"Collapse ":"Expand ")+label);
       toggle.addEventListener("click",()=>{if(openArchiveFolders.has(path))openArchiveFolders.delete(path);else openArchiveFolders.add(path);renderArchiveFolders();});
       row.append(toggle);
@@ -76,7 +78,13 @@ function renderArchiveFolders() {
     }
     const button=document.createElement("button");button.type="button";
     button.className="archive-folder-button"+(activeArchiveFolder===path?" active":"");
-    button.textContent=(path?"▰ ":"⌂ ")+label;
+    const glyph = document.createElement("span");
+    glyph.className = path ? "archive-folder-glyph" : "archive-all-glyph";
+    glyph.setAttribute("aria-hidden", "true");
+    const name = document.createElement("span");
+    name.className = "archive-folder-label";
+    name.textContent = label;
+    button.append(glyph, name);
     button.title=path||"All posts";
     button.addEventListener("click",()=>chooseArchiveFolder(path));
     row.append(button);
