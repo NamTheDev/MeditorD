@@ -157,7 +157,7 @@ async function createFolder() {
   });
   if (!name?.trim()) return;
   const trimmed = name.trim();
-  if (trimmed === "." || trimmed === ".." || trimmed.includes("/") || trimmed.includes("\\\\")) {
+  if (trimmed === "." || trimmed === ".." || trimmed.includes("/") || trimmed.includes("\\")) {
     await window.showAppAlert("Use a folder name without slashes.", { title: "Invalid name" });
     return;
   }
