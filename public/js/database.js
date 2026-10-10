@@ -266,7 +266,7 @@ async function saveEdit(event) {
   const form = new FormData(document.getElementById("editForm"));
   const leaf = document.getElementById("editTitle").value.trim();
   const folder = document.getElementById("editFolder").value;
-  if (!leaf || leaf.includes("/") || leaf.includes("\\\\")) {
+  if (!leaf || leaf.includes("/") || leaf.includes(String.fromCharCode(92))) {
     document.getElementById("editError").textContent = "Title cannot contain path separators.";
     return;
   }
