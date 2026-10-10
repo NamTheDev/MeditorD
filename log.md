@@ -99,3 +99,11 @@
 - Identified the next anti-flicker optimization path: persist image dimensions or aspect ratios with thumbnail metadata, emit size hints during SSR, and establish final masonry geometry earlier so cached thumbnails paint into reserved space with less reflow.
 - Added the dated ChatGPT log and synchronized the README directory tree for the 05-10-2026 discussion.
 
+# 10-10-2026
+- Implemented folder-aware archive navigation with a Windows 95/98-style Explorer sidebar, nested folders, breadcrumb navigation, and gallery filtering using the existing Catppuccin palette.
+- Kept the Database page as a flat management table with a Folder property, folder creation, and folder assignment through editing.
+- Added Archive post actions for moving items into folders and drag-and-drop onto folder targets.
+- Aligned Explorer controls with existing beveled styles, added a compact new-folder icon and a custom folder context menu for sibling/subfolder creation and confirmed recursive deletion.
+- Prevented image-only drag previews by disabling native media dragging and using the whole post card as the drag representation.
+- Consolidated document API request handling and reused existing theme primitives, removed obsolete explorer styles, and strengthened collision and literal-path protections for folder creation, rename, and recursive deletion.
+- Validated changed browser JavaScript syntax; full Bun TypeScript and live browser smoke tests remain to be run locally.
