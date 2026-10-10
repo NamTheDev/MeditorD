@@ -547,15 +547,21 @@ function sizeMasonryColumns(cards) {
     (card) => !card.hidden && card.style.display !== "none",
   ).length;
 
-  // 270px is the minimum comfortable card width; 360px remains the maximum.
+  // Keep columns readable and never stretch a sparse folder into giant cards.
+  // Set concrete tracks rather than a custom property inside CSS repeat().
+  const minCardWidth = 260;
+  const maxCardWidth = 340;
   const possibleColumns = Math.max(
     1,
-    Math.floor((availableWidth + gap) / (270 + gap)),
+    Math.floor((availableWidth + gap) / (minCardWidth + gap)),
   );
   const columns = Math.max(1, Math.min(visibleCount, possibleColumns));
-  const width = Math.min(availableWidth, columns * 360 + (columns - 1) * gap);
+  const width = Math.min(
+    availableWidth,
+    columns * maxCardWidth + (columns - 1) * gap,
+  );
 
-  postsContainer.style.setProperty("--gallery-columns", String(columns));
+  postsContainer.style.gridTemplateColumns = `repeat(${columns}, minmax(0, 1fr))`;
   postsContainer.style.maxWidth = `${width}px`;
 }
 
@@ -564,7 +570,7 @@ function layoutMasonry() {
   if (!postsContainer) return;
   if (getComputedStyle(postsContainer).display !== "grid") {
     // Mobile keeps the existing full-width, single-column list.
-    postsContainer.style.removeProperty("--gallery-columns");
+    postsContainer.style.removeProperty("grid-template-columns");
     postsContainer.style.removeProperty("max-width");
     return;
   }
