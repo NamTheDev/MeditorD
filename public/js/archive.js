@@ -532,17 +532,51 @@ const postsContainer = document.getElementById("postsContainer");
 
 let masonryFrame = 0;
 
+// Pinterest-style: fill the available space when there are many posts;
+// center a capped set of columns when a folder contains only a few.
+function sizeMasonryColumns(cards) {
+  const viewport = document.getElementById("galleryViewport");
+  const viewportStyle = getComputedStyle(viewport);
+  const containerStyle = getComputedStyle(postsContainer);
+  const padding =
+    (Number.parseFloat(viewportStyle.paddingLeft) || 0) +
+    (Number.parseFloat(viewportStyle.paddingRight) || 0);
+  const availableWidth = Math.max(0, viewport.clientWidth - padding);
+  const gap = Number.parseFloat(containerStyle.columnGap) || 0;
+  const visibleCount = cards.filter(
+    (card) => !card.hidden && card.style.display !== "none",
+  ).length;
+
+  // 270px is the minimum comfortable card width; 360px remains the maximum.
+  const possibleColumns = Math.max(
+    1,
+    Math.floor((availableWidth + gap) / (270 + gap)),
+  );
+  const columns = Math.max(1, Math.min(visibleCount, possibleColumns));
+  const width = Math.min(availableWidth, columns * 360 + (columns - 1) * gap);
+
+  postsContainer.style.setProperty("--gallery-columns", String(columns));
+  postsContainer.style.maxWidth = `${width}px`;
+}
+
 function layoutMasonry() {
   masonryFrame = 0;
-  if (!postsContainer || getComputedStyle(postsContainer).display !== "grid") {
+  if (!postsContainer) return;
+  if (getComputedStyle(postsContainer).display !== "grid") {
+    // Mobile keeps the existing full-width, single-column list.
+    postsContainer.style.removeProperty("--gallery-columns");
+    postsContainer.style.removeProperty("max-width");
     return;
   }
 
+  const cards = [...postsContainer.querySelectorAll(".gallery-card")];
+  sizeMasonryColumns(cards);
   const styles = getComputedStyle(postsContainer);
   const rowHeight = Number.parseFloat(styles.gridAutoRows) || 8;
   const rowGap = Number.parseFloat(styles.rowGap) || 0;
 
-  postsContainer.querySelectorAll(".gallery-card").forEach((card) => {
+  cards.forEach((card) => {
+    if (card.hidden || card.style.display === "none") return;
     const height = card.getBoundingClientRect().height;
     const span = Math.max(
       1,
@@ -564,6 +598,7 @@ function initializeMasonry() {
   if ("ResizeObserver" in window) {
     const observer = new ResizeObserver(queueMasonryLayout);
     cards.forEach((card) => observer.observe(card));
+    observer.observe(document.getElementById("galleryViewport"));
   } else {
     postsContainer?.querySelectorAll("img, video").forEach((media) => {
       media.addEventListener("load", queueMasonryLayout, { passive: true });
