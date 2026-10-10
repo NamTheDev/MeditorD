@@ -108,9 +108,7 @@ function renderArchiveFolders() {
 }
 async function loadArchiveFolders() {
   try {
-    const response=await fetch("/api/documents?database=true",{cache:"no-store"});
-    if(!response.ok)throw new Error("Folder list could not be loaded.");
-    archiveFolderRows=await response.json();
+    archiveFolderRows = await archiveDocumentRequest("?database=true", { cache: "no-store" });
   } catch(error) {
     archiveFolderRows=[];
     console.warn(error);
@@ -738,14 +736,7 @@ async function deletePost(post, card) {
   if (!confirmed) return;
 
   try {
-    const response = await fetch(
-      `/api/documents/${encodeURIComponent(post.title)}`,
-      { method: "DELETE" },
-    );
-    const body = await response.json().catch(() => null);
-    if (!response.ok) {
-      throw new Error(body?.error || `Delete failed (${response.status}).`);
-    }
+    await archiveDocumentRequest("/" + encodeURIComponent(post.title), { method: "DELETE" });
 
     postsData = postsData.filter((entry) => entry.title !== post.title);
     card.remove();
