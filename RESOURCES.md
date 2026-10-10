@@ -16,6 +16,8 @@ Pinterest's masonry-style visual feed informs the archive's multi-column card la
 
 [Pinterest](https://www.pinterest.com/)
 
+The implementation also references [Pinterest's open-source Gestalt Masonry component](https://github.com/pinterest/gestalt/blob/master/packages/gestalt/src/Masonry.tsx), which measures its container and positions cards based on column availability. The archive uses its own vanilla JavaScript positioning rather than copying Gestalt or bundling the React library.
+
 ## Minimal Folder Hierarchy
 
 A user-provided tree-view reference informed the Archive Explorer's compact 16px indentation, muted folder icons, disclosure arrows, and understated selection treatment. It is a visual reference, not a bundled third-party asset.
