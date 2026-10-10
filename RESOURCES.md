@@ -10,11 +10,26 @@ Used for the editor and archive pages. This design inspired me to create the pro
 
 [GitHub/Chrislemke/Windows_95_98](https://chrislemke.github.io/website_designs/designs/Windows_95_98.html)
 
+## Pinterest Gallery Layout
+
+Pinterest's masonry-style visual feed informs the archive's multi-column card layout. Posts retain variable heights while individual cards stay within a readable maximum width.
+
+[Pinterest](https://www.pinterest.com/)
+
+## Minimal Folder Hierarchy
+
+A user-provided tree-view reference informed the Archive Explorer's compact 16px indentation, muted folder icons, disclosure arrows, and understated selection treatment. It is a visual reference, not a bundled third-party asset.
+
 ## Catppuccin Mocha Palette (Lavender Accent)
 
 This color palette is used throughout the project. It is my favorite minimal and visually appealing color scheme.
 
 [Catppuccin/palette](https://catppuccin.com/palette)
+
+# Interface and Browser API References
+
+- [MDN: CSS Grid Layout](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_grid_layout) — responsive Archive masonry column layout.
+- [MDN: HTML Drag and Drop API](https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API) — moving archive posts onto Explorer folders.
 
 # Software
 
