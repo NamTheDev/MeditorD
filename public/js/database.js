@@ -2,6 +2,8 @@ const state = {
   items: [],
   filter: "",
   editingTitle: "",
+  currentFolder: "",
+  expandedFolders: new Set(),
 };
 
 const tableBody = document.getElementById("databaseList");
@@ -53,10 +55,135 @@ function renderMessage(message, className = "empty-state") {
   tableBody.append(row);
 }
 
+
+function parentPath(path) {
+  const index = path.lastIndexOf("/");
+  return index < 0 ? "" : path.slice(0, index);
+}
+function basename(path) {
+  return path.slice(path.lastIndexOf("/") + 1);
+}
+function availableFolders() {
+  const folders = new Set(state.items.filter(item => item.isDirectory).map(item => item.title));
+  for (const item of state.items) {
+    let path = parentPath(item.title);
+    while (path) {
+      folders.add(path);
+      path = parentPath(path);
+    }
+  }
+  return [...folders].sort((a, b) => a.localeCompare(b));
+}
+function selectFolder(folder) {
+  state.currentFolder = folder;
+  let path = folder;
+  while (path) {
+    state.expandedFolders.add(path);
+    path = parentPath(path);
+  }
+  renderExplorer();
+  renderTable();
+}
+function renderExplorer() {
+  const tree = document.getElementById("folderTree");
+  const breadcrumbs = document.getElementById("folderBreadcrumbs");
+  tree.replaceChildren();
+  breadcrumbs.replaceChildren();
+  const folders = availableFolders();
+  const addButton = (label, path, depth, hasChildren) => {
+    const row = document.createElement("div");
+    row.className = "explorer-folder-row";
+    row.style.paddingLeft = `${depth * 14 + 8}px`;
+    if (hasChildren) {
+      const toggle = document.createElement("button");
+      toggle.type = "button";
+      toggle.className = "explorer-toggle";
+      toggle.textContent = state.expandedFolders.has(path) ? "▾" : "▸";
+      toggle.setAttribute("aria-label", `${state.expandedFolders.has(path) ? "Collapse" : "Expand"} ${label}`);
+      toggle.addEventListener("click", () => {
+        if (state.expandedFolders.has(path)) state.expandedFolders.delete(path);
+        else state.expandedFolders.add(path);
+        renderExplorer();
+      });
+      row.append(toggle);
+    } else {
+      const spacer = document.createElement("span");
+      spacer.className = "explorer-toggle-spacer";
+      row.append(spacer);
+    }
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "explorer-folder" + (state.currentFolder === path ? " active" : "");
+    button.textContent = (path ? "▰ " : "⌂ ") + label;
+    button.title = path || "All posts";
+    button.addEventListener("click", () => selectFolder(path));
+    row.append(button);
+    tree.append(row);
+  };
+  addButton("All posts", "", 0, false);
+  const appendChildren = (parent, depth) => {
+    for (const folder of folders.filter(path => parentPath(path) === parent)) {
+      const children = folders.some(path => parentPath(path) === folder);
+      addButton(basename(folder), folder, depth, children);
+      if (children && state.expandedFolders.has(folder)) appendChildren(folder, depth + 1);
+    }
+  };
+  appendChildren("", 1);
+  const crumb = (label, path) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.textContent = label;
+    button.addEventListener("click", () => selectFolder(path));
+    breadcrumbs.append(button);
+  };
+  crumb("All posts", "");
+  if (state.currentFolder) {
+    const segments = state.currentFolder.split("/");
+    let path = "";
+    for (const segment of segments) {
+      path = path ? path + "/" + segment : segment;
+      const separator = document.createElement("span");
+      separator.textContent = " / ";
+      breadcrumbs.append(separator);
+      crumb(segment, path);
+    }
+  }
+}
+async function createFolder() {
+  const name = await window.showAppPrompt("Folder name:", {
+    title: "New folder",
+    inputLabel: "Folder name",
+    confirmLabel: "Create",
+  });
+  if (!name?.trim()) return;
+  const trimmed = name.trim();
+  if (trimmed === "." || trimmed === ".." || trimmed.includes("/") || trimmed.includes("\\\\")) {
+    await window.showAppAlert("Use a folder name without slashes.", { title: "Invalid name" });
+    return;
+  }
+  const title = [state.currentFolder, trimmed].filter(Boolean).join("/");
+  if (state.items.some(item => item.title === title)) {
+    await window.showAppAlert("An item with that name already exists.", { title: "Duplicate name" });
+    return;
+  }
+  try {
+    await request("/documents", {
+      method: "POST",
+      body: JSON.stringify({ title, isFolder: true }),
+    });
+    state.expandedFolders.add(state.currentFolder);
+    await loadItems();
+    selectFolder(title);
+  } catch (error) {
+    await window.showAppAlert(error.message || "Could not create folder.", { title: "Error" });
+  }
+}
+
 function renderTable() {
   const query = state.filter.trim().toLowerCase();
   const items = state.items.filter((item) =>
-    item.title.toLowerCase().includes(query),
+    item.title.toLowerCase().includes(query) &&
+    (query ? true : !state.currentFolder || parentPath(item.title) === state.currentFolder),
   );
   tableBody.replaceChildren();
 
@@ -70,7 +197,15 @@ function renderTable() {
   items.forEach((item) => {
     const row = document.createElement("tr");
     const title = document.createElement("td");
-    title.textContent = item.title;
+    title.textContent = basename(item.title);
+    if (item.isDirectory) {
+      title.className = "explorer-entry";
+      title.tabIndex = 0;
+      title.setAttribute("role", "button");
+      title.setAttribute("aria-label", "Open folder " + item.title);
+      title.addEventListener("click", () => selectFolder(item.title));
+      title.addEventListener("keydown", event => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); selectFolder(item.title); } });
+    }
     row.append(title);
 
     if (item.isDirectory) {
@@ -118,6 +253,8 @@ async function loadItems() {
   renderMessage("Loading database...");
   try {
     state.items = await request("/documents?database=true");
+    if (state.currentFolder && !availableFolders().includes(state.currentFolder)) state.currentFolder = "";
+    renderExplorer();
     renderTable();
 
     const editTitle = new URLSearchParams(window.location.search).get("edit");
@@ -134,6 +271,7 @@ async function loadItems() {
     }
   } catch (error) {
     state.items = [];
+    renderExplorer();
     renderMessage(error.message, "error-state");
   }
 }
@@ -190,7 +328,7 @@ async function editItem(item) {
 function createPost() {
   state.editingTitle = "";
   document.getElementById("editModalTitle").textContent = "New post";
-  document.getElementById("editTitle").value = "";
+  document.getElementById("editTitle").value = state.currentFolder ? state.currentFolder + "/" : "";
   document.getElementById("editUsername").value = "";
   document.getElementById("editUrl").value = "";
   document.getElementById("editCreatedAt").value = toDateTimeInput(
@@ -284,6 +422,7 @@ document.getElementById("archiveButton").addEventListener("click", () => {
   window.location.href = "/archive.html";
 });
 document.getElementById("newPostButton").addEventListener("click", createPost);
+document.getElementById("newFolderButton").addEventListener("click", createFolder);
 document.getElementById("refreshButton").addEventListener("click", loadItems);
 document.getElementById("searchInput").addEventListener("input", (event) => {
   state.filter = event.target.value;
