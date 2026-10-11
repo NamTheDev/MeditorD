@@ -755,12 +755,158 @@ function showArchiveFolderPicker(post) {
   actions.append(cancel,move);panel.append(heading,select,actions);overlay.append(panel);document.body.append(overlay);select.focus();
 }
 postsContainer.querySelectorAll(".gallery-card").forEach(card => {
-  card.draggable = true;
+  card.draggable = !window.matchMedia("(pointer: coarse)").matches;
   card.querySelectorAll("img, video, a").forEach(media => { media.draggable = false; });
+  const handle = document.createElement("button");
+  handle.type = "button";
+  handle.className = "archive-touch-drag-handle";
+  handle.dataset.action = "move-drag-handle";
+  handle.textContent = "⠿";
+  handle.title = "Drag to a folder, or tap to choose a folder";
+  handle.setAttribute("aria-label", "Move post to folder: drag or tap to choose");
+  card.append(handle);
 });
+
+let archivePointerDrag = null;
+let suppressArchiveDragClickUntil = 0;
+
+function archiveFolderRowAt(x, y) {
+  return document.elementFromPoint(x, y)?.closest(".archive-folder-row") || null;
+}
+
+function updateArchivePointerDropTarget(drag) {
+  const row = archiveFolderRowAt(drag.x, drag.y);
+  if (row === drag.dropRow) return;
+  drag.dropRow?.classList.remove("drop-target");
+  drag.dropRow = row;
+  row?.classList.add("drop-target");
+}
+
+function autoScrollArchivePointerDrag() {
+  const drag = archivePointerDrag;
+  if (!drag || !drag.dragging) return;
+  drag.scrollFrame = 0;
+  const element = document.elementFromPoint(drag.x, drag.y);
+  const scroller = element?.closest(".archive-explorer-sidebar, .gallery-viewport");
+  if (!scroller) return;
+
+  const rect = scroller.getBoundingClientRect();
+  const edge = Math.min(48, rect.height / 3);
+  if (edge <= 0) return;
+  let speed = 0;
+  if (drag.y < rect.top + edge) {
+    speed = -Math.ceil(((rect.top + edge - drag.y) / edge) * 12);
+  } else if (drag.y > rect.bottom - edge) {
+    speed = Math.ceil(((drag.y - (rect.bottom - edge)) / edge) * 12);
+  }
+  if (!speed) return;
+
+  const before = scroller.scrollTop;
+  scroller.scrollTop += speed;
+  if (scroller.scrollTop !== before) {
+    updateArchivePointerDropTarget(drag);
+    drag.scrollFrame = requestAnimationFrame(autoScrollArchivePointerDrag);
+  }
+}
+
+function updateArchivePointerDragPosition(drag) {
+  const x = Math.max(6, Math.min(drag.x + 14, window.innerWidth - 200));
+  const y = Math.max(6, Math.min(drag.y - 48, window.innerHeight - 36));
+  drag.preview.style.transform = "translate3d(" + x + "px, " + y + "px, 0)";
+  updateArchivePointerDropTarget(drag);
+  if (drag.scrollFrame) cancelAnimationFrame(drag.scrollFrame);
+  drag.scrollFrame = requestAnimationFrame(autoScrollArchivePointerDrag);
+}
+
+function beginArchivePointerDrag(drag) {
+  closeAllMenus();
+  closeFolderContextMenu();
+  drag.dragging = true;
+  drag.card.classList.add("is-dragging");
+  drag.preview = document.createElement("div");
+  drag.preview.className = "archive-touch-drag-preview";
+  drag.preview.setAttribute("aria-hidden", "true");
+  drag.preview.textContent = drag.card.dataset.title.split("/").pop();
+  document.body.append(drag.preview);
+  updateArchivePointerDragPosition(drag);
+}
+
+function finishArchivePointerDrag(cancel = false) {
+  const drag = archivePointerDrag;
+  if (!drag) return;
+  archivePointerDrag = null;
+  if (drag.scrollFrame) cancelAnimationFrame(drag.scrollFrame);
+  drag.dropRow?.classList.remove("drop-target");
+  drag.card.classList.remove("is-dragging");
+  drag.preview?.remove();
+  if (drag.handle.hasPointerCapture(drag.pointerId)) {
+    drag.handle.releasePointerCapture(drag.pointerId);
+  }
+  if (!drag.dragging) return;
+  // The click synthesized after pointerup must not open the post or navigate a folder.
+  suppressArchiveDragClickUntil = performance.now() + 500;
+  if (!cancel && drag.dropRow) {
+    void moveArchivePost(drag.card.dataset.title, drag.dropRow.dataset.folder || "");
+  }
+}
+
+// A dedicated handle avoids disabling native scrolling across the whole card.
+postsContainer.addEventListener("pointerdown", (event) => {
+  const handle = event.target.closest(".archive-touch-drag-handle");
+  if (!handle || event.button !== 0 || !event.isPrimary || archivePointerDrag) return;
+  const card = handle.closest(".gallery-card");
+  if (!card) return;
+  archivePointerDrag = {
+    handle, card, pointerId: event.pointerId,
+    startX: event.clientX, startY: event.clientY,
+    x: event.clientX, y: event.clientY,
+    dragging: false, dropRow: null, preview: null, scrollFrame: 0
+  };
+  handle.setPointerCapture(event.pointerId);
+});
+
+document.addEventListener("pointermove", (event) => {
+  const drag = archivePointerDrag;
+  if (!drag || event.pointerId !== drag.pointerId) return;
+  drag.x = event.clientX;
+  drag.y = event.clientY;
+  if (!drag.dragging && Math.hypot(drag.x - drag.startX, drag.y - drag.startY) < 8) return;
+  if (!drag.dragging) beginArchivePointerDrag(drag);
+  event.preventDefault();
+  updateArchivePointerDragPosition(drag);
+});
+
+document.addEventListener("pointerup", (event) => {
+  if (event.pointerId !== archivePointerDrag?.pointerId) return;
+  const dragging = archivePointerDrag.dragging;
+  archivePointerDrag.x = event.clientX;
+  archivePointerDrag.y = event.clientY;
+  if (dragging) {
+    event.preventDefault();
+    updateArchivePointerDropTarget(archivePointerDrag);
+  }
+  finishArchivePointerDrag();
+});
+document.addEventListener("pointercancel", (event) => {
+  if (event.pointerId === archivePointerDrag?.pointerId) finishArchivePointerDrag(true);
+});
+document.addEventListener("lostpointercapture", (event) => {
+  if (event.pointerId === archivePointerDrag?.pointerId) finishArchivePointerDrag(true);
+});
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && archivePointerDrag) finishArchivePointerDrag(true);
+});
+document.addEventListener("click", (event) => {
+  if (performance.now() >= suppressArchiveDragClickUntil || event.detail === 0) return;
+  suppressArchiveDragClickUntil = 0;
+  event.preventDefault();
+  event.stopImmediatePropagation();
+}, true);
+
+
 postsContainer.addEventListener("dragstart", event => {
   const card = event.target.closest(".gallery-card");
-  if (!card || event.target.closest(".card-actions") || !event.dataTransfer) {
+  if (!card || archivePointerDrag || event.target.closest(".card-actions, .archive-touch-drag-handle") || !event.dataTransfer) {
     event.preventDefault();
     return;
   }
@@ -852,7 +998,10 @@ postsContainer.addEventListener("click", async (event) => {
       return;
     }
 
-    if (action === "add-to-folder") { showArchiveFolderPicker(post); return; }
+    if (action === "add-to-folder" || action === "move-drag-handle") {
+      showArchiveFolderPicker(post);
+      return;
+    }
     if (action === "edit") {
       closeAllMenus();
       window.location.href = `/database.html?edit=${encodeURIComponent(post.title)}`;
