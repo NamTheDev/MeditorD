@@ -14,6 +14,7 @@
   padding: 6px 4px;
   background: var(--ctp-mantle);
   border: 1px solid var(--bevel-darkest);
+  box-shadow: none;
 }
 .archive-explorer-heading {
   display: flex;
@@ -27,9 +28,6 @@
   font: 0.85rem "IBM Plex Sans", sans-serif;
   letter-spacing: .09em;
 }
-.archive-explorer-heading.raised {
-  box-shadow: none;
-}
 .archive-new-folder-button {
   display: grid;
   place-items: center;
@@ -40,6 +38,7 @@
   color: var(--ctp-subtext1);
   background: transparent;
   border: 0;
+  box-shadow: none;
   cursor: pointer;
 }
 .archive-new-folder-button:hover,
@@ -48,7 +47,9 @@
   background: var(--ctp-surface1);
 }
 .archive-new-folder-button:active {
-  box-shadow: inset 1px 1px 0 var(--bevel-darkest);
+  /* Override global button:active shadow and padding shift. */
+  box-shadow: none;
+  padding: 2px;
 }
 .archive-folder-row {
   display: flex;
@@ -135,6 +136,15 @@
 .archive-folder-button.active {
   color: var(--ctp-text);
   font-weight: 600;
+  box-shadow: none;
+}
+.archive-folder-toggle:active {
+  box-shadow: none;
+  padding: 0;
+}
+.archive-folder-button:active {
+  box-shadow: none;
+  padding: 2px 5px 2px 0;
 }
 .archive-folder-toggle:focus-visible,
 .archive-folder-button:focus-visible,
