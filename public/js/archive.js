@@ -424,8 +424,14 @@ function appendLessButton(description) {
   less.type = "button";
   less.className = "read-more-toggle";
   less.dataset.action = "toggle-description";
+  less.setAttribute("aria-label", "Show less of this post");
   less.textContent = "less";
-  description.append(less);
+
+  // Keep the control at the end of the final paragraph, not as a
+  // separate raised element below the description.
+  const lastElement = description.lastElementChild;
+  const target = lastElement?.tagName === "P" ? lastElement : description;
+  target.append(document.createTextNode(" "), less);
 }
 
 function toggleDescription(card, description) {
