@@ -130,3 +130,4 @@
 - Exercised the live site in headless Chromium across desktop and mobile sizes, verified the single-post 420px cap without horizontal overflow, and found no browser page errors on Archive, Home, Database, or Editor.
 - Tested an isolated temporary database with nested folder and post creation, rejected unsafe post URLs, validated ETag 304 responses, and checked inline description expansion, folder context menus, filtering, and card drag-and-drop in Chromium.
 - Corrected the README installation requirement for the Bun v2 lockfile and documented that deployments must protect the unauthenticated write API when port 3000 is reachable outside a trusted network.
+- Fixed Database page horizontal viewport scrolling at phone and tablet widths by containing table painting while preserving the table's own horizontal scrolling; retested at 320px, 390px, 768px, and 1440px without JavaScript errors.
