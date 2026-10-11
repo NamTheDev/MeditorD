@@ -104,7 +104,7 @@ body {
 
 /* Do not let the last remaining post expand to the full gallery width. */
 .reddit-gallery.single-post {
-    grid-template-columns: minmax(0, 420px);
+    grid-template-columns: minmax(0, min(100%, 420px));
     justify-content: center;
 }
 
