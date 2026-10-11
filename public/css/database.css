@@ -91,6 +91,7 @@ body {
 
 .table-wrap {
     overflow-x: auto;
+    contain: paint;
 }
 
 table {
