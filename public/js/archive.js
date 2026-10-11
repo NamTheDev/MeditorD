@@ -592,8 +592,9 @@ function layoutMasonry() {
       card.style.gridRowEnd = `span ${span}`;
     }
   }
+  const visibleSet = new Set(visible);
   for (const card of cards) {
-    if (mobile || !visible.includes(card)) card.style.removeProperty("grid-row-end");
+    if (mobile || !visibleSet.has(card)) card.style.removeProperty("grid-row-end");
   }
 
   const viewport = document.getElementById("galleryViewport");
@@ -605,7 +606,7 @@ function layoutMasonry() {
       (Number.parseFloat(viewportStyle.paddingRight) || 0),
   );
   const tracks = mobile ? 1 :
-    getComputedStyle(postsContainer).gridTemplateColumns.trim().split(/\\s+/).length;
+    getComputedStyle(postsContainer).gridTemplateColumns.trim().split(/\s+/).length;
   showMasonryDiagnostics({
     columns: visible.length ? tracks : 0,
     visiblePosts: visible.length,
