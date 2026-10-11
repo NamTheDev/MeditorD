@@ -16,7 +16,7 @@ Pinterest's masonry-style visual feed informs the archive's multi-column card la
 
 [Pinterest](https://www.pinterest.com/)
 
-The implementation also references [Pinterest's open-source Gestalt Masonry component](https://github.com/pinterest/gestalt/blob/master/packages/gestalt/src/Masonry.tsx), which measures its container and positions cards based on column availability. The archive uses its own vanilla JavaScript positioning rather than copying Gestalt or bundling the React library.
+Pinterest's [open-source Gestalt Masonry component](https://github.com/pinterest/gestalt/blob/master/packages/gestalt/src/Masonry.tsx) was researched as a reference for card sizing and placement. The current Archive instead retains its original responsive CSS Grid and JavaScript row-span calculation, with a maximum width applied when only one post is visible. No Gestalt code or React dependency is bundled.
 
 ## Minimal Folder Hierarchy
 
