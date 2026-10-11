@@ -530,20 +530,20 @@ async function downloadPost(post, action) {
 
 const postsContainer = document.getElementById("postsContainer");
 
-// Pinterest Gestalt-inspired masonry: measured, absolutely positioned cards.
-// Keep SSR cards in the DOM so post actions, images and folder filtering survive.
-const masonryEngine = "positioned-v2";
+// Original pre-Explorer masonry sizing, with a cap for a single visible post.
+const masonryEngine = "original-grid-single-cap";
 let masonryFrame = 0;
 
 function visibleMasonryCards() {
   return [...postsContainer.querySelectorAll(".gallery-card")].filter(
-    (card) => !card.hidden && getComputedStyle(card).display !== "none",
+    (card) => !card.hidden && card.style.display !== "none",
   );
 }
 
 function showMasonryDiagnostics(info) {
   window.meditordMasonryLayout = { engine: masonryEngine, ...info };
   if (new URLSearchParams(location.search).get("layoutDebug") !== "1") return;
+
   let label = document.getElementById("masonryDebug");
   if (!label) {
     label = document.createElement("div");
@@ -552,6 +552,7 @@ function showMasonryDiagnostics(info) {
     label.setAttribute("role", "status");
     document.body.append(label);
   }
+
   const build = document.querySelector('meta[name="meditord-build-id"]')?.content || "unknown";
   label.textContent =
     `Masonry ${masonryEngine} | build ${build} | ${info.columns} cols | ${info.visiblePosts} posts | ${Math.round(info.cardWidth)}px | container ${Math.round(info.availableWidth)}px`;
@@ -561,6 +562,40 @@ function layoutMasonry() {
   masonryFrame = 0;
   if (!postsContainer) return;
 
+  const cards = [...postsContainer.querySelectorAll(".gallery-card")];
+  const visible = visibleMasonryCards();
+
+  // Clear coordinates from the replaced absolute-positioning layout.
+  postsContainer.classList.remove("masonry-ready");
+  postsContainer.style.removeProperty("height");
+  postsContainer.style.removeProperty("max-width");
+  postsContainer.style.removeProperty("grid-template-columns");
+  for (const card of cards) {
+    card.style.removeProperty("left");
+    card.style.removeProperty("top");
+    card.style.removeProperty("width");
+  }
+
+  const mobile = getComputedStyle(postsContainer).display !== "grid";
+  postsContainer.classList.toggle("single-post", !mobile && visible.length === 1);
+
+  if (!mobile) {
+    const styles = getComputedStyle(postsContainer);
+    const rowHeight = Number.parseFloat(styles.gridAutoRows) || 8;
+    const rowGap = Number.parseFloat(styles.rowGap) || 0;
+    for (const card of visible) {
+      const height = card.getBoundingClientRect().height;
+      const span = Math.max(
+        1,
+        Math.ceil((height + rowGap) / (rowHeight + rowGap)),
+      );
+      card.style.gridRowEnd = `span ${span}`;
+    }
+  }
+  for (const card of cards) {
+    if (mobile || !visible.includes(card)) card.style.removeProperty("grid-row-end");
+  }
+
   const viewport = document.getElementById("galleryViewport");
   const viewportStyle = getComputedStyle(viewport);
   const availableWidth = Math.max(
@@ -569,70 +604,12 @@ function layoutMasonry() {
       (Number.parseFloat(viewportStyle.paddingLeft) || 0) -
       (Number.parseFloat(viewportStyle.paddingRight) || 0),
   );
-  const cards = [...postsContainer.querySelectorAll(".gallery-card")];
-  const mobile = window.matchMedia("(max-width: 600px)").matches;
-
-  // Return mobile to normal document flow; don't leave desktop coordinates.
-  if (mobile) {
-    postsContainer.classList.remove("masonry-ready");
-    postsContainer.style.removeProperty("height");
-    postsContainer.style.removeProperty("max-width");
-    postsContainer.style.removeProperty("grid-template-columns");
-    for (const card of cards) {
-      card.style.removeProperty("left");
-      card.style.removeProperty("top");
-      card.style.removeProperty("width");
-      card.style.removeProperty("grid-row-end");
-    }
-    showMasonryDiagnostics({
-      columns: 1,
-      visiblePosts: visibleMasonryCards().length,
-      cardWidth: availableWidth,
-      availableWidth,
-    });
-    return;
-  }
-
-  // Pinterest Gestalt uses a 236px target item width. Here cards grow only
-  // to 300px; one or two posts stay centered rather than filling the screen.
-  const visible = visibleMasonryCards();
-  const gutter = 16;
-  const targetWidth = 236;
-  const maximumWidth = 300;
-  const possibleColumns = Math.max(
-    1,
-    Math.floor((availableWidth + gutter) / (targetWidth + gutter)),
-  );
-  const columns = Math.max(1, Math.min(visible.length, possibleColumns));
-  const cardWidth = Math.max(
-    1,
-    Math.min(maximumWidth, (availableWidth - gutter * (columns - 1)) / columns),
-  );
-  const contentWidth = columns * cardWidth + gutter * (columns - 1);
-  const inset = Math.max(0, (availableWidth - contentWidth) / 2);
-  const heights = Array(columns).fill(0);
-
-  postsContainer.classList.add("masonry-ready");
-  postsContainer.style.removeProperty("max-width");
-  postsContainer.style.removeProperty("grid-template-columns");
-  for (const card of visible) {
-    card.style.removeProperty("grid-row-end");
-    card.style.width = `${cardWidth}px`;
-    let shortest = 0;
-    for (let i = 1; i < columns; i += 1) {
-      if (heights[i] < heights[shortest]) shortest = i;
-    }
-    const left = inset + shortest * (cardWidth + gutter);
-    card.style.left = `${left}px`;
-    card.style.top = `${heights[shortest]}px`;
-    heights[shortest] += card.getBoundingClientRect().height + gutter;
-  }
-  const totalHeight = Math.max(0, ...heights.map((height) => height - gutter));
-  postsContainer.style.height = `${totalHeight}px`;
+  const tracks = mobile ? 1 :
+    getComputedStyle(postsContainer).gridTemplateColumns.trim().split(/\\s+/).length;
   showMasonryDiagnostics({
-    columns,
+    columns: visible.length ? tracks : 0,
     visiblePosts: visible.length,
-    cardWidth,
+    cardWidth: visible[0]?.getBoundingClientRect().width || 0,
     availableWidth,
   });
 }
@@ -643,15 +620,15 @@ function queueMasonryLayout() {
 }
 
 function initializeMasonry() {
+  const cards = postsContainer?.querySelectorAll(".gallery-card") ?? [];
   queueMasonryLayout();
+
   if ("ResizeObserver" in window) {
     const observer = new ResizeObserver(queueMasonryLayout);
-    postsContainer.querySelectorAll(".gallery-card").forEach((card) =>
-      observer.observe(card),
-    );
+    cards.forEach((card) => observer.observe(card));
     observer.observe(document.getElementById("galleryViewport"));
   } else {
-    postsContainer.querySelectorAll("img, video").forEach((media) => {
+    postsContainer?.querySelectorAll("img, video").forEach((media) => {
       media.addEventListener("load", queueMasonryLayout, { passive: true });
       media.addEventListener("loadedmetadata", queueMasonryLayout, {
         passive: true,
