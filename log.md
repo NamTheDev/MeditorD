@@ -126,3 +126,7 @@
 - Added a responsive maximum 420px Grid track when a folder contains exactly one visible post, without changing the one-column mobile layout.
 - Updated the Pinterest research notes to describe the restored Grid implementation; verified one-, two-, and nine-post cases at representative viewport widths in a Chromium layout fixture.
 - Refined Archive description expansion controls: removed inherited raised button shadows, minimum heights, active-state padding shifts, and touch-specific oversizing; kept the ellipsis and “more” in one inline text action and placed “less” after the final paragraph. Checked desktop, narrow, and touch styles in a Chromium CSS fixture.
+- Audited the Gateway-connected MeditorD deployment: confirmed its Git checkout, Docker runtime, port-3000 HTTP routes, and clean TypeScript compilation using Bun 1.4.3 in an isolated Docker workspace.
+- Exercised the live site in headless Chromium across desktop and mobile sizes, verified the single-post 420px cap without horizontal overflow, and found no browser page errors on Archive, Home, Database, or Editor.
+- Tested an isolated temporary database with nested folder and post creation, rejected unsafe post URLs, validated ETag 304 responses, and checked inline description expansion, folder context menus, filtering, and card drag-and-drop in Chromium.
+- Corrected the README installation requirement for the Bun v2 lockfile and documented that deployments must protect the unauthenticated write API when port 3000 is reachable outside a trusted network.
