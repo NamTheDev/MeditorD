@@ -6,7 +6,7 @@ Built from human ideas with Gemini, DeepSeek, GitHub Copilot, and ChatGPT suppor
 
 ## II. Introduction
 
-MeditorD is a nostalgic editor for securely saving linked documents.
+MeditorD is a nostalgic editor for organizing saved linked documents.
 
 ### Directory
 
@@ -104,13 +104,14 @@ meditord/
 
 ## III. Installation
 
-1. Install Bun v1.0 or newer.
+1. Install Bun v1.4.3 or newer, which supports the repository's Bun v2 lockfile.
 2. Clone this repository and change into its directory.
-3. Run `bun install` to install dependencies.
+3. Run `bun install --frozen-lockfile` to install the locked dependencies.
 4. Optionally set `PORT`, `HOST`, and `ROOT` in `.env`.
 5. Start the server with `bun run index.ts`.
 6. Open `http://localhost:3000` in a modern browser.
 7. Open `http://localhost:3000/database.html` to access the database page.
+8. Keep port 3000 on a trusted network, or protect it using authenticated HTTPS access before exposing it publicly. The built-in API does not authenticate write requests.
 
 ### Docker Alternative
 
