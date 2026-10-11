@@ -113,15 +113,6 @@ body {
 }
 
 .gallery-card {
-    position: absolute;
-    margin: 0;
-}
-
-.reddit-gallery.compact {
-    grid-template-columns: 1fr;
-}
-
-.gallery-card {
     display: block;
     width: 100%;
     min-width: 0;
