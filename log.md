@@ -118,3 +118,7 @@
 - Kept the gallery in normal CSS flow on mobile while preserving filterable, interactive post-card nodes on desktop; ensured the scroll container honors calculated masonry height.
 - Added opt-in `?layoutDebug=1` diagnostics for the actual column count, visible post count, CSS width, and build identifier, plus `?fresh=1` to bypass stale service-worker navigation content for troubleshooting.
 - Verified desktop placement across sparse, full, and filtered collections using isolated JavaScript geometry tests; live MeditorD browser validation remains outstanding in the current runtime.
+
+# 11-10-2026
+- Removed raised and sunken utility classes from the Archive Explorer toolbar and sidebar.
+- Overrode shared active-state shadows and padding shifts for folder items, disclosure controls, and the new-folder icon, retaining flat hover, selection, and keyboard-focus feedback.
