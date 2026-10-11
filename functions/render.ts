@@ -187,7 +187,7 @@ function getCollapsedDescriptionHtml(value: string): string {
   }
 
   const excerpt = words.slice(0, 200).join(" ");
-  return `<p>${escapeHtml(excerpt)} … <button type="button" class="read-more-toggle" data-action="toggle-description">more</button></p>`;
+  return `<p>${escapeHtml(excerpt)} <button type="button" class="read-more-toggle" data-action="toggle-description" aria-label="Read more of this post">… more</button></p>`;
 }
 
 function renderDownloadActions(post: DocumentRecord): string {
