@@ -122,3 +122,6 @@
 # 11-10-2026
 - Removed raised and sunken utility classes from the Archive Explorer toolbar and sidebar.
 - Overrode shared active-state shadows and padding shifts for folder items, disclosure controls, and the new-folder icon, retaining flat hover, selection, and keyboard-focus feedback.
+- Restored the pre-Explorer Archive masonry sizing from the original main baseline: 320px minimum auto-fit CSS Grid columns, variable-height 8px row spans, and uncapped multi-post cards.
+- Added a responsive maximum 420px Grid track when a folder contains exactly one visible post, without changing the one-column mobile layout.
+- Updated the Pinterest research notes to describe the restored Grid implementation; verified one-, two-, and nine-post cases at representative viewport widths in a Chromium layout fixture.
