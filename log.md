@@ -125,3 +125,4 @@
 - Restored the pre-Explorer Archive masonry sizing from the original main baseline: 320px minimum auto-fit CSS Grid columns, variable-height 8px row spans, and uncapped multi-post cards.
 - Added a responsive maximum 420px Grid track when a folder contains exactly one visible post, without changing the one-column mobile layout.
 - Updated the Pinterest research notes to describe the restored Grid implementation; verified one-, two-, and nine-post cases at representative viewport widths in a Chromium layout fixture.
+- Refined Archive description expansion controls: removed inherited raised button shadows, minimum heights, active-state padding shifts, and touch-specific oversizing; kept the ellipsis and “more” in one inline text action and placed “less” after the final paragraph. Checked desktop, narrow, and touch styles in a Chromium CSS fixture.
