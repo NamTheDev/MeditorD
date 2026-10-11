@@ -358,15 +358,38 @@ body {
     white-space: nowrap;
 }
 
-.read-more-toggle {
-    display: inline-block;
+/* A text-level action, not a raised Win98 button. */
+.card-description .read-more-toggle,
+.card-description .read-more-toggle:active {
+    display: inline;
+    position: static;
+    min-width: 0;
+    min-height: 0;
+    width: auto;
+    height: auto;
+    margin: 0;
     padding: 0;
-    background: none;
+    vertical-align: baseline;
+    background: transparent;
     border: 0;
+    box-shadow: none;
     color: var(--ctp-lavender);
     font: inherit;
+    letter-spacing: inherit;
+    line-height: inherit;
+    white-space: nowrap;
     cursor: pointer;
     text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+.card-description .read-more-toggle:hover {
+    color: var(--ctp-text);
+}
+
+.card-description .read-more-toggle:focus-visible {
+    outline: 1px dotted var(--ctp-lavender);
+    outline-offset: 2px;
 }
 
 .description-notice {
@@ -641,11 +664,6 @@ select:focus {
 }
 
 @media (pointer: coarse) {
-    .read-more-toggle {
-        min-height: 44px;
-        padding-inline: 4px;
-    }
-
     .modal-close-button {
         width: 44px;
         height: 44px;
