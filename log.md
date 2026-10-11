@@ -131,3 +131,8 @@
 - Tested an isolated temporary database with nested folder and post creation, rejected unsafe post URLs, validated ETag 304 responses, and checked inline description expansion, folder context menus, filtering, and card drag-and-drop in Chromium.
 - Corrected the README installation requirement for the Bun v2 lockfile and documented that deployments must protect the unauthenticated write API when port 3000 is reachable outside a trusted network.
 - Fixed Database page horizontal viewport scrolling at phone and tablet widths by containing table painting while preserving the table's own horizontal scrolling; retested at 320px, 390px, 768px, and 1440px without JavaScript errors.
+
+# 12-10-2026
+- Added an Android-friendly Archive drag handle with Pointer Events, live folder hit-testing and highlighting, edge auto-scrolling, and drop-to-move through the existing API.
+- Preserved touch scrolling and tap-to-inspect on cards, made handle taps open the folder picker, suppressed accidental clicks after drops, and retained desktop HTML drag-and-drop.
+- Verified browser JavaScript syntax and simulated pointer capture, movement threshold, folder drop, cancellation, tap behavior, click suppression, and edge auto-scroll; physical Android browser testing remains outstanding.
