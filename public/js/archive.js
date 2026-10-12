@@ -10,105 +10,111 @@ const archiveTree = document.getElementById("archiveFolderTree");
 const archiveCrumbs = document.getElementById("archiveBreadcrumbs");
 const archiveSidebar = document.querySelector(".archive-explorer-sidebar");
 const folderMenu = document.getElementById("archiveFolderContextMenu");
-let activeArchiveFolder = "";
+archiveCrumbs.addEventListener("click", event => {
+  const button = event.target.closest("button[data-archive-path]");
+  if (button && archiveCrumbs.contains(button)) chooseArchiveFolder(button.dataset.archivePath || "");
+});
+const archiveFolderParam = "folder";
+let masonryInitialized = false;
+function archiveFolderFromUrl() {
+  return new URL(window.location.href).searchParams.get(archiveFolderParam) || "";
+}
+let activeArchiveFolder = archiveFolderFromUrl();
 const openArchiveFolders = new Set();
 function archiveParent(path) {
   const index = path.lastIndexOf("/");
-  return index < 0 ? "" : path.slice(0, index);
+  return index < 0 ? "" : path.slice(0,index);
 }
 function archiveFolders(rows) {
-  const paths = new Set(
-    rows.filter((row) => row.isDirectory).map((row) => row.title),
-  );
+  const paths = new Set(rows.filter(row => row.isDirectory).map(row => row.title));
   for (const item of [...rows, ...postsData]) {
     let folder = archiveParent(item.title);
-    while (folder) {
-      paths.add(folder);
-      folder = archiveParent(folder);
-    }
+    while (folder) { paths.add(folder); folder = archiveParent(folder); }
   }
-  return [...paths].sort((a, b) => a.localeCompare(b));
+  return [...paths].sort((a,b)=>a.localeCompare(b));
 }
 function refreshArchiveFolderView() {
   const cards = [...postsContainer.querySelectorAll(".gallery-card")];
   for (const card of cards) {
     const path = card.dataset.title || "";
-    card.hidden = Boolean(
-      activeArchiveFolder && !path.startsWith(activeArchiveFolder + "/"),
-    );
+    card.hidden = Boolean(activeArchiveFolder && !path.startsWith(activeArchiveFolder + "/"));
     if (card.hidden) card.style.display = "none";
     else card.style.removeProperty("display");
   }
-  archiveCrumbs.replaceChildren();
-  const crumbs = [{ label: "All posts", path: "" }];
-  let path = "";
-  for (const part of activeArchiveFolder.split("/").filter(Boolean)) {
-    path = path ? path + "/" + part : part;
-    crumbs.push({ label: part, path });
-  }
-  crumbs.forEach((entry, index) => {
-    if (index) {
-      const separator = document.createElement("span");
-      separator.textContent = " / ";
-      archiveCrumbs.append(separator);
+  // Keep existing breadcrumb nodes intact when refreshing the same folder.
+  // Replacing focused buttons after every API request causes a visible blink.
+  if (archiveCrumbs.dataset.currentFolder !== activeArchiveFolder) {
+    const fragment = document.createDocumentFragment();
+    const crumbs = [{label:"All posts", path:""}];
+    let path = "";
+    for (const part of activeArchiveFolder.split("/").filter(Boolean)) {
+      path = path ? path + "/" + part : part;
+      crumbs.push({label:part,path});
     }
-    const btn = document.createElement("button");
-    btn.type = "button";
-    btn.textContent = entry.label;
-    btn.addEventListener("click", () => chooseArchiveFolder(entry.path));
-    archiveCrumbs.append(btn);
-  });
-  queueMasonryLayout();
-}
-function chooseArchiveFolder(folder) {
-  activeArchiveFolder = folder;
-  let path = folder;
-  while (path) {
-    openArchiveFolders.add(path);
-    path = archiveParent(path);
+    crumbs.forEach((entry,index)=>{
+      if(index) { const separator=document.createElement("span"); separator.textContent=" / "; fragment.append(separator); }
+      const btn=document.createElement("button");
+      btn.type="button";btn.dataset.archivePath=entry.path;btn.textContent=entry.label;
+      fragment.append(btn);
+    });
+    archiveCrumbs.replaceChildren(fragment);
+    archiveCrumbs.dataset.currentFolder = activeArchiveFolder;
   }
+  // Resolve grid spans in the same task as filtering so no intermediate
+  // layout of the old cards can be painted.
+  if (masonryInitialized) layoutMasonry();
+  else queueMasonryLayout();
+}
+function syncArchiveFolderUrl(folder, replace = false) {
+  const url = new URL(window.location.href);
+  if (folder) url.searchParams.set(archiveFolderParam, folder);
+  else url.searchParams.delete(archiveFolderParam);
+  if (url.href !== window.location.href) {
+    window.history[replace ? "replaceState" : "pushState"](window.history.state, "", url);
+  }
+}
+function resolveArchiveFolder(folder) {
+  const available = new Set(archiveFolders(archiveFolderRows));
+  while (folder && !available.has(folder)) folder = archiveParent(folder);
+  return folder;
+}
+function chooseArchiveFolder(folder, { historyMode = "push" } = {}) {
+  activeArchiveFolder = resolveArchiveFolder(folder);
+  if (historyMode !== "none") syncArchiveFolderUrl(activeArchiveFolder, historyMode === "replace");
+  let path = activeArchiveFolder;
+  while(path) { openArchiveFolders.add(path); path=archiveParent(path); }
   renderArchiveFolders();
   refreshArchiveFolderView();
+  if (historyMode === "push" && document.getElementById("galleryViewport")) {
+    document.getElementById("galleryViewport").scrollTop = 0;
+  }
 }
+window.addEventListener("popstate", () => {
+  chooseArchiveFolder(archiveFolderFromUrl(), { historyMode: "replace" });
+});
 let archiveFolderRows = [];
 function renderArchiveFolders() {
   if (!archiveTree) return;
   archiveTree.replaceChildren();
-  const folders = archiveFolders(archiveFolderRows);
-  const appendRow = (label, path, depth, children) => {
-    const row = document.createElement("div");
-    row.className = "archive-folder-row";
+  const folders=archiveFolders(archiveFolderRows);
+  const appendRow=(label,path,depth,children)=>{
+    const row=document.createElement("div");row.className="archive-folder-row";
     row.dataset.folder = path;
-    row.style.paddingLeft = depth * 16 + 4 + "px";
+    row.style.paddingLeft=(depth * 16 + 4) + "px";
     row.classList.toggle("selected", activeArchiveFolder === path);
-    if (children) {
-      const toggle = document.createElement("button");
-      toggle.type = "button";
-      toggle.className = "archive-folder-toggle";
+    if(children) {
+      const toggle=document.createElement("button");toggle.type="button";
+      toggle.className="archive-folder-toggle";
       toggle.textContent = openArchiveFolders.has(path) ? "▾" : "▸";
-      toggle.setAttribute(
-        "aria-expanded",
-        String(openArchiveFolders.has(path)),
-      );
-      toggle.setAttribute(
-        "aria-label",
-        (openArchiveFolders.has(path) ? "Collapse " : "Expand ") + label,
-      );
-      toggle.addEventListener("click", () => {
-        if (openArchiveFolders.has(path)) openArchiveFolders.delete(path);
-        else openArchiveFolders.add(path);
-        renderArchiveFolders();
-      });
+      toggle.setAttribute("aria-expanded", String(openArchiveFolders.has(path)));
+      toggle.setAttribute("aria-label",(openArchiveFolders.has(path)?"Collapse ":"Expand ")+label);
+      toggle.addEventListener("click",()=>{if(openArchiveFolders.has(path))openArchiveFolders.delete(path);else openArchiveFolders.add(path);renderArchiveFolders();});
       row.append(toggle);
     } else {
-      const spacer = document.createElement("span");
-      spacer.className = "archive-folder-spacer";
-      row.append(spacer);
+      const spacer=document.createElement("span");spacer.className="archive-folder-spacer";row.append(spacer);
     }
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className =
-      "archive-folder-button" + (activeArchiveFolder === path ? " active" : "");
+    const button=document.createElement("button");button.type="button";
+    button.className="archive-folder-button"+(activeArchiveFolder===path?" active":"");
     const glyph = document.createElement("span");
     glyph.className = path ? "archive-folder-glyph" : "archive-all-glyph";
     glyph.setAttribute("aria-hidden", "true");
@@ -116,38 +122,36 @@ function renderArchiveFolders() {
     name.className = "archive-folder-label";
     name.textContent = label;
     button.append(glyph, name);
-    button.title = path || "All posts";
-    button.addEventListener("click", () => chooseArchiveFolder(path));
+    button.title=path||"All posts";
+    button.addEventListener("click",()=>chooseArchiveFolder(path));
     row.append(button);
     archiveTree.append(row);
   };
-  appendRow("All posts", "", 0, false);
-  function appendChildren(parent, depth) {
-    for (const folder of folders.filter(
-      (path) => archiveParent(path) === parent,
-    )) {
-      const hasChildren = folders.some(
-        (path) => archiveParent(path) === folder,
-      );
-      appendRow(folder.split("/").pop(), folder, depth, hasChildren);
-      if (hasChildren && openArchiveFolders.has(folder))
-        appendChildren(folder, depth + 1);
+  appendRow("All posts","",0,false);
+  function appendChildren(parent,depth) {
+    for (const folder of folders.filter(path=>archiveParent(path)===parent)) {
+      const hasChildren=folders.some(path=>archiveParent(path)===folder);
+      appendRow(folder.split("/").pop(),folder,depth,hasChildren);
+      if (hasChildren && openArchiveFolders.has(folder)) appendChildren(folder,depth+1);
     }
   }
-  appendChildren("", 1);
+  appendChildren("",1);
 }
 async function loadArchiveFolders() {
   try {
-    archiveFolderRows = await archiveDocumentRequest("?database=true", {
-      cache: "no-store",
-    });
-  } catch (error) {
-    archiveFolderRows = [];
+    archiveFolderRows = await archiveDocumentRequest("?database=true", { cache: "no-store" });
+  } catch(error) {
+    archiveFolderRows=[];
     console.warn(error);
+    // Keep the bookmarked selection during transient network errors.
+    renderArchiveFolders();
+    refreshArchiveFolderView();
+    return;
   }
-  renderArchiveFolders();
-  refreshArchiveFolderView();
+  chooseArchiveFolder(activeArchiveFolder, { historyMode: "replace" });
 }
+// Paint the folder tree from server-supplied posts while the directory API loads.
+renderArchiveFolders();
 void loadArchiveFolders();
 
 async function archiveDocumentRequest(path, options = {}) {
@@ -157,95 +161,58 @@ async function archiveDocumentRequest(path, options = {}) {
   return body;
 }
 function validateFolderSegment(name) {
-  return (
-    name &&
-    name !== "." &&
-    name !== ".." &&
-    !name.includes("/") &&
-    !name.includes(String.fromCharCode(92)) &&
-    !/[\u0000-\u001f]/.test(name)
-  );
+  return name && name !== "." && name !== ".." && !name.includes("/") &&
+    !name.includes(String.fromCharCode(92)) && !/[\u0000-\u001f]/.test(name);
 }
 async function createArchiveFolder(parent = "") {
   const name = await window.showAppPrompt(
     parent ? "Create a subfolder in " + parent + ":" : "New folder name:",
-    { title: "New folder", inputLabel: "Folder name", confirmLabel: "Create" },
+    { title: "New folder", inputLabel: "Folder name", confirmLabel: "Create" }
   );
   if (name == null) return;
   const leaf = name.trim();
   if (!validateFolderSegment(leaf)) {
-    await window.showAppAlert(
-      "Use a name without slashes or control characters.",
-      { title: "Invalid folder name" },
-    );
+    await window.showAppAlert("Use a name without slashes or control characters.", { title: "Invalid folder name" });
     return;
   }
   const title = parent ? parent + "/" + leaf : leaf;
-  if (
-    archiveFolderRows.some((item) => item.title === title) ||
-    postsData.some((item) => item.title === title)
-  ) {
-    await window.showAppAlert(
-      "A post or folder already exists with this name.",
-      { title: "Folder exists" },
-    );
+  if (archiveFolderRows.some(item => item.title === title) ||
+      postsData.some(item => item.title === title)) {
+    await window.showAppAlert("A post or folder already exists with this name.", { title: "Folder exists" });
     return;
   }
   try {
     await archiveDocumentRequest("", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ title, isFolder: true }),
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ title, isFolder: true })
     });
     await loadArchiveFolders();
     chooseArchiveFolder(title);
   } catch (error) {
-    await window.showAppAlert(error.message || "Could not create folder.", {
-      title: "Create folder failed",
-    });
+    await window.showAppAlert(error.message || "Could not create folder.", { title: "Create folder failed" });
   }
 }
 async function deleteArchiveFolder(path) {
   if (!path) return;
   const prefix = path + "/";
-  const posts = postsData.filter((post) =>
-    post.title.startsWith(prefix),
-  ).length;
-  const subfolders = archiveFolders(archiveFolderRows).filter((folder) =>
-    folder.startsWith(prefix),
-  ).length;
-  const warning =
-    'Delete folder "' +
-    path +
-    '"?\n\nThis will permanently delete ' +
-    posts +
-    " post(s) and " +
-    subfolders +
-    " subfolder(s), including their contents. This cannot be undone.";
-  if (
-    !(await window.showAppConfirm(warning, {
-      title: "Delete folder and contents",
-      confirmLabel: "Delete folder",
-    }))
-  )
-    return;
+  const posts = postsData.filter(post => post.title.startsWith(prefix)).length;
+  const subfolders = archiveFolders(archiveFolderRows).filter(folder => folder.startsWith(prefix)).length;
+  const warning = 'Delete folder "' + path + '"?\n\nThis will permanently delete ' +
+    posts + " post(s) and " + subfolders + " subfolder(s), including their contents. This cannot be undone.";
+  if (!await window.showAppConfirm(warning, {
+    title: "Delete folder and contents", confirmLabel: "Delete folder"
+  })) return;
   try {
-    await archiveDocumentRequest("/" + encodeURIComponent(path), {
-      method: "DELETE",
-    });
+    await archiveDocumentRequest("/" + encodeURIComponent(path), { method: "DELETE" });
     window.location.reload();
   } catch (error) {
-    await window.showAppAlert(error.message || "Could not delete folder.", {
-      title: "Delete folder failed",
-    });
+    await window.showAppAlert(error.message || "Could not delete folder.", { title: "Delete folder failed" });
   }
 }
 let folderMenuPath = null;
 function closeFolderContextMenu() {
   folderMenu.hidden = true;
-  archiveTree
-    .querySelectorAll(".context-target")
-    .forEach((row) => row.classList.remove("context-target"));
+  archiveTree.querySelectorAll(".context-target").forEach(row => row.classList.remove("context-target"));
   folderMenuPath = null;
 }
 function openFolderContextMenu(event, row) {
@@ -255,68 +222,48 @@ function openFolderContextMenu(event, row) {
   folderMenuPath = row?.dataset.folder || null;
   row?.classList.add("context-target");
   const canUseFolder = Boolean(folderMenuPath || activeArchiveFolder);
-  folderMenu.querySelector('[data-folder-action="new-subfolder"]').disabled =
-    !canUseFolder;
-  folderMenu.querySelector('[data-folder-action="delete-folder"]').disabled =
-    !folderMenuPath;
+  folderMenu.querySelector('[data-folder-action="new-subfolder"]').disabled = !canUseFolder;
+  folderMenu.querySelector('[data-folder-action="delete-folder"]').disabled = !folderMenuPath;
   folderMenu.classList.remove("hidden");
   folderMenu.hidden = false;
-  const width = folderMenu.offsetWidth,
-    height = folderMenu.offsetHeight;
-  folderMenu.style.left =
-    Math.max(5, Math.min(event.clientX, window.innerWidth - width - 5)) + "px";
-  folderMenu.style.top =
-    Math.max(5, Math.min(event.clientY, window.innerHeight - height - 5)) +
-    "px";
+  const width = folderMenu.offsetWidth, height = folderMenu.offsetHeight;
+  folderMenu.style.left = Math.max(5, Math.min(event.clientX, window.innerWidth - width - 5)) + "px";
+  folderMenu.style.top = Math.max(5, Math.min(event.clientY, window.innerHeight - height - 5)) + "px";
   folderMenu.querySelector("button:not(:disabled)")?.focus();
 }
-archiveSidebar.addEventListener("contextmenu", (event) => {
+archiveSidebar.addEventListener("contextmenu", event => {
   const row = event.target.closest(".archive-folder-row");
   openFolderContextMenu(event, row);
 });
-archiveSidebar.addEventListener("keydown", (event) => {
-  if (event.key !== "ContextMenu" && !(event.shiftKey && event.key === "F10"))
-    return;
+archiveSidebar.addEventListener("keydown", event => {
+  if (event.key !== "ContextMenu" && !(event.shiftKey && event.key === "F10")) return;
   const row = event.target.closest(".archive-folder-row");
   const rect = (row || archiveSidebar).getBoundingClientRect();
-  openFolderContextMenu(
-    {
-      preventDefault: () => event.preventDefault(),
-      clientX: rect.left + 12,
-      clientY: rect.top + 12,
-    },
-    row,
-  );
+  openFolderContextMenu({preventDefault: () => event.preventDefault(), clientX: rect.left + 12, clientY: rect.top + 12}, row);
 });
-folderMenu.addEventListener("click", (event) => {
+folderMenu.addEventListener("click", event => {
   const button = event.target.closest("[data-folder-action]");
   if (!button || button.disabled) return;
   const path = folderMenuPath;
   const action = button.dataset.folderAction;
   closeFolderContextMenu();
-  if (action === "new-folder")
-    void createArchiveFolder(path ? archiveParent(path) : "");
-  if (action === "new-subfolder")
-    void createArchiveFolder(path || activeArchiveFolder);
+  if (action === "new-folder") void createArchiveFolder(path ? archiveParent(path) : "");
+  if (action === "new-subfolder") void createArchiveFolder(path || activeArchiveFolder);
   if (action === "delete-folder") void deleteArchiveFolder(path);
 });
-document
-  .getElementById("archiveNewFolderButton")
-  .addEventListener("click", () => {
-    closeFolderContextMenu();
-    void createArchiveFolder(activeArchiveFolder);
-  });
-document.addEventListener("pointerdown", (event) => {
-  if (!folderMenu.hidden && !folderMenu.contains(event.target))
-    closeFolderContextMenu();
+document.getElementById("archiveNewFolderButton").addEventListener("click", () => {
+  closeFolderContextMenu();
+  void createArchiveFolder(activeArchiveFolder);
 });
-document.addEventListener("keydown", (event) => {
+document.addEventListener("pointerdown", event => {
+  if (!folderMenu.hidden && !folderMenu.contains(event.target)) closeFolderContextMenu();
+});
+document.addEventListener("keydown", event => {
   if (event.key === "Escape") closeFolderContextMenu();
 });
-archiveSidebar.addEventListener("scroll", closeFolderContextMenu, {
-  passive: true,
-});
+archiveSidebar.addEventListener("scroll", closeFolderContextMenu, {passive: true});
 window.addEventListener("resize", closeFolderContextMenu);
+
 
 const MARKDOWN_IT_URL = "/vendor/markdown-it.js?v=15.0.2";
 let markdownPromise;
@@ -352,6 +299,7 @@ function getMarkdown() {
 function formatPostDate(value) {
   if (!value) return "";
 
+  // SQLite returns CURRENT_TIMESTAMP as "YYYY-MM-DD HH:MM:SS".
   const normalizedValue = value.includes(" ")
     ? value.replace(" ", "T") + "Z"
     : value;
@@ -466,7 +414,7 @@ function closeModal() {
 
   if (archiveRefreshPending) {
     archiveRefreshPending = false;
-    window.location.reload();
+    void refreshArchiveFromCacheUpdate();
   }
 }
 
@@ -507,6 +455,8 @@ function appendLessButton(description) {
   less.setAttribute("aria-label", "Show less of this post");
   less.textContent = "less";
 
+  // Keep the control at the end of the final paragraph, not as a
+  // separate raised element below the description.
   const lastElement = description.lastElementChild;
   const target = lastElement?.tagName === "P" ? lastElement : description;
   target.append(document.createTextNode(" "), less);
@@ -531,7 +481,10 @@ function toggleDescription(card, description) {
 
   void getMarkdown()
     .then((markdown) => {
-      if (!description.isConnected || description.dataset.expanded !== "true") {
+      if (
+        !description.isConnected ||
+        description.dataset.expanded !== "true"
+      ) {
         return;
       }
 
@@ -579,8 +532,7 @@ async function downloadMedia(post) {
   const response = await fetch(getMediaUrl(post, { download: true }));
   if (!response.ok) throw new Error("Media could not be downloaded.");
   const blob = await response.blob();
-  if (!post.mediaName)
-    throw new Error("The original media filename is unavailable.");
+  if (!post.mediaName) throw new Error("The original media filename is unavailable.");
   triggerBlobDownload(blob, post.mediaName);
 }
 
@@ -612,8 +564,12 @@ async function downloadPost(post, action) {
 
 const postsContainer = document.getElementById("postsContainer");
 
+// Original pre-Explorer masonry sizing, with a cap for a single visible post.
 const masonryEngine = "original-grid-single-cap";
 let masonryFrame = 0;
+let masonryResizeObserver = null;
+// Filter cards on the first frame, rather than flashing all posts before fetch().
+refreshArchiveFolderView();
 
 function visibleMasonryCards() {
   return [...postsContainer.querySelectorAll(".gallery-card")].filter(
@@ -634,10 +590,9 @@ function showMasonryDiagnostics(info) {
     document.body.append(label);
   }
 
-  const build =
-    document.querySelector('meta[name="meditord-build-id"]')?.content ||
-    "unknown";
-  label.textContent = `Masonry ${masonryEngine} | build ${build} | ${info.columns} cols | ${info.visiblePosts} posts | ${Math.round(info.cardWidth)}px | container ${Math.round(info.availableWidth)}px`;
+  const build = document.querySelector('meta[name="meditord-build-id"]')?.content || "unknown";
+  label.textContent =
+    `Masonry ${masonryEngine} | build ${build} | ${info.columns} cols | ${info.visiblePosts} posts | ${Math.round(info.cardWidth)}px | container ${Math.round(info.availableWidth)}px`;
 }
 
 function layoutMasonry() {
@@ -647,21 +602,10 @@ function layoutMasonry() {
   const cards = [...postsContainer.querySelectorAll(".gallery-card")];
   const visible = visibleMasonryCards();
 
-  postsContainer.classList.remove("masonry-ready");
-  postsContainer.style.removeProperty("height");
-  postsContainer.style.removeProperty("max-width");
-  postsContainer.style.removeProperty("grid-template-columns");
-  for (const card of cards) {
-    card.style.removeProperty("left");
-    card.style.removeProperty("top");
-    card.style.removeProperty("width");
-  }
-
+  // Preserve the previous grid and row spans while measuring. Clearing all
+  // spans every frame repacks the gallery even for unrelated UI changes.
   const mobile = getComputedStyle(postsContainer).display !== "grid";
-  postsContainer.classList.toggle(
-    "single-post",
-    !mobile && visible.length === 1,
-  );
+  postsContainer.classList.toggle("single-post", !mobile && visible.length === 1);
 
   if (!mobile) {
     const styles = getComputedStyle(postsContainer);
@@ -673,13 +617,14 @@ function layoutMasonry() {
         1,
         Math.ceil((height + rowGap) / (rowHeight + rowGap)),
       );
-      card.style.gridRowEnd = `span ${span}`;
+      if (card.style.gridRowEnd !== 'span ' + span) card.style.gridRowEnd = `span ${span}`;
     }
   }
   const visibleSet = new Set(visible);
   for (const card of cards) {
-    if (mobile || !visibleSet.has(card))
+    if ((mobile || !visibleSet.has(card)) && card.style.gridRowEnd) {
       card.style.removeProperty("grid-row-end");
+    }
   }
 
   const viewport = document.getElementById("galleryViewport");
@@ -690,10 +635,10 @@ function layoutMasonry() {
       (Number.parseFloat(viewportStyle.paddingLeft) || 0) -
       (Number.parseFloat(viewportStyle.paddingRight) || 0),
   );
-  const tracks = mobile
-    ? 1
-    : getComputedStyle(postsContainer).gridTemplateColumns.trim().split(/\s+/)
-        .length;
+  const tracks = mobile ? 1 :
+    getComputedStyle(postsContainer).gridTemplateColumns.trim().split(/\s+/).length;
+  // All geometry is committed before revealing the cards on first paint.
+  postsContainer.classList.add("masonry-ready");
   showMasonryDiagnostics({
     columns: visible.length ? tracks : 0,
     visiblePosts: visible.length,
@@ -709,12 +654,14 @@ function queueMasonryLayout() {
 
 function initializeMasonry() {
   const cards = postsContainer?.querySelectorAll(".gallery-card") ?? [];
-  queueMasonryLayout();
+  masonryInitialized = true;
+  if (masonryFrame) cancelAnimationFrame(masonryFrame);
+  layoutMasonry();
 
   if ("ResizeObserver" in window) {
-    const observer = new ResizeObserver(queueMasonryLayout);
-    cards.forEach((card) => observer.observe(card));
-    observer.observe(document.getElementById("galleryViewport"));
+    masonryResizeObserver = new ResizeObserver(queueMasonryLayout);
+    cards.forEach((card) => masonryResizeObserver.observe(card));
+    masonryResizeObserver.observe(document.getElementById("galleryViewport"));
   } else {
     postsContainer?.querySelectorAll("img, video").forEach((media) => {
       media.addEventListener("load", queueMasonryLayout, { passive: true });
@@ -786,102 +733,116 @@ function initializeThumbnailBackfill() {
       if (image.complete && image.naturalWidth > 0) {
         scheduleThumbnailBackfill(image);
       } else {
-        image.addEventListener("load", () => scheduleThumbnailBackfill(image), {
-          once: true,
-          passive: true,
-        });
+        image.addEventListener(
+          "load",
+          () => scheduleThumbnailBackfill(image),
+          { once: true, passive: true },
+        );
       }
     });
 }
 
-async function moveArchivePost(title, folder) {
-  const post = postsData.find((item) => item.title === title);
-  if (!post) return;
-  const leaf = title.split("/").pop();
-  const destination = folder ? folder + "/" + leaf : leaf;
-  if (destination === title) return;
-  if (
-    postsData.some((item) => item.title === destination) ||
-    archiveFolderRows.some((item) => item.title === destination)
-  ) {
-    await window.showAppAlert(
-      "An item with that name already exists in this folder.",
-      { title: "Move failed" },
-    );
-    return;
+
+function updateArchiveMovedPost(post, previousTitle, destination) {
+  post.title = destination;
+  const row = archiveFolderRows.find(item => item.title === previousTitle && !item.isDirectory);
+  if (row) row.title = destination;
+
+  const card = [...postsContainer.querySelectorAll(".gallery-card")]
+    .find(item => item.dataset.title === previousTitle);
+  if (card) {
+    card.dataset.title = destination;
+    const title = card.querySelector(".card-title");
+    if (title) title.textContent = destination;
+    const description = card.querySelector(".card-description");
+    if (description) description.dataset.title = destination;
+    card.querySelector(".card-menu-button")
+      ?.setAttribute("aria-label", "Open actions for " + destination);
+
+    const menu = card.querySelector(".card-menu");
+    const remove = menu?.querySelector('[data-action="remove-from-folder"]');
+    if (!archiveParent(destination)) {
+      remove?.remove();
+    } else if (menu && !remove) {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.dataset.action = "remove-from-folder";
+      button.textContent = "Remove from folder";
+      menu.querySelector('[data-action="add-to-folder"]')?.after(button);
+    }
+
+    // Media URLs contain the post title, so keep images/videos valid after a move.
+    for (const media of card.querySelectorAll("img[src], video[src]")) {
+      const url = new URL(media.getAttribute("src"), window.location.href);
+      if (url.origin !== window.location.origin) continue;
+      for (const prefix of ["/api/media/", "/api/media-thumbnail/"]) {
+        if (url.pathname === prefix + encodeURIComponent(previousTitle)) {
+          media.setAttribute("src", prefix + encodeURIComponent(destination) + url.search);
+          break;
+        }
+      }
+      if (media.getAttribute("aria-label") === previousTitle) {
+        media.setAttribute("aria-label", destination);
+      }
+      if (media.alt === "YouTube thumbnail for " + previousTitle) {
+        media.alt = "YouTube thumbnail for " + destination;
+      }
+    }
   }
+
+  renderArchiveFolders();
+  refreshArchiveFolderView();
+}
+
+const movingArchivePosts = new Set();
+async function moveArchivePost(title,folder) {
+  const post=postsData.find(item=>item.title===title);
+  if(!post || movingArchivePosts.has(title)) return;
+  const leaf=title.split("/").pop();
+  const destination=folder?folder+"/"+leaf:leaf;
+  if(destination===title) return;
+  if(postsData.some(item=>item.title===destination)||archiveFolderRows.some(item=>item.title===destination)){
+    await window.showAppAlert("An item with that name already exists in this folder.",{title:"Move failed"});return;
+  }
+  movingArchivePosts.add(title);
   try {
     await archiveDocumentRequest("/" + encodeURIComponent(title), {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ newTitle: destination }),
+      method: "PUT", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ newTitle: destination })
     });
-    window.location.reload();
-  } catch (error) {
-    await window.showAppAlert(error.message || "Move failed.", {
-      title: "Move failed",
-    });
+    updateArchiveMovedPost(post, title, destination);
+  } catch(error) {
+    await window.showAppAlert(error.message||"Move failed.",{title:"Move failed"});
+  } finally {
+    movingArchivePosts.delete(title);
   }
 }
 function showArchiveFolderPicker(post) {
   closeAllMenus();
-  const overlay = document.createElement("div");
-  overlay.className = "archive-folder-picker";
-  const panel = document.createElement("div");
-  panel.className = "archive-folder-picker-window raised";
-  panel.setAttribute("role", "dialog");
-  panel.setAttribute("aria-modal", "true");
-  panel.setAttribute("aria-label", "Move post to folder");
-  const heading = document.createElement("h2");
-  heading.className = "archive-folder-picker-title";
-  heading.textContent = "ADD TO FOLDER";
-  const select = document.createElement("select");
-  select.setAttribute("aria-label", "Destination folder");
-  for (const folder of ["", ...archiveFolders(archiveFolderRows)]) {
-    const option = document.createElement("option");
-    option.value = folder;
-    option.textContent = folder || "(Unfiled)";
-    select.append(option);
+  const overlay=document.createElement("div");overlay.className="archive-folder-picker";
+  const panel=document.createElement("div");panel.className="archive-folder-picker-window raised";
+  panel.setAttribute("role","dialog");panel.setAttribute("aria-modal","true");panel.setAttribute("aria-label","Move post to folder");
+  const heading=document.createElement("h2");heading.className="archive-folder-picker-title";heading.textContent="ADD TO FOLDER";
+  const select=document.createElement("select");select.setAttribute("aria-label","Destination folder");
+  for(const folder of ["",...archiveFolders(archiveFolderRows)]) {
+    const option=document.createElement("option");option.value=folder;option.textContent=folder||"(Unfiled)";select.append(option);
   }
-  select.value = archiveParent(post.title);
-  const actions = document.createElement("div");
-  actions.className = "archive-folder-picker-actions";
-  const cancel = document.createElement("button");
-  cancel.type = "button";
-  cancel.textContent = "Cancel";
-  const move = document.createElement("button");
-  move.type = "button";
-  move.textContent = "Move";
-  const close = () => {
-    overlay.remove();
-    document.removeEventListener("keydown", onKey);
-  };
-  const onKey = (event) => {
-    if (event.key === "Escape") close();
-  };
-  cancel.addEventListener("click", close);
-  move.addEventListener("click", () => {
-    const destination = select.value;
-    close();
-    void moveArchivePost(post.title, destination);
-  });
-  overlay.addEventListener("click", (event) => {
-    if (event.target === overlay) close();
-  });
-  document.addEventListener("keydown", onKey);
-  actions.append(cancel, move);
-  panel.append(heading, select, actions);
-  overlay.append(panel);
-  document.body.append(overlay);
-  select.focus();
+  select.value=archiveParent(post.title);
+  const actions=document.createElement("div");actions.className="archive-folder-picker-actions";
+  const cancel=document.createElement("button");cancel.type="button";cancel.textContent="Cancel";
+  const move=document.createElement("button");move.type="button";move.textContent="Move";
+  const close=()=>{overlay.remove();document.removeEventListener("keydown",onKey);};
+  const onKey=event=>{if(event.key==="Escape")close();};
+  cancel.addEventListener("click",close);
+  move.addEventListener("click",()=>{const destination=select.value;close();void moveArchivePost(post.title,destination);});
+  overlay.addEventListener("click",event=>{if(event.target===overlay)close();});
+  document.addEventListener("keydown",onKey);
+  actions.append(cancel,move);panel.append(heading,select,actions);overlay.append(panel);document.body.append(overlay);select.focus();
 }
-postsContainer
-  .querySelectorAll(
-    ".gallery-card, .gallery-card img, .gallery-card video, .gallery-card a",
-  )
-  .forEach((element) => {
-    element.draggable = false;
-  });
+// Folder changes are available only through each post's three-dot menu.
+// Prevent incidental native image/link dragging on touch and desktop.
+postsContainer.querySelectorAll(".gallery-card, .gallery-card img, .gallery-card video, .gallery-card a")
+  .forEach((element) => { element.draggable = false; });
 
 function toggleCardMenu(card) {
   const menu = card.querySelector(".card-menu");
@@ -920,9 +881,7 @@ async function deletePost(post, card) {
   if (!confirmed) return;
 
   try {
-    await archiveDocumentRequest("/" + encodeURIComponent(post.title), {
-      method: "DELETE",
-    });
+    await archiveDocumentRequest("/" + encodeURIComponent(post.title), { method: "DELETE" });
 
     postsData = postsData.filter((entry) => entry.title !== post.title);
     card.remove();
@@ -1021,18 +980,86 @@ initializeMasonry();
 initializeThumbnailBackfill();
 
 let archiveRefreshPending = false;
+let archiveRefreshInFlight = false;
 
-function refreshArchiveFromCacheUpdate() {
-  const modal = document.getElementById("postModal");
+async function refreshArchiveFromCacheUpdate() {
   if (
     document.visibilityState !== "visible" ||
-    modal?.classList.contains("active")
+    document.getElementById("postModal")?.classList.contains("active")
   ) {
     archiveRefreshPending = true;
     return;
   }
+  if (archiveRefreshInFlight) {
+    archiveRefreshPending = true;
+    return;
+  }
 
-  window.location.reload();
+  archiveRefreshInFlight = true;
+  try {
+    // Refresh only changed cards from server-rendered HTML. Do not reload the
+    // document, remount identical media, or disturb the current folder/scroll.
+    const response = await fetch("/archive.html?fresh=1", { cache: "no-store" });
+    if (!response.ok) throw new Error("Archive refresh failed");
+    const incoming = new DOMParser().parseFromString(await response.text(), "text/html");
+    const json = incoming.getElementById("initialPosts")?.textContent;
+    const newContainer = incoming.getElementById("postsContainer");
+    if (!json || !newContainer) throw new Error("Invalid archive refresh");
+    const updated = JSON.parse(json);
+    if (!Array.isArray(updated)) throw new Error("Invalid archive post data");
+
+    const previousPosts = new Map(postsData.map(post => [post.title, JSON.stringify(post)]));
+    const oldCards = new Map(
+      [...postsContainer.querySelectorAll(".gallery-card")].map(card => [card.dataset.title, card]),
+    );
+    const newCards = [...newContainer.querySelectorAll(".gallery-card")];
+    const newTitles = new Set(newCards.map(card => card.dataset.title));
+    const newPostData = new Map(updated.map(post => [post.title, JSON.stringify(post)]));
+    if (newCards.length !== updated.length ||
+        newCards.some(card => !newPostData.has(card.dataset.title))) {
+      throw new Error("Archive refresh mismatch");
+    }
+
+    for (const [title, card] of oldCards) {
+      if (!newTitles.has(title)) {
+        masonryResizeObserver?.unobserve(card);
+        card.remove();
+      }
+    }
+    for (let index = 0; index < newCards.length; index++) {
+      const incomingCard = newCards[index];
+      const title = incomingCard.dataset.title;
+      let currentCard = oldCards.get(title);
+      if (currentCard && previousPosts.get(title) !== newPostData.get(title)) {
+        masonryResizeObserver?.unobserve(currentCard);
+        currentCard.replaceWith(incomingCard);
+        currentCard = incomingCard;
+      }
+      const desired = currentCard || incomingCard;
+      if (postsContainer.children[index] !== desired) {
+        postsContainer.insertBefore(desired, postsContainer.children[index] || null);
+      }
+      if (!oldCards.has(title) || oldCards.get(title) !== desired) {
+        masonryResizeObserver?.observe(desired);
+      }
+    }
+
+    postsData = updated;
+    renderArchiveFolders();
+    refreshArchiveFolderView();
+    initializeThumbnailBackfill();
+  } catch (error) {
+    // An intermittent network error should not blank a perfectly usable cache.
+    console.warn("Archive background refresh failed:", error);
+  } finally {
+    archiveRefreshInFlight = false;
+    if (archiveRefreshPending &&
+        document.visibilityState === "visible" &&
+        !document.getElementById("postModal")?.classList.contains("active")) {
+      archiveRefreshPending = false;
+      void refreshArchiveFromCacheUpdate();
+    }
+  }
 }
 
 if ("serviceWorker" in navigator) {

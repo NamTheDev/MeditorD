@@ -4,9 +4,12 @@ import { join } from "node:path";
 import { gzipSync } from "node:zlib";
 import MarkdownIt from "markdown-it";
 import { ROOT } from "../config";
+import { imageDimensions } from "./image-dimensions";
 import {
   getAllDocuments,
   getArchiveValidator,
+  getDocumentThumbnail,
+  getDocumentMedia,
   type DocumentRecord,
 } from "./database/documents";
 
@@ -292,6 +295,19 @@ function renderCard(
   priorityImageIndex: number,
 ): string {
   const youtubeThumbnailUrl = getYouTubeThumbnailUrl(post.url);
+  // Reserve each preview height in SSR before lazy images are decoded.
+  const imageBytes = !youtubeThumbnailUrl && post.hasMedia &&
+    !post.mediaType?.startsWith("video/")
+      ? post.hasThumbnail
+        ? getDocumentThumbnail(post.title)
+        : getDocumentMedia(post.title)?.data
+      : null;
+  const dimensions = youtubeThumbnailUrl
+    ? { width: 480, height: 360 }
+    : imageBytes ? imageDimensions(imageBytes) : null;
+  const imageSize = dimensions
+    ? ` width="${dimensions.width}" height="${dimensions.height}"`
+    : "";
   let mediaHtml = "";
   if (youtubeThumbnailUrl) {
     const loading = index < 3 ? "eager" : "lazy";
@@ -302,7 +318,7 @@ function renderCard(
           ? ' fetchpriority="low"'
           : "";
     mediaHtml = `<div class="gallery-media thin-sunken embed-thumbnail youtube-thumbnail">
-      <img src="${youtubeThumbnailUrl}" alt="YouTube thumbnail for ${escapeHtml(post.title)}" loading="${loading}" decoding="async"${fetchPriority} />
+      <img src="${youtubeThumbnailUrl}" alt="YouTube thumbnail for ${escapeHtml(post.title)}"${imageSize} loading="${loading}" decoding="async"${fetchPriority} />
     </div>`;
   } else if (post.hasMedia) {
     const mediaUrl = getMediaUrl(post);
@@ -326,7 +342,7 @@ function renderCard(
           ? ` data-thumbnail-backfill="true" data-media-hash="${escapeHtml(post.mediaHash)}"`
           : "";
       mediaHtml = `<div class="gallery-media thin-sunken">
-        <img src="${displayUrl}" alt="" loading="${loading}" decoding="async" data-gallery-image="true"${backfillAttributes}${fetchPriority} />
+        <img src="${displayUrl}" alt=""${imageSize} loading="${loading}" decoding="async" data-gallery-image="true"${backfillAttributes}${fetchPriority} />
       </div>`;
     }
   }
@@ -430,7 +446,10 @@ async function renderPage(
       .replaceAll("{{build_id}}", () => escapeHtml(BUILD_ID))
       .replace(
         "{{page_stylesheet}}",
-        () => `<link rel="stylesheet" href="${pageStylesheetPath}" />`,
+        () => [
+          `<link rel="stylesheet" href="${pageStylesheetPath}" />`,
+          ...(isArchive ? ['<link rel="stylesheet" href="/css/archive-explorer.css" />'] : []),
+        ].join("\n        "),
       )
       .replace("{{body}}", () => content);
     if (pagePreloadHtml) {

@@ -11,24 +11,65 @@
         <link rel="icon" type="image/webp" href="/media/icon.webp" />
         <meta name="color-scheme" content="dark" />
         <meta name="darkreader-lock" />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-        <link
-            rel="preload"
-            as="style"
-            href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;600;700&family=Montserrat:wght@600;700;800&family=Pixelify+Sans:wght@400;600;700&family=Press+Start+2P&family=Silkscreen:wght@400;700&display=optional"
-            onload="this.onload=null;this.rel='stylesheet'"
-        />
-        <noscript>
-            <link
-                rel="stylesheet"
-                href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;600;700&family=Montserrat:wght@600;700;800&family=Pixelify+Sans:wght@400;600;700&family=Press+Start+2P&family=Silkscreen:wght@400;700&display=optional"
-            />
-        </noscript>
+        <link rel="preload" as="font" type="font/woff2" crossorigin href="/fonts/9d44a92983acf712.woff2" />
+        <link rel="preload" as="font" type="font/woff2" crossorigin href="/fonts/c4f4a8cd0b92a14a.woff2" />
+        <link rel="stylesheet" href="/css/fonts.css" />
+        <style>
+            html.meditord-js.meditord-cold-shell #appLoadingOverlay {
+                display: grid;
+            }
+            #appLoadingOverlay {
+                display: none;
+                position: fixed;
+                inset: 0;
+                z-index: 2147483640;
+                place-content: center;
+                justify-items: center;
+                gap: 20px;
+                background: #1e1e2e;
+                color: #cdd6f4;
+                font: 600 18px/1.5 system-ui, sans-serif;
+                text-align: center;
+            }
+            .app-loading-track {
+                width: min(300px, 76vw);
+                height: 16px;
+                border: 2px solid #585b70;
+                background: #11111b;
+                padding: 2px;
+            }
+            .app-loading-fill {
+                display: block;
+                height: 100%;
+                width: 0%;
+                background: #b4befe;
+                transition: width 160ms linear;
+            }
+            @media (prefers-reduced-motion: reduce) {
+                .app-loading-fill { transition: none; }
+            }
+        </style>
+        <script>
+            (() => {
+                document.documentElement.classList.add("meditord-js");
+                const build = document.querySelector('meta[name="meditord-build-id"]')?.content;
+                let warm = false;
+                try { warm = !!build && localStorage.getItem("meditord-shell-ready") === build; } catch {}
+                if (!warm) document.documentElement.classList.add("meditord-cold-shell");
+            })();
+        </script>
+        <script src="/js/app-shell.js" defer></script>
         <link rel="stylesheet" href="/css/global.css" />
         {{page_stylesheet}}
     </head>
     <body>
+        <div id="appLoadingOverlay" role="status" aria-live="polite" aria-label="Loading application">
+            <span>Loading...</span>
+            <div class="app-loading-track" role="progressbar" aria-label="Application loading progress"
+                 aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                <span class="app-loading-fill"></span>
+            </div>
+        </div>
         {{body}}
         <div
             class="app-dialog-overlay"
@@ -98,18 +139,28 @@
                 )?.content;
                 if (!buildId) return;
 
-                window.addEventListener(
-                    "load",
-                    () => {
-                        void navigator.serviceWorker
-                            .register(
-                                `/sw.js?v=${encodeURIComponent(buildId)}`,
-                                { scope: "/" },
-                            )
-                            .catch(() => {});
-                    },
-                    { once: true },
-                );
+                // Register before window.load, which can wait on large post images.
+                const scriptUrl = `/sw.js?v=${encodeURIComponent(buildId)}`;
+                window.meditordServiceWorkerReady = navigator.serviceWorker
+                    .register(scriptUrl, { scope: "/", updateViaCache: "none" })
+                    .then(async registration => {
+                        if (!registration.active?.scriptURL.endsWith(scriptUrl)) {
+                            const installing = registration.installing || registration.waiting;
+                            if (installing) {
+                                await Promise.race([
+                                    new Promise(resolve => {
+                                        if (installing.state === "activated") return resolve();
+                                        installing.addEventListener("statechange", () => {
+                                            if (installing.state === "activated" || installing.state === "redundant") resolve();
+                                        });
+                                    }),
+                                    new Promise(resolve => window.setTimeout(resolve, 2800)),
+                                ]);
+                            }
+                        }
+                        return registration;
+                    })
+                    .catch(() => null);
             })();
         </script>
         <script>

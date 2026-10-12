@@ -4,9 +4,11 @@
 
 Built from human ideas with Gemini, DeepSeek, GitHub Copilot, and ChatGPT supporting design, research, implementation, testing, and documentation throughout development.
 
+> Since I have been more educated about the problems with AI, I decided to boycott platforms by companies such as OpenAI, Claude, and Google. I will still use a little bit of AI (maybe more responsible platforms or self-hosted) to assist in coding, but overall I will try to do stuff myself more. This notice is written by a human btw. ***18:12 | Mon, Oct 12 | 2026***
+
 ## II. Introduction
 
-MeditorD is a nostalgic editor for organizing saved linked documents.
+MeditorD provides nostalgic, self-hosted Markdown editing and folder-based media archiving.
 
 ### Directory
 
@@ -18,17 +20,9 @@ meditord/
 │   │   ├── home-background.png
 │   │   └── home.png
 │   ├── chat-logs/
-│   │   ├── chatgpt-02-10-2026.md
-│   │   ├── chatgpt-03-10-2026.md
-│   │   ├── chatgpt-04-10-2026.md
-│   │   ├── chatgpt-05-10-2026.md
-│   │   ├── chatgpt-10-10-2026.md
-│   │   ├── chatgpt-11-10-2026.md
-│   │   ├── chatgpt-12-10-2026.md
-│   │   ├── gemini-11-09-2026.md
-│   │   ├── gemini-28-09-2026.md
-│   │   ├── github-copilot-16-09-2026.md
-│   │   └── github-copilot-25-09-2026.md
+│   │   ├── [GITHUB COPILOT CONVERSATION LOGS]
+│   │   ├── [GEMINI CONVERSATION LOGS]
+│   │   └── [CHATGPT CONVERSATION LOGS]
 │   └── ideas/
 │       └── editor.png
 ├── functions/
@@ -38,6 +32,7 @@ meditord/
 │   │   ├── documents.ts
 │   │   └── index.ts
 │   ├── file.ts
+│   ├── image-dimensions.ts
 │   ├── render.ts
 │   ├── string.ts
 │   └── url.ts
@@ -49,11 +44,17 @@ meditord/
 │   │   ├── database.css
 │   │   ├── edit.css
 │   │   ├── exit.css
+│   │   ├── fonts.css
 │   │   ├── global.css
 │   │   ├── home.css
 │   │   └── not-found.css
+│   ├── fonts/
+│   │   ├── [SELF-HOSTED WOFF2 FONT FILES]
+│   │   └── licenses/
+│   │       └── [FONT FAMILY LICENSE FILES]
 │   ├── js/
 │   │   ├── app-dialog.js
+│   │   ├── app-shell.js
 │   │   ├── archive.js
 │   │   ├── database.js
 │   │   ├── document-api.js
@@ -75,7 +76,11 @@ meditord/
 │   ├── global.html
 │   └── home.html
 ├── tests/
-│   └── api-data-integrity.test.ts
+│   ├── api-data-integrity.test.ts
+│   ├── app-shell-cache.test.ts
+│   ├── archive-breadcrumbs.test.ts
+│   ├── archive-layout.test.ts
+│   └── image-dimensions.test.ts
 ├── .dockerignore
 ├── .gitignore
 ├── Dockerfile
@@ -94,18 +99,15 @@ meditord/
 
 ### Tech Stack
 
-- Bun runtime and HTTP server.
-- Docker containerization.
-- TypeScript.
-- Bun's SQLite with `database/meditord.sqlite`.
-- Raw SQLite BLOB storage for original image and video uploads with generated gallery thumbnails, fingerprinted browser caching, and byte-range delivery.
-- markdown-it for rendering Markdown post descriptions.
-- HTML, CSS, browser JavaScript, and a service worker for offline-first runtime caching.
-- Database-management table with folder properties for organizing saved posts.
-- Archive folder explorer with contextual folder actions and three-dot Add to folder / Remove from folder post moves.
-- Modal editing and creation for title, username, URL, date, media, and description.
-- JSON API for document, folder, and media operations.
-- Responsive phone, tablet, and desktop layouts with safe-area and virtual-keyboard handling.
+| Layer | Technologies |
+| --- | --- |
+| Frontend | HTML, CSS, and vanilla JavaScript with native browser DOM APIs |
+| Backend | TypeScript running on Bun with `Bun.serve` |
+| Database | SQLite through Bun's built-in `bun:sqlite` driver |
+| Markdown | markdown-it |
+| Browser caching | Service Workers and the Cache Storage API |
+| Containerization | Docker with the official `oven/bun` image |
+| Development and testing | TypeScript compiler, Bun test runner, and Git |
 
 ## III. Installation
 
@@ -115,7 +117,7 @@ meditord/
 4. Run `bun test` to verify the isolated data-integrity regression tests.
 5. Optionally set `PORT`, `HOST`, and `ROOT` in `.env`.
 6. Start the server with `bun run index.ts`.
-7. Open `http://localhost:3000` in a modern browser.
+7. Open `http://localhost:3000` in a modern browser. The offline app shell requires HTTPS or localhost for service-worker registration.
 8. Open `http://localhost:3000/database.html` to access the database page.
 9. Keep port 3000 on a trusted network, or protect it using authenticated HTTPS access before exposing it publicly. The built-in API does not authenticate write requests.
 

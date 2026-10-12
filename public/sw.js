@@ -1,4 +1,5 @@
-const buildId = new URL(self.location.href).searchParams.get("v") || "runtime";
+const buildId =
+  new URL(self.location.href).searchParams.get("v") || "runtime";
 
 const PAGE_CACHE = `meditord-pages-${buildId}`;
 const ASSET_CACHE = `meditord-assets-${buildId}`;
@@ -22,6 +23,57 @@ const PRECACHE_PAGES = [
   "/exit.html",
 ];
 
+// The complete local app shell is cached by build ID, independent of SQLite
+// content and hashed post media. Fonts are same-origin and work offline.
+const FONT_ASSETS = [
+  "/fonts/01c04f4d69ca47be.woff2",
+  "/fonts/06a00cf15830e987.woff2",
+  "/fonts/0b5c2db191621518.woff2",
+  "/fonts/0df26f35f561af8d.woff2",
+  "/fonts/0e213dc59c137688.woff2",
+  "/fonts/11ced52deb54070d.woff2",
+  "/fonts/155bc5d4aa04bfb0.woff2",
+  "/fonts/2532acb5e3041baf.woff2",
+  "/fonts/2d8cfbcbf9ec7629.woff2",
+  "/fonts/2eab9668f909a1cb.woff2",
+  "/fonts/33ff57e97518ac70.woff2",
+  "/fonts/3ac757485912968d.woff2",
+  "/fonts/4065b246a6a3a332.woff2",
+  "/fonts/466e6a68c4ee3f94.woff2",
+  "/fonts/4e183d488cda203f.woff2",
+  "/fonts/5778b1a208141d42.woff2",
+  "/fonts/629b63da958cc8b3.woff2",
+  "/fonts/7300d08cc3cf7909.woff2",
+  "/fonts/757e9d7228a62b17.woff2",
+  "/fonts/7744a5a46dc6d551.woff2",
+  "/fonts/784e5ede32c4cdea.woff2",
+  "/fonts/831b24d66d162c0f.woff2",
+  "/fonts/839c38410d1a25b2.woff2",
+  "/fonts/8998599c66c8fbe3.woff2",
+  "/fonts/917577ede7adc104.woff2",
+  "/fonts/9d44a92983acf712.woff2",
+  "/fonts/9db1dd0fa5bc64ca.woff2",
+  "/fonts/a42b6e465d3ca536.woff2",
+  "/fonts/b05e6a7c9b00e462.woff2",
+  "/fonts/bde7db92496666b1.woff2",
+  "/fonts/c3a25aa85495bee4.woff2",
+  "/fonts/c4f4a8cd0b92a14a.woff2",
+  "/fonts/cb1a242b907c798c.woff2",
+  "/fonts/cf65f680c0c97e6e.woff2",
+  "/fonts/da9e68f458e4d3db.woff2",
+  "/fonts/efbd4e0b7034b5e3.woff2",
+  "/fonts/f776288548a3e1d9.woff2",
+  "/fonts/f798d93bcc10a932.woff2",
+];
+const SHELL_STATIC_ASSETS = [
+  "/css/fonts.css",
+  "/media/icon.webp",
+  "/media/grass-background.webp",
+  "/media/green-arrow.webp",
+  "/media/home-background.webp",
+  ...FONT_ASSETS,
+];
+
 function pageCacheKey(url) {
   return new Request(`${url.origin}${url.pathname}`, {
     method: "GET",
@@ -35,18 +87,48 @@ async function putIfCacheable(cache, key, response) {
   return response;
 }
 
-async function precachePages() {
-  const cache = await caches.open(PAGE_CACHE);
-  await Promise.allSettled(
-    PRECACHE_PAGES.map(async (path) => {
-      const response = await fetch(path, { cache: "reload" });
-      await putIfCacheable(cache, path, response);
-    }),
-  );
+async function precacheAppShell() {
+  const pages = await caches.open(PAGE_CACHE);
+  const assets = await caches.open(ASSET_CACHE);
+  const assetsToCache = new Set(SHELL_STATIC_ASSETS);
+  const pageResults = await Promise.allSettled(PRECACHE_PAGES.map(async path => {
+    const response = await fetch(path, { cache: "reload" });
+    if (!response.ok) throw new Error("Page unavailable: " + path);
+    await pages.put(path, response.clone());
+    const html = await response.text();
+    for (const match of html.matchAll(/(?:src|href)="(\/(?:css|js|media|vendor|fonts)\/[^"]+)"/g)) {
+      assetsToCache.add(match[1].replace(/&amp;/g, "&"));
+    }
+  }));
+
+  const assetResults = await Promise.allSettled([...assetsToCache].map(async path => {
+    const response = await fetch(path, { cache: "reload" });
+    if (!response.ok) throw new Error("Asset unavailable: " + path);
+    await assets.put(path, response);
+  }));
+
+  const complete = pageResults.every(result => result.status === "fulfilled") &&
+    assetResults.every(result => result.status === "fulfilled");
+  if (!complete) {
+    throw new Error("App shell precache failed; retaining the previous worker.");
+  }
+  await assets.put("/__meditord_shell_ready__", new Response(buildId));
 }
 
-self.addEventListener("install", (event) => {
-  event.waitUntil(Promise.all([precachePages(), self.skipWaiting()]));
+self.addEventListener("install", event => {
+  event.waitUntil(precacheAppShell().then(() => self.skipWaiting()));
+});
+
+self.addEventListener("message", event => {
+  if (event.data?.type !== "meditord-shell-status") return;
+  const port = event.ports?.[0];
+  if (!port) return;
+  event.waitUntil(
+    caches.open(ASSET_CACHE)
+      .then(cache => cache.match("/__meditord_shell_ready__"))
+      .then(response => port.postMessage({ ready: !!response }))
+      .catch(() => port.postMessage({ ready: false })),
+  );
 });
 
 self.addEventListener("activate", (event) => {
@@ -58,7 +140,9 @@ self.addEventListener("activate", (event) => {
 
       const cacheNames = await caches.keys();
       const legacyMediaCaches = cacheNames.filter(
-        (name) => name.startsWith("meditord-media-") && name !== MEDIA_CACHE,
+        (name) =>
+          name.startsWith("meditord-media-") &&
+          name !== MEDIA_CACHE,
       );
 
       if (legacyMediaCaches.length) {
@@ -80,9 +164,7 @@ self.addEventListener("activate", (event) => {
           .filter(
             (name) =>
               name.startsWith(CACHE_PREFIX) &&
-              ![PAGE_CACHE, ASSET_CACHE, MEDIA_CACHE, DATA_CACHE].includes(
-                name,
-              ),
+              ![PAGE_CACHE, ASSET_CACHE, MEDIA_CACHE, DATA_CACHE].includes(name),
           )
           .map((name) => caches.delete(name)),
       );
@@ -92,71 +174,72 @@ self.addEventListener("activate", (event) => {
   );
 });
 
-async function revalidatePage(event, request, key, cachedResponse) {
-  try {
-    const preloaded = await event.preloadResponse;
-    const response =
-      preloaded || (await fetch(new Request(request, { cache: "no-cache" })));
-
-    if (!response?.ok) return;
-
-    const cachedEtag = cachedResponse?.headers.get("etag");
-    const networkEtag = response.headers.get("etag");
-    const cache = await caches.open(PAGE_CACHE);
-    await cache.put(key, response.clone());
-
-    if (
-      cachedResponse &&
-      networkEtag &&
-      cachedEtag &&
-      networkEtag !== cachedEtag
-    ) {
-      const clients = await self.clients.matchAll({ type: "window" });
-      for (const client of clients) {
-        client.postMessage({
-          type: "meditord-page-cache-updated",
-          path: new URL(request.url).pathname,
-          etag: networkEtag,
-        });
-      }
-    }
-  } catch {}
-}
-
 async function handleNavigation(event) {
   const request = event.request;
   const url = new URL(request.url);
   const key = pageCacheKey(url);
   const cache = await caches.open(PAGE_CACHE);
   const cached = await cache.match(key);
+  const forceFresh = url.searchParams.get("fresh") === "1";
+  const controller = new AbortController();
+  const deadline = setTimeout(() => controller.abort(), 2200);
+  let servedCached = false;
 
-  if (url.searchParams.get("fresh") === "1") {
+  const network = (async () => {
     try {
-      const response = await fetch(new Request(request, { cache: "reload" }));
-      return await putIfCacheable(cache, key, response);
+      const response = await fetch(new Request(request, {
+        cache: forceFresh ? "reload" : "no-cache",
+        signal: controller.signal,
+      }));
+      if (!response.ok) return null;
+      const changed = Boolean(cached) &&
+        cached.headers.get("ETag") !== response.headers.get("ETag");
+      await cache.put(key, response.clone());
+      if (servedCached && changed) {
+        // The user already sees the cached page. Synchronize its changed posts
+        // without reloading or disrupting an open modal.
+        const clients = await self.clients.matchAll({ type: "window", includeUncontrolled: true });
+        for (const client of clients) {
+          if (new URL(client.url).pathname === url.pathname) {
+            client.postMessage({ type: "meditord-page-cache-updated", path: url.pathname });
+          }
+        }
+      }
+      return response;
     } catch {
-      if (cached) return cached;
+      return null;
+    } finally {
+      clearTimeout(deadline);
     }
-  }
+  })();
 
-  if (cached) {
-    event.waitUntil(revalidatePage(event, request, key, cached));
+  if (cached && !forceFresh) {
+    // A small network grace period favors fresh posts on fast connections;
+    // slow connections paint fully cached HTML rather than a blank viewport.
+    let timer;
+    const first = await Promise.race([
+      network,
+      new Promise(resolve => {
+        timer = setTimeout(() => resolve(null), 160);
+      }),
+    ]);
+    clearTimeout(timer);
+    if (first) return first;
+    servedCached = true;
+    event.waitUntil(network);
     return cached;
   }
 
-  try {
-    const preloaded = await event.preloadResponse;
-    const response = preloaded || (await fetch(request));
-    return await putIfCacheable(cache, key, response);
-  } catch {
-    return (
-      (await cache.match("/home.html")) ||
-      new Response("MeditorD is unavailable offline.", {
-        status: 503,
-        headers: { "Content-Type": "text/plain; charset=utf-8" },
-      })
-    );
-  }
+  const response = await network;
+  if (response) return response;
+  if (cached) return cached;
+  return (
+    (await cache.match("/home.html")) ||
+    new Response("MeditorD is unavailable offline.", {
+      status: 503,
+      headers: { "Content-Type": "text/plain; charset=utf-8" },
+    })
+  );
 }
 
 async function cacheFirst(request, cacheName) {
@@ -219,14 +302,19 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  if (request.mode === "navigate" && APP_PAGES.has(url.pathname)) {
+  if (
+    request.mode === "navigate" &&
+    APP_PAGES.has(url.pathname)
+  ) {
     event.respondWith(handleNavigation(event));
     return;
   }
 
   if (
-    (url.pathname.startsWith("/api/media/") ||
-      url.pathname.startsWith("/api/media-thumbnail/")) &&
+    (
+      url.pathname.startsWith("/api/media/") ||
+      url.pathname.startsWith("/api/media-thumbnail/")
+    ) &&
     url.searchParams.has("v") &&
     !url.searchParams.has("download") &&
     !request.headers.has("range")
@@ -244,11 +332,11 @@ self.addEventListener("fetch", (event) => {
   }
 
   if (
-    url.searchParams.has("v") &&
-    (url.pathname.startsWith("/css/") ||
-      url.pathname.startsWith("/js/") ||
-      url.pathname.startsWith("/media/") ||
-      url.pathname.startsWith("/vendor/"))
+    url.pathname.startsWith("/css/") ||
+    url.pathname.startsWith("/js/") ||
+    url.pathname.startsWith("/fonts/") ||
+    url.pathname.startsWith("/media/") ||
+    url.pathname.startsWith("/vendor/")
   ) {
     event.respondWith(cacheFirst(request, ASSET_CACHE));
   }
