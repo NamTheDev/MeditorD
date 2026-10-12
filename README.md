@@ -147,18 +147,15 @@ meditord/
 
 ### Tech Stack
 
-- Bun runtime and HTTP server.
-- Docker containerization.
-- TypeScript.
-- Bun's SQLite with `database/meditord.sqlite`.
-- Raw SQLite BLOB storage for original image and video uploads with generated gallery thumbnails, fingerprinted browser caching, and byte-range delivery.
-- markdown-it for rendering Markdown post descriptions.
-- Versioned offline app-shell caching for HTML, CSS, JavaScript, images, and locally hosted WOFF2 fonts, with a cold-start loading screen.
-- Database-management table with folder properties for organizing saved posts.
-- Archive folder explorer with URL-persistent folder selection, contextual actions, and three-dot Add to folder / Remove from folder post moves.
-- Modal editing and creation for title, username, URL, date, media, and description.
-- JSON API for document, folder, and media operations.
-- Responsive phone, tablet, and desktop layouts with safe-area and virtual-keyboard handling.
+| Layer | Technologies |
+| --- | --- |
+| Frontend | HTML, CSS, and vanilla JavaScript with native browser DOM APIs |
+| Backend | TypeScript running on Bun with `Bun.serve` |
+| Database | SQLite through Bun's built-in `bun:sqlite` driver |
+| Markdown | markdown-it |
+| Browser caching | Service Workers and the Cache Storage API |
+| Containerization | Docker with the official `oven/bun` image |
+| Development and testing | TypeScript compiler, Bun test runner, and Git |
 
 ## III. Installation
 
