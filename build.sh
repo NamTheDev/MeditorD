@@ -3,7 +3,8 @@ set -euo pipefail
 
 git pull
 
-docker build \
+docker compose up \
   --build-arg BUILD_ID="$(git rev-parse --short=12 HEAD)" \
   -t meditord \
-  .
+  . \
+  --build
