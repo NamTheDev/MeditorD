@@ -31,7 +31,15 @@ const server = Bun.serve({
   development: false,
   async fetch(req) {
     const url = new URL(req.url);
-    const path = decodeURIComponent(url.pathname);
+    let path: string;
+    try {
+      path = decodeURIComponent(url.pathname);
+    } catch {
+      if (url.pathname.startsWith("/api/")) {
+        return Response.json({ error: "Malformed URL encoding" }, { status: 400 });
+      }
+      return new Response("Bad Request", { status: 400 });
+    }
 
     if (path.includes("..")) {
       return new Response("Forbidden", { status: 403 });
