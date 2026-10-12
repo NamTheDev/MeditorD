@@ -4,3 +4,7 @@
 
 - <Commit details>
 - ...
+
+note:
+- capitalize
+- follow format
