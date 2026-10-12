@@ -4,7 +4,7 @@
 
 Built from human ideas with Gemini, DeepSeek, GitHub Copilot, and ChatGPT supporting design, research, implementation, testing, and documentation throughout development.
 
-> Since I have been more educated about the problems with AI, I decided to boycott using platforms by companies such as OpenAI, Claude, and Google. I will still use a little bit of AI (maybe more responsible platforms or self-hosted) to assist in coding, but overall I will try to do stuff myself more. This notice is written by a human btw. 18:12 | Mon, Oct 12 | 2026
+> Since I have been more educated about the problems with AI, I decided to boycott platforms by companies such as OpenAI, Claude, and Google. I will still use a little bit of AI (maybe more responsible platforms or self-hosted) to assist in coding, but overall I will try to do stuff myself more. This notice is written by a human btw. 18:12 | Mon, Oct 12 | 2026
 
 ## II. Introduction
 
