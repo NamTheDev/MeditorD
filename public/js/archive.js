@@ -701,22 +701,79 @@ function initializeThumbnailBackfill() {
 }
 
 
+function updateArchiveMovedPost(post, previousTitle, destination) {
+  post.title = destination;
+  const row = archiveFolderRows.find(item => item.title === previousTitle && !item.isDirectory);
+  if (row) row.title = destination;
+
+  const card = [...postsContainer.querySelectorAll(".gallery-card")]
+    .find(item => item.dataset.title === previousTitle);
+  if (card) {
+    card.dataset.title = destination;
+    const title = card.querySelector(".card-title");
+    if (title) title.textContent = destination;
+    const description = card.querySelector(".card-description");
+    if (description) description.dataset.title = destination;
+    card.querySelector(".card-menu-button")
+      ?.setAttribute("aria-label", "Open actions for " + destination);
+
+    const menu = card.querySelector(".card-menu");
+    const remove = menu?.querySelector('[data-action="remove-from-folder"]');
+    if (!archiveParent(destination)) {
+      remove?.remove();
+    } else if (menu && !remove) {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.dataset.action = "remove-from-folder";
+      button.textContent = "Remove from folder";
+      menu.querySelector('[data-action="add-to-folder"]')?.after(button);
+    }
+
+    // Media URLs contain the post title, so keep images/videos valid after a move.
+    for (const media of card.querySelectorAll("img[src], video[src]")) {
+      const url = new URL(media.getAttribute("src"), window.location.href);
+      if (url.origin !== window.location.origin) continue;
+      for (const prefix of ["/api/media/", "/api/media-thumbnail/"]) {
+        if (url.pathname === prefix + encodeURIComponent(previousTitle)) {
+          media.setAttribute("src", prefix + encodeURIComponent(destination) + url.search);
+          break;
+        }
+      }
+      if (media.getAttribute("aria-label") === previousTitle) {
+        media.setAttribute("aria-label", destination);
+      }
+      if (media.alt === "YouTube thumbnail for " + previousTitle) {
+        media.alt = "YouTube thumbnail for " + destination;
+      }
+    }
+  }
+
+  renderArchiveFolders();
+  refreshArchiveFolderView();
+}
+
+const movingArchivePosts = new Set();
 async function moveArchivePost(title,folder) {
   const post=postsData.find(item=>item.title===title);
-  if(!post) return;
+  if(!post || movingArchivePosts.has(title)) return;
   const leaf=title.split("/").pop();
   const destination=folder?folder+"/"+leaf:leaf;
   if(destination===title) return;
   if(postsData.some(item=>item.title===destination)||archiveFolderRows.some(item=>item.title===destination)){
     await window.showAppAlert("An item with that name already exists in this folder.",{title:"Move failed"});return;
   }
+  movingArchivePosts.add(title);
   try {
     await archiveDocumentRequest("/" + encodeURIComponent(title), {
       method: "PUT", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ newTitle: destination })
     });
-    window.location.reload();
-  } catch(error) {await window.showAppAlert(error.message||"Move failed.",{title:"Move failed"});}
+    updateArchiveMovedPost(post, title, destination);
+  } catch(error) {
+    await window.showAppAlert(error.message||"Move failed.",{title:"Move failed"});
+  } finally {
+    movingArchivePosts.delete(title);
+  }
 }
 function showArchiveFolderPicker(post) {
   closeAllMenus();
