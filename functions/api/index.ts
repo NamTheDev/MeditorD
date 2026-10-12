@@ -461,9 +461,13 @@ export async function handleApi(
       { status: 405 },
     );
   } catch (err: any) {
+    const sqliteConstraint =
+      typeof err?.code === "string" &&
+      err.code.startsWith("SQLITE_CONSTRAINT");
+    const isConflict = err instanceof db.DocumentConflictError || sqliteConstraint;
     return Response.json(
       { error: err.message || "Internal server error" },
-      { status: 500 },
+      { status: isConflict ? 409 : 500 },
     );
   }
 }
