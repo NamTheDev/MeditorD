@@ -824,6 +824,11 @@ postsContainer.addEventListener("click", async (event) => {
       showArchiveFolderPicker(post);
       return;
     }
+    if (action === "remove-from-folder") {
+      closeAllMenus();
+      if (archiveParent(post.title)) await moveArchivePost(post.title, "");
+      return;
+    }
     if (action === "edit") {
       closeAllMenus();
       window.location.href = `/database.html?edit=${encodeURIComponent(post.title)}`;
