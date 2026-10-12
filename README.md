@@ -18,17 +18,9 @@ meditord/
 │   │   ├── home-background.png
 │   │   └── home.png
 │   ├── chat-logs/
-│   │   ├── chatgpt-02-10-2026.md
-│   │   ├── chatgpt-03-10-2026.md
-│   │   ├── chatgpt-04-10-2026.md
-│   │   ├── chatgpt-05-10-2026.md
-│   │   ├── chatgpt-10-10-2026.md
-│   │   ├── chatgpt-11-10-2026.md
-│   │   ├── chatgpt-12-10-2026.md
-│   │   ├── gemini-11-09-2026.md
-│   │   ├── gemini-28-09-2026.md
-│   │   ├── github-copilot-16-09-2026.md
-│   │   └── github-copilot-25-09-2026.md
+│   │   ├── [GITHUB COPILOT CONVERSATION LOGS]
+│   │   ├── [GEMINI CONVERSATION LOGS]
+│   │   └── [CHATGPT CONVERSATION LOGS]
 │   └── ideas/
 │       └── editor.png
 ├── functions/
@@ -55,51 +47,9 @@ meditord/
 │   │   ├── home.css
 │   │   └── not-found.css
 │   ├── fonts/
-│   │   ├── 01c04f4d69ca47be.woff2
-│   │   ├── 06a00cf15830e987.woff2
-│   │   ├── 0b5c2db191621518.woff2
-│   │   ├── 0df26f35f561af8d.woff2
-│   │   ├── 0e213dc59c137688.woff2
-│   │   ├── 11ced52deb54070d.woff2
-│   │   ├── 155bc5d4aa04bfb0.woff2
-│   │   ├── 2532acb5e3041baf.woff2
-│   │   ├── 2d8cfbcbf9ec7629.woff2
-│   │   ├── 2eab9668f909a1cb.woff2
-│   │   ├── 33ff57e97518ac70.woff2
-│   │   ├── 3ac757485912968d.woff2
-│   │   ├── 4065b246a6a3a332.woff2
-│   │   ├── 466e6a68c4ee3f94.woff2
-│   │   ├── 4e183d488cda203f.woff2
-│   │   ├── 5778b1a208141d42.woff2
-│   │   ├── 629b63da958cc8b3.woff2
-│   │   ├── 7300d08cc3cf7909.woff2
-│   │   ├── 757e9d7228a62b17.woff2
-│   │   ├── 7744a5a46dc6d551.woff2
-│   │   ├── 784e5ede32c4cdea.woff2
-│   │   ├── 831b24d66d162c0f.woff2
-│   │   ├── 839c38410d1a25b2.woff2
-│   │   ├── 8998599c66c8fbe3.woff2
-│   │   ├── 917577ede7adc104.woff2
-│   │   ├── 9d44a92983acf712.woff2
-│   │   ├── 9db1dd0fa5bc64ca.woff2
-│   │   ├── a42b6e465d3ca536.woff2
-│   │   ├── b05e6a7c9b00e462.woff2
-│   │   ├── bde7db92496666b1.woff2
-│   │   ├── c3a25aa85495bee4.woff2
-│   │   ├── c4f4a8cd0b92a14a.woff2
-│   │   ├── cb1a242b907c798c.woff2
-│   │   ├── cf65f680c0c97e6e.woff2
-│   │   ├── da9e68f458e4d3db.woff2
-│   │   ├── efbd4e0b7034b5e3.woff2
-│   │   ├── f776288548a3e1d9.woff2
-│   │   ├── f798d93bcc10a932.woff2
+│   │   ├── [SELF-HOSTED WOFF2 FONT FILES]
 │   │   └── licenses/
-│   │       ├── ibmplexmono-OFL.txt
-│   │       ├── ibmplexsans-OFL.txt
-│   │       ├── montserrat-OFL.txt
-│   │       ├── pixelifysans-OFL.txt
-│   │       ├── pressstart2p-OFL.txt
-│   │       └── silkscreen-OFL.txt
+│   │       └── [FONT FAMILY LICENSE FILES]
 │   ├── js/
 │   │   ├── app-dialog.js
 │   │   ├── app-shell.js
