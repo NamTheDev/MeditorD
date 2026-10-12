@@ -1,8 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-git pull
+git pull --ff-only
 
-cd ~/docker
+BUILD_ID="$(git rev-parse --short=12 HEAD)"
 
-BUILD_ID="$(git rev-parse --short=12 HEAD)" docker compose up --build
+(
+  cd ~/docker
+  BUILD_ID="$BUILD_ID" docker compose up --build -d meditord
+)
