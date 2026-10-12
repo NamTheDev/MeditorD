@@ -15,6 +15,7 @@ archiveCrumbs.addEventListener("click", event => {
   if (button && archiveCrumbs.contains(button)) chooseArchiveFolder(button.dataset.archivePath || "");
 });
 const archiveFolderParam = "folder";
+let masonryInitialized = false;
 function archiveFolderFromUrl() {
   return new URL(window.location.href).searchParams.get(archiveFolderParam) || "";
 }
@@ -59,7 +60,10 @@ function refreshArchiveFolderView() {
     archiveCrumbs.replaceChildren(fragment);
     archiveCrumbs.dataset.currentFolder = activeArchiveFolder;
   }
-  queueMasonryLayout();
+  // Resolve grid spans in the same task as filtering so no intermediate
+  // layout of the old cards can be painted.
+  if (masonryInitialized) layoutMasonry();
+  else queueMasonryLayout();
 }
 function syncArchiveFolderUrl(folder, replace = false) {
   const url = new URL(window.location.href);
@@ -81,6 +85,9 @@ function chooseArchiveFolder(folder, { historyMode = "push" } = {}) {
   while(path) { openArchiveFolders.add(path); path=archiveParent(path); }
   renderArchiveFolders();
   refreshArchiveFolderView();
+  if (historyMode === "push" && document.getElementById("galleryViewport")) {
+    document.getElementById("galleryViewport").scrollTop = 0;
+  }
 }
 window.addEventListener("popstate", () => {
   chooseArchiveFolder(archiveFolderFromUrl(), { historyMode: "replace" });
@@ -407,7 +414,7 @@ function closeModal() {
 
   if (archiveRefreshPending) {
     archiveRefreshPending = false;
-    window.location.reload();
+    void refreshArchiveFromCacheUpdate();
   }
 }
 
@@ -560,6 +567,7 @@ const postsContainer = document.getElementById("postsContainer");
 // Original pre-Explorer masonry sizing, with a cap for a single visible post.
 const masonryEngine = "original-grid-single-cap";
 let masonryFrame = 0;
+let masonryResizeObserver = null;
 // Filter cards on the first frame, rather than flashing all posts before fetch().
 refreshArchiveFolderView();
 
@@ -594,17 +602,8 @@ function layoutMasonry() {
   const cards = [...postsContainer.querySelectorAll(".gallery-card")];
   const visible = visibleMasonryCards();
 
-  // Clear coordinates from the replaced absolute-positioning layout.
-  postsContainer.classList.remove("masonry-ready");
-  postsContainer.style.removeProperty("height");
-  postsContainer.style.removeProperty("max-width");
-  postsContainer.style.removeProperty("grid-template-columns");
-  for (const card of cards) {
-    card.style.removeProperty("left");
-    card.style.removeProperty("top");
-    card.style.removeProperty("width");
-  }
-
+  // Preserve the previous grid and row spans while measuring. Clearing all
+  // spans every frame repacks the gallery even for unrelated UI changes.
   const mobile = getComputedStyle(postsContainer).display !== "grid";
   postsContainer.classList.toggle("single-post", !mobile && visible.length === 1);
 
@@ -618,12 +617,14 @@ function layoutMasonry() {
         1,
         Math.ceil((height + rowGap) / (rowHeight + rowGap)),
       );
-      card.style.gridRowEnd = `span ${span}`;
+      if (card.style.gridRowEnd !== 'span ' + span) card.style.gridRowEnd = `span ${span}`;
     }
   }
   const visibleSet = new Set(visible);
   for (const card of cards) {
-    if (mobile || !visibleSet.has(card)) card.style.removeProperty("grid-row-end");
+    if ((mobile || !visibleSet.has(card)) && card.style.gridRowEnd) {
+      card.style.removeProperty("grid-row-end");
+    }
   }
 
   const viewport = document.getElementById("galleryViewport");
@@ -636,6 +637,8 @@ function layoutMasonry() {
   );
   const tracks = mobile ? 1 :
     getComputedStyle(postsContainer).gridTemplateColumns.trim().split(/\s+/).length;
+  // All geometry is committed before revealing the cards on first paint.
+  postsContainer.classList.add("masonry-ready");
   showMasonryDiagnostics({
     columns: visible.length ? tracks : 0,
     visiblePosts: visible.length,
@@ -651,12 +654,14 @@ function queueMasonryLayout() {
 
 function initializeMasonry() {
   const cards = postsContainer?.querySelectorAll(".gallery-card") ?? [];
-  queueMasonryLayout();
+  masonryInitialized = true;
+  if (masonryFrame) cancelAnimationFrame(masonryFrame);
+  layoutMasonry();
 
   if ("ResizeObserver" in window) {
-    const observer = new ResizeObserver(queueMasonryLayout);
-    cards.forEach((card) => observer.observe(card));
-    observer.observe(document.getElementById("galleryViewport"));
+    masonryResizeObserver = new ResizeObserver(queueMasonryLayout);
+    cards.forEach((card) => masonryResizeObserver.observe(card));
+    masonryResizeObserver.observe(document.getElementById("galleryViewport"));
   } else {
     postsContainer?.querySelectorAll("img, video").forEach((media) => {
       media.addEventListener("load", queueMasonryLayout, { passive: true });
@@ -975,18 +980,86 @@ initializeMasonry();
 initializeThumbnailBackfill();
 
 let archiveRefreshPending = false;
+let archiveRefreshInFlight = false;
 
-function refreshArchiveFromCacheUpdate() {
-  const modal = document.getElementById("postModal");
+async function refreshArchiveFromCacheUpdate() {
   if (
     document.visibilityState !== "visible" ||
-    modal?.classList.contains("active")
+    document.getElementById("postModal")?.classList.contains("active")
   ) {
     archiveRefreshPending = true;
     return;
   }
+  if (archiveRefreshInFlight) {
+    archiveRefreshPending = true;
+    return;
+  }
 
-  window.location.reload();
+  archiveRefreshInFlight = true;
+  try {
+    // Refresh only changed cards from server-rendered HTML. Do not reload the
+    // document, remount identical media, or disturb the current folder/scroll.
+    const response = await fetch("/archive.html?fresh=1", { cache: "no-store" });
+    if (!response.ok) throw new Error("Archive refresh failed");
+    const incoming = new DOMParser().parseFromString(await response.text(), "text/html");
+    const json = incoming.getElementById("initialPosts")?.textContent;
+    const newContainer = incoming.getElementById("postsContainer");
+    if (!json || !newContainer) throw new Error("Invalid archive refresh");
+    const updated = JSON.parse(json);
+    if (!Array.isArray(updated)) throw new Error("Invalid archive post data");
+
+    const previousPosts = new Map(postsData.map(post => [post.title, JSON.stringify(post)]));
+    const oldCards = new Map(
+      [...postsContainer.querySelectorAll(".gallery-card")].map(card => [card.dataset.title, card]),
+    );
+    const newCards = [...newContainer.querySelectorAll(".gallery-card")];
+    const newTitles = new Set(newCards.map(card => card.dataset.title));
+    const newPostData = new Map(updated.map(post => [post.title, JSON.stringify(post)]));
+    if (newCards.length !== updated.length ||
+        newCards.some(card => !newPostData.has(card.dataset.title))) {
+      throw new Error("Archive refresh mismatch");
+    }
+
+    for (const [title, card] of oldCards) {
+      if (!newTitles.has(title)) {
+        masonryResizeObserver?.unobserve(card);
+        card.remove();
+      }
+    }
+    for (let index = 0; index < newCards.length; index++) {
+      const incomingCard = newCards[index];
+      const title = incomingCard.dataset.title;
+      let currentCard = oldCards.get(title);
+      if (currentCard && previousPosts.get(title) !== newPostData.get(title)) {
+        masonryResizeObserver?.unobserve(currentCard);
+        currentCard.replaceWith(incomingCard);
+        currentCard = incomingCard;
+      }
+      const desired = currentCard || incomingCard;
+      if (postsContainer.children[index] !== desired) {
+        postsContainer.insertBefore(desired, postsContainer.children[index] || null);
+      }
+      if (!oldCards.has(title) || oldCards.get(title) !== desired) {
+        masonryResizeObserver?.observe(desired);
+      }
+    }
+
+    postsData = updated;
+    renderArchiveFolders();
+    refreshArchiveFolderView();
+    initializeThumbnailBackfill();
+  } catch (error) {
+    // An intermittent network error should not blank a perfectly usable cache.
+    console.warn("Archive background refresh failed:", error);
+  } finally {
+    archiveRefreshInFlight = false;
+    if (archiveRefreshPending &&
+        document.visibilityState === "visible" &&
+        !document.getElementById("postModal")?.classList.contains("active")) {
+      archiveRefreshPending = false;
+      void refreshArchiveFromCacheUpdate();
+    }
+  }
 }
 
 if ("serviceWorker" in navigator) {
