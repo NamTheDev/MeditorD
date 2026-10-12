@@ -180,34 +180,66 @@ async function handleNavigation(event) {
   const key = pageCacheKey(url);
   const cache = await caches.open(PAGE_CACHE);
   const cached = await cache.match(key);
+  const forceFresh = url.searchParams.get("fresh") === "1";
   const controller = new AbortController();
   const deadline = setTimeout(() => controller.abort(), 2200);
+  let servedCached = false;
 
-  try {
-    // Network-first HTML guarantees new posts and changed asset fingerprints
-    // on reload, while Cache Storage provides a full offline fallback.
-    const response = await fetch(new Request(request, {
-      cache: url.searchParams.get("fresh") === "1" ? "reload" : "no-cache",
-      signal: controller.signal,
-    }));
-    if (!response.ok) {
-      if (cached) return cached;
+  const network = (async () => {
+    try {
+      const response = await fetch(new Request(request, {
+        cache: forceFresh ? "reload" : "no-cache",
+        signal: controller.signal,
+      }));
+      if (!response.ok) return null;
+      const changed = Boolean(cached) &&
+        cached.headers.get("ETag") !== response.headers.get("ETag");
+      await cache.put(key, response.clone());
+      if (servedCached && changed) {
+        // The user already sees the cached page. Synchronize its changed posts
+        // without reloading or disrupting an open modal.
+        const clients = await self.clients.matchAll({ type: "window", includeUncontrolled: true });
+        for (const client of clients) {
+          if (new URL(client.url).pathname === url.pathname) {
+            client.postMessage({ type: "meditord-page-cache-updated", path: url.pathname });
+          }
+        }
+      }
       return response;
+    } catch {
+      return null;
+    } finally {
+      clearTimeout(deadline);
     }
-    await cache.put(key, response.clone());
-    return response;
-  } catch {
-    if (cached) return cached;
-    return (
-      (await cache.match("/home.html")) ||
-      new Response("MeditorD is unavailable offline.", {
-        status: 503,
-        headers: { "Content-Type": "text/plain; charset=utf-8" },
-      })
-    );
-  } finally {
-    clearTimeout(deadline);
+  })();
+
+  if (cached && !forceFresh) {
+    // A small network grace period favors fresh posts on fast connections;
+    // slow connections paint fully cached HTML rather than a blank viewport.
+    let timer;
+    const first = await Promise.race([
+      network,
+      new Promise(resolve => {
+        timer = setTimeout(() => resolve(null), 160);
+      }),
+    ]);
+    clearTimeout(timer);
+    if (first) return first;
+    servedCached = true;
+    event.waitUntil(network);
+    return cached;
   }
+
+  const response = await network;
+  if (response) return response;
+  if (cached) return cached;
+  return (
+    (await cache.match("/home.html")) ||
+    new Response("MeditorD is unavailable offline.", {
+      status: 503,
+      headers: { "Content-Type": "text/plain; charset=utf-8" },
+    })
+  );
 }
 
 async function cacheFirst(request, cacheName) {
