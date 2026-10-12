@@ -136,3 +136,4 @@
 - Added an Android-friendly Archive drag handle with Pointer Events, live folder hit-testing and highlighting, edge auto-scrolling, and drop-to-move through the existing API.
 - Preserved touch scrolling and tap-to-inspect on cards, made handle taps open the folder picker, suppressed accidental clicks after drops, and retained desktop HTML drag-and-drop.
 - Verified browser JavaScript syntax and simulated pointer capture, movement threshold, folder drop, cancellation, tap behavior, click suppression, and edge auto-scroll; physical Android browser testing remains outstanding.
+- Removed the experimental Android drag handle and all Archive drag-and-drop interactions on desktop and mobile; moving posts now requires the existing three-dot Add to folder picker. Preserved folder browsing and native page scrolling, and verified the picker’s rename API request in an isolated DOM test.
