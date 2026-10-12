@@ -38,6 +38,7 @@ meditord/
 │   │   ├── documents.ts
 │   │   └── index.ts
 │   ├── file.ts
+│   ├── image-dimensions.ts
 │   ├── render.ts
 │   ├── string.ts
 │   └── url.ts
@@ -124,7 +125,10 @@ meditord/
 │   └── home.html
 ├── tests/
 │   ├── api-data-integrity.test.ts
-│   └── app-shell-cache.test.ts
+│   ├── app-shell-cache.test.ts
+│   ├── archive-breadcrumbs.test.ts
+│   ├── archive-layout.test.ts
+│   └── image-dimensions.test.ts
 ├── .dockerignore
 ├── .gitignore
 ├── Dockerfile
