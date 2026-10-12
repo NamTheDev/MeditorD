@@ -20,9 +20,7 @@ meditord/
 │   │   ├── home-background.png
 │   │   └── home.png
 │   ├── chat-logs/
-│   │   ├── [GITHUB COPILOT CONVERSATION LOGS]
-│   │   ├── [GEMINI CONVERSATION LOGS]
-│   │   └── [CHATGPT CONVERSATION LOGS]
+│   │   └── [AI CONVERSATION LOGS]
 │   └── ideas/
 │       └── editor.png
 ├── functions/
@@ -75,12 +73,6 @@ meditord/
 │   ├── exit.html
 │   ├── global.html
 │   └── home.html
-├── tests/
-│   ├── api-data-integrity.test.ts
-│   ├── app-shell-cache.test.ts
-│   ├── archive-breadcrumbs.test.ts
-│   ├── archive-layout.test.ts
-│   └── image-dimensions.test.ts
 ├── .dockerignore
 ├── .gitignore
 ├── Dockerfile
@@ -91,9 +83,10 @@ meditord/
 ├── bun.lock
 ├── config.ts
 ├── index.ts
-├── log.md
+├── notes/
+│   ├── chat-logs.md
+│   └── commit-message-format.txt
 ├── package.json
-├── guidelines.md
 └── tsconfig.json
 ```
 
