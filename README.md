@@ -97,36 +97,41 @@ meditord/
 └── tsconfig.json
 ```
 
-### Tech Stack
-
-| Layer | Technologies |
-| --- | --- |
-| Frontend | HTML, CSS, and vanilla JavaScript with native browser DOM APIs |
-| Backend | TypeScript running on Bun with `Bun.serve` |
-| Database | SQLite through Bun's built-in `bun:sqlite` driver |
-| Markdown | markdown-it |
-| Browser caching | Service Workers and the Cache Storage API |
-| Containerization | Docker with the official `oven/bun` image |
-| Development and testing | TypeScript compiler, Bun test runner, and Git |
-
 ## III. Installation
 
-1. Install Bun v1.4.3 or newer, which supports the repository's Bun v2 lockfile.
-2. Clone this repository and change into its directory.
-3. Run `bun install --frozen-lockfile` to install the locked dependencies.
-4. Run `bun test` to verify the isolated data-integrity regression tests.
+1. Install latest version of Bun.
+2. Clone the repo and `cd` into it.
+3. Install locked dependencies:
+```bash
+bun install --frozen-lockfile
+```
+4. Run tests:
+```bash
+bun test
+```
 5. Optionally set `PORT`, `HOST`, and `ROOT` in `.env`.
-6. Start the server with `bun run index.ts`.
-7. Open `http://localhost:3000` in a modern browser. The offline app shell requires HTTPS or localhost for service-worker registration.
-8. Open `http://localhost:3000/database.html` to access the database page.
-9. Keep port 3000 on a trusted network, or protect it using authenticated HTTPS access before exposing it publicly. The built-in API does not authenticate write requests.
+6. Start the server:
+```bash
+bun run index.ts
+```
+7. Open `http://localhost:3000`; database page: `http://localhost:3000/database.html`. The offline shell needs HTTPS or localhost.
+8. Port 3000 has no auth for writes—keep it trusted or protect it with authenticated HTTPS.
 
-### Docker Alternative
+**Docker**
 
-1. Update the repository on the host with `git pull --ff-only`.
-2. Build the image with the native Git revision: `docker build --build-arg BUILD_ID="$(git rev-parse --short=12 HEAD)" -t meditord .`
-3. Run the container with the local database mounted: `docker run --rm -p 3000:3000 -v "$(pwd)/database:/app/database" meditord`.
-4. Re-run the host Git pull and Docker build commands when deploying new source changes.
+1. Update the host repo:
+```bash
+git pull --ff-only
+```
+2. Build the image:
+```bash
+docker build --build-arg BUILD_ID="$(git rev-parse --short=12 HEAD)" -t meditord .
+```
+3. Run the container:
+```bash
+docker run --rm -p 3000:3000 -v "$(pwd)/database:/app/database" meditord
+```
+4. On updates, re-run the pull and build.
 
 ## IV. Resources and License
 

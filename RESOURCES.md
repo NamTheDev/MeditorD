@@ -64,14 +64,12 @@ Licensing notes for Catppuccin, the Windows 95/98 design reference, markdown-it,
 
 ## Tech Stack
 
-The following technologies are used in this project:
+The project uses:
 
-- **Bun** — JavaScript/TypeScript runtime and native HTTP server via `Bun.serve`.
-- **Docker** — Containerizes the Bun application for consistent deployment.
-- **TypeScript** — Strictly typed server-side application code and Bun configuration.
-- **SQLite** — Local document storage through Bun's built-in `bun:sqlite` driver.
-- **HTML, CSS, and browser JavaScript** — Framework-free frontend pages, styling, editor behavior, and API client.
-- **HTTP/JSON API** — Document, folder, and media operations exposed under `/api`.
-- **SQLite media caching** — Uploaded image and video files are stored as raw SQLite BLOBs with content fingerprints, immutable browser caching, RAM reuse, and byte-range delivery.
-- **Bun and Node.js standard APIs** — Filesystem, path, and zlib utilities support static file serving and media storage.
-- **markdown-it** — Renders Markdown post descriptions in the archive and editor preview.
+- **HTML, CSS, vanilla JavaScript** ([MDN](https://developer.mozilla.org/)) for the frontend.
+- **TypeScript on Bun** with [`Bun.serve`](https://bun.sh/docs/api/http) for the backend.
+- **SQLite** via [`bun:sqlite`](https://bun.sh/docs/api/sqlite) for the database.
+- **markdown-it** ([GitHub](https://github.com/markdown-it/markdown-it)) for Markdown.
+- **Service Workers + Cache Storage API** ([MDN](https://developer.mozilla.org/en-US/docs/Web/API/CacheStorage)) for browser caching.
+- **Docker** with [`oven/bun`](https://hub.docker.com/r/oven/bun) for containerization.
+- **TypeScript compiler, Bun test runner, Git** ([TypeScript](https://www.typescriptlang.org/), [Bun test](https://bun.sh/docs/cli/test), [Git](https://git-scm.com/)) for development and testing.
