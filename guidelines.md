@@ -6,8 +6,25 @@
 
 2. Section II: Introduction.
 
-- A 10-word summary sentence, a symbolic directory tree view (full), and a tech-stack overview.
-- Do not add descriptions to files or directories in the README directory tree.
+- A 10-word summary sentence, a symbolic directory tree view covering the full project structure, and a tech-stack overview.
+- In directory tree views, summarize groups of files with repetitive naming using descriptive, uppercase, bracketed labels of 3–5 words instead of listing every filename.
+- Choose labels that identify the actual file group. Keep directory names and distinct source, configuration, and documentation files visible; preserve the tree hierarchy and branch connectors.
+- Summary labels represent file groups, not literal files or directories. Do not add inline descriptions to individual files or directories in the README directory tree.
+- Examples:
+
+```text
+│   ├── chat-logs/
+│   │   ├── [GITHUB COPILOT CONVERSATION LOGS]
+│   │   ├── [GEMINI CONVERSATION LOGS]
+│   │   └── [CHATGPT CONVERSATION LOGS]
+```
+
+```text
+│   ├── fonts/
+│   │   ├── [SELF-HOSTED WOFF2 FONT FILES]
+│   │   └── licenses/
+│   │       └── [FONT FAMILY LICENSE FILES]
+```
 
 3. Section III: Installation.
 
