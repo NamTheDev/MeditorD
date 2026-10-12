@@ -285,6 +285,13 @@ function cacheMedia(hash: string, data: Uint8Array): void {
   mediaCacheBytes += data.byteLength;
 }
 
+export class DocumentConflictError extends Error {
+  constructor(message = "An item with that name already exists") {
+    super(message);
+    this.name = "DocumentConflictError";
+  }
+}
+
 function normalizeTitle(title: string): string {
   const normalized = posix
     .normalize(title.replaceAll("\\", "/"))
@@ -646,7 +653,7 @@ export async function saveDocument(
     ? createHash("sha256").update(thumbnailBytes).digest("hex")
     : null;
 
-  database
+  const inserted = database
     .query(
       `INSERT INTO documents (
          title, is_directory, username, content, url,
@@ -654,16 +661,7 @@ export async function saveDocument(
          media_thumbnail, media_thumbnail_type, media_thumbnail_hash, media_thumbnail_size
        )
        VALUES (?, 0, ?, ?, ?, ?, ?, ?, ?, ?, 'identity', ?, ?, ?, ?)
-       ON CONFLICT(title) DO UPDATE SET
-         username = excluded.username, content = excluded.content, url = excluded.url,
-         media = excluded.media, media_name = excluded.media_name,
-         media_type = excluded.media_type, media_hash = excluded.media_hash,
-         media_size = excluded.media_size, media_storage = excluded.media_storage,
-         media_thumbnail = excluded.media_thumbnail,
-         media_thumbnail_type = excluded.media_thumbnail_type,
-         media_thumbnail_hash = excluded.media_thumbnail_hash,
-         media_thumbnail_size = excluded.media_thumbnail_size,
-         updated_at = CURRENT_TIMESTAMP`,
+       ON CONFLICT(title) DO NOTHING`,
     )
     .run(
       normalizedTitle, username, content, url,
@@ -672,6 +670,10 @@ export async function saveDocument(
       thumbnailBytes, thumbnailBytes ? thumbnail?.type || "image/webp" : null,
       thumbnailHash, thumbnailBytes?.byteLength ?? null,
     );
+
+  if (!inserted.changes) {
+    throw new DocumentConflictError();
+  }
 
   if (mediaBytes && mediaHash) cacheMedia(mediaHash, mediaBytes);
   if (thumbnailBytes && thumbnailHash) cacheMedia(thumbnailHash, thumbnailBytes);
@@ -752,7 +754,7 @@ export function createFolder(folderPath: string): boolean {
       "SELECT is_directory FROM documents WHERE title = ?",
     )
     .get(title);
-  if (existing) throw new Error("An item with that name already exists");
+  if (existing) throw new DocumentConflictError("An item with that name already exists");
   database
     .query("INSERT INTO documents (title, is_directory) VALUES (?, 1)")
     .run(title);
@@ -770,7 +772,7 @@ export function renameItem(oldPath: string, newPath: string): boolean {
   if (!item) return false;
   if (newTitle === oldTitle) return true;
   if (database.query("SELECT 1 FROM documents WHERE title = ?").get(newTitle)) {
-    throw new Error("An item already exists at the destination");
+    throw new DocumentConflictError("An item already exists at the destination");
   }
   if (item.is_directory === 1 && newTitle.startsWith(oldTitle + "/")) {
     throw new Error("Cannot move a folder into itself");
