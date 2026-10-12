@@ -6,7 +6,7 @@ Built from human ideas with Gemini, DeepSeek, GitHub Copilot, and ChatGPT suppor
 
 ## II. Introduction
 
-MeditorD is a nostalgic editor for organizing saved linked documents.
+MeditorD provides nostalgic, self-hosted Markdown editing and folder-based media archiving.
 
 ### Directory
 
