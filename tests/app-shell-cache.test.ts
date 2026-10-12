@@ -12,6 +12,9 @@ type Handler = (event: any) => void;
 function worker(buildId: string, storage = new Map<string, Map<string, any>>()) {
   const handlers = new Map<string, Handler>();
   let offline = false;
+  let networkDelayMs = 0;
+  let archiveEtag = '"revision-1"';
+  const pageUpdateMessages: any[] = [];
   const codeHash = buildId === "second" ? "def" : "abc";
   let freshPage = `<html><script src="/js/archive.js?v=${codeHash}"></script><link rel="stylesheet" href="/css/global.css?v=xyz"></html>`;
   const fetched: string[] = [];
@@ -31,12 +34,14 @@ function worker(buildId: string, storage = new Map<string, Map<string, any>>()) 
   };
   const mockFetch = async (input: Request | string) => {
     if (offline) throw new Error("offline");
+    if (networkDelayMs) await new Promise(resolve => setTimeout(resolve, networkDelayMs));
     const url = urlFor(input);
     fetched.push(url);
     const path = new URL(url).pathname;
     if (path.endsWith(".html")) {
       return new Response(path === "/archive.html" ? freshPage : `<html><script src="/js/archive.js?v=${codeHash}"></script></html>`, {
-        status: 200, headers: { "Content-Type": "text/html" },
+        status: 200, headers: { "Content-Type": "text/html",
+          ETag: path === "/archive.html" ? archiveEtag : '"static-page"' },
       });
     }
     return new Response(path.endsWith(".woff2") ? new Uint8Array([119, 79, 70, 50]) : "asset", { status: 200 });
@@ -45,7 +50,15 @@ function worker(buildId: string, storage = new Map<string, Map<string, any>>()) 
     location: { href: origin + "/sw.js?v=" + buildId, origin },
     addEventListener(name: string, handler: Handler) { handlers.set(name, handler); },
     async skipWaiting() {},
-    clients: { async claim() {} },
+    clients: {
+      async claim() {},
+      async matchAll() {
+        return [{
+          url: origin + "/archive.html?folder=Brawl%20stars",
+          postMessage(message: any) { pageUpdateMessages.push(message); },
+        }];
+      },
+    },
     registration: { navigationPreload: { async enable() {} } },
   };
   runInNewContext(swSource, {
@@ -53,7 +66,7 @@ function worker(buildId: string, storage = new Map<string, Map<string, any>>()) 
     setTimeout, clearTimeout, Promise, Uint8Array, Error,
   });
 
-  async function dispatch(name: string, event: any) {
+  async function dispatch(name: string, event: any, awaitBackground = true) {
     const promises: Promise<unknown>[] = [];
     let responsePromise: Promise<any> | undefined;
     const augmented = {
@@ -63,19 +76,22 @@ function worker(buildId: string, storage = new Map<string, Map<string, any>>()) 
     };
     handlers.get(name)?.(augmented);
     const response = responsePromise && await responsePromise;
-    await Promise.all(promises);
+    if (awaitBackground) await Promise.all(promises);
+    else promises.forEach(promise => void promise.catch(() => {}));
     return response;
   }
   return {
     dispatch,
     storage,
     fetched,
+    pageUpdateMessages,
     setOffline(value: boolean) { offline = value; },
-    setPage(value: string) { freshPage = value; },
-    async navigate(path = "/archive.html") {
+    setDelay(value: number) { networkDelayMs = value; },
+    setPage(value: string) { freshPage = value; archiveEtag = '"revision-updated"'; },
+    async navigate(path = "/archive.html", awaitBackground = true) {
       const request = new Request(origin + path);
       Object.defineProperty(request, "mode", { value: "navigate" });
-      return dispatch("fetch", { request });
+      return dispatch("fetch", { request }, awaitBackground);
     },
     async asset(path: string) { return dispatch("fetch", { request: new Request(origin + path) }); },
   };
@@ -148,4 +164,33 @@ test("incomplete updates do not activate or remove the last complete shell", asy
   expect(storage.has("meditord-pages-previous")).toBe(true);
   expect(storage.has("meditord-assets-previous")).toBe(true);
   expect(storage.get("meditord-assets-incomplete")?.has(origin + "/__meditord_shell_ready__")).toBe(false);
+});
+
+
+test("cached archive loads promptly on a slow network and updates in place", async () => {
+  const site = worker("slow");
+  await site.dispatch("install", {});
+  await site.dispatch("activate", {});
+  site.setPage("<html>Fresh Brawl stars post</html>");
+  site.setDelay(450);
+  const started = Date.now();
+  const cached = await site.navigate("/archive.html?folder=Brawl%20stars", false);
+  expect(Date.now() - started).toBeLessThan(350);
+  expect(await cached?.text()).not.toContain("Fresh Brawl stars post");
+  await new Promise(resolve => setTimeout(resolve, 550));
+  expect(site.pageUpdateMessages).toEqual([{
+    type: "meditord-page-cache-updated", path: "/archive.html",
+  }]);
+  site.setDelay(0);
+  expect(await (await site.navigate("/archive.html?folder=Brawl%20stars"))?.text())
+    .toContain("Fresh Brawl stars post");
+});
+
+test("unchanged cached page does not trigger a gallery refresh", async () => {
+  const site = worker("unchanged");
+  await site.dispatch("install", {});
+  site.setDelay(400);
+  expect(await (await site.navigate("/archive.html", false))?.text()).toContain("<html>");
+  await new Promise(resolve => setTimeout(resolve, 490));
+  expect(site.pageUpdateMessages).toEqual([]);
 });
