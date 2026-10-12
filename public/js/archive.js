@@ -10,7 +10,11 @@ const archiveTree = document.getElementById("archiveFolderTree");
 const archiveCrumbs = document.getElementById("archiveBreadcrumbs");
 const archiveSidebar = document.querySelector(".archive-explorer-sidebar");
 const folderMenu = document.getElementById("archiveFolderContextMenu");
-let activeArchiveFolder = "";
+const archiveFolderParam = "folder";
+function archiveFolderFromUrl() {
+  return new URL(window.location.href).searchParams.get(archiveFolderParam) || "";
+}
+let activeArchiveFolder = archiveFolderFromUrl();
 const openArchiveFolders = new Set();
 function archiveParent(path) {
   const index = path.lastIndexOf("/");
@@ -48,13 +52,30 @@ function refreshArchiveFolderView() {
   });
   queueMasonryLayout();
 }
-function chooseArchiveFolder(folder) {
-  activeArchiveFolder = folder;
-  let path = folder;
+function syncArchiveFolderUrl(folder, replace = false) {
+  const url = new URL(window.location.href);
+  if (folder) url.searchParams.set(archiveFolderParam, folder);
+  else url.searchParams.delete(archiveFolderParam);
+  if (url.href !== window.location.href) {
+    window.history[replace ? "replaceState" : "pushState"](window.history.state, "", url);
+  }
+}
+function resolveArchiveFolder(folder) {
+  const available = new Set(archiveFolders(archiveFolderRows));
+  while (folder && !available.has(folder)) folder = archiveParent(folder);
+  return folder;
+}
+function chooseArchiveFolder(folder, { historyMode = "push" } = {}) {
+  activeArchiveFolder = resolveArchiveFolder(folder);
+  if (historyMode !== "none") syncArchiveFolderUrl(activeArchiveFolder, historyMode === "replace");
+  let path = activeArchiveFolder;
   while(path) { openArchiveFolders.add(path); path=archiveParent(path); }
   renderArchiveFolders();
   refreshArchiveFolderView();
 }
+window.addEventListener("popstate", () => {
+  chooseArchiveFolder(archiveFolderFromUrl(), { historyMode: "replace" });
+});
 let archiveFolderRows = [];
 function renderArchiveFolders() {
   if (!archiveTree) return;
@@ -106,9 +127,12 @@ async function loadArchiveFolders() {
   } catch(error) {
     archiveFolderRows=[];
     console.warn(error);
+    // Keep the bookmarked selection during transient network errors.
+    renderArchiveFolders();
+    refreshArchiveFolderView();
+    return;
   }
-  renderArchiveFolders();
-  refreshArchiveFolderView();
+  chooseArchiveFolder(activeArchiveFolder, { historyMode: "replace" });
 }
 void loadArchiveFolders();
 
