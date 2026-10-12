@@ -108,6 +108,12 @@ body {
     justify-content: center;
 }
 
+/* Hold only the cards, not the page chrome, until first grid measurement.
+   The no-JS gallery still renders normally. */
+html.meditord-js .reddit-gallery:not(.masonry-ready) .gallery-card {
+    visibility: hidden;
+}
+
 .reddit-gallery.compact {
     grid-template-columns: 1fr;
 }
@@ -166,6 +172,8 @@ body {
 
 .gallery-media video {
     background: var(--ctp-crust);
+    /* No metadata-dependent height jump when video metadata finishes loading. */
+    aspect-ratio: 16 / 9;
 }
 
 .gallery-media.embed-thumbnail {
