@@ -1,5 +1,4 @@
-const buildId =
-  new URL(self.location.href).searchParams.get("v") || "runtime";
+const buildId = new URL(self.location.href).searchParams.get("v") || "runtime";
 
 const PAGE_CACHE = `meditord-pages-${buildId}`;
 const ASSET_CACHE = `meditord-assets-${buildId}`;
@@ -23,8 +22,6 @@ const PRECACHE_PAGES = [
   "/exit.html",
 ];
 
-// The complete local app shell is cached by build ID, independent of SQLite
-// content and hashed post media. Fonts are same-origin and work offline.
 const FONT_ASSETS = [
   "/fonts/01c04f4d69ca47be.woff2",
   "/fonts/06a00cf15830e987.woff2",
@@ -91,42 +88,52 @@ async function precacheAppShell() {
   const pages = await caches.open(PAGE_CACHE);
   const assets = await caches.open(ASSET_CACHE);
   const assetsToCache = new Set(SHELL_STATIC_ASSETS);
-  const pageResults = await Promise.allSettled(PRECACHE_PAGES.map(async path => {
-    const response = await fetch(path, { cache: "reload" });
-    if (!response.ok) throw new Error("Page unavailable: " + path);
-    await pages.put(path, response.clone());
-    const html = await response.text();
-    for (const match of html.matchAll(/(?:src|href)="(\/(?:css|js|media|vendor|fonts)\/[^"]+)"/g)) {
-      assetsToCache.add(match[1].replace(/&amp;/g, "&"));
-    }
-  }));
+  const pageResults = await Promise.allSettled(
+    PRECACHE_PAGES.map(async (path) => {
+      const response = await fetch(path, { cache: "reload" });
+      if (!response.ok) throw new Error("Page unavailable: " + path);
+      await pages.put(path, response.clone());
+      const html = await response.text();
+      for (const match of html.matchAll(
+        /(?:src|href)="(\/(?:css|js|media|vendor|fonts)\/[^"]+)"/g,
+      )) {
+        assetsToCache.add(match[1].replace(/&amp;/g, "&"));
+      }
+    }),
+  );
 
-  const assetResults = await Promise.allSettled([...assetsToCache].map(async path => {
-    const response = await fetch(path, { cache: "reload" });
-    if (!response.ok) throw new Error("Asset unavailable: " + path);
-    await assets.put(path, response);
-  }));
+  const assetResults = await Promise.allSettled(
+    [...assetsToCache].map(async (path) => {
+      const response = await fetch(path, { cache: "reload" });
+      if (!response.ok) throw new Error("Asset unavailable: " + path);
+      await assets.put(path, response);
+    }),
+  );
 
-  const complete = pageResults.every(result => result.status === "fulfilled") &&
-    assetResults.every(result => result.status === "fulfilled");
+  const complete =
+    pageResults.every((result) => result.status === "fulfilled") &&
+    assetResults.every((result) => result.status === "fulfilled");
   if (!complete) {
-    throw new Error("App shell precache failed; retaining the previous worker.");
+    throw new Error(
+      "App shell precache failed; retaining the previous worker.",
+    );
   }
   await assets.put("/__meditord_shell_ready__", new Response(buildId));
 }
 
-self.addEventListener("install", event => {
+self.addEventListener("install", (event) => {
   event.waitUntil(precacheAppShell().then(() => self.skipWaiting()));
 });
 
-self.addEventListener("message", event => {
+self.addEventListener("message", (event) => {
   if (event.data?.type !== "meditord-shell-status") return;
   const port = event.ports?.[0];
   if (!port) return;
   event.waitUntil(
-    caches.open(ASSET_CACHE)
-      .then(cache => cache.match("/__meditord_shell_ready__"))
-      .then(response => port.postMessage({ ready: !!response }))
+    caches
+      .open(ASSET_CACHE)
+      .then((cache) => cache.match("/__meditord_shell_ready__"))
+      .then((response) => port.postMessage({ ready: !!response }))
       .catch(() => port.postMessage({ ready: false })),
   );
 });
@@ -140,9 +147,7 @@ self.addEventListener("activate", (event) => {
 
       const cacheNames = await caches.keys();
       const legacyMediaCaches = cacheNames.filter(
-        (name) =>
-          name.startsWith("meditord-media-") &&
-          name !== MEDIA_CACHE,
+        (name) => name.startsWith("meditord-media-") && name !== MEDIA_CACHE,
       );
 
       if (legacyMediaCaches.length) {
@@ -164,7 +169,9 @@ self.addEventListener("activate", (event) => {
           .filter(
             (name) =>
               name.startsWith(CACHE_PREFIX) &&
-              ![PAGE_CACHE, ASSET_CACHE, MEDIA_CACHE, DATA_CACHE].includes(name),
+              ![PAGE_CACHE, ASSET_CACHE, MEDIA_CACHE, DATA_CACHE].includes(
+                name,
+              ),
           )
           .map((name) => caches.delete(name)),
       );
@@ -187,21 +194,28 @@ async function handleNavigation(event) {
 
   const network = (async () => {
     try {
-      const response = await fetch(new Request(request, {
-        cache: forceFresh ? "reload" : "no-cache",
-        signal: controller.signal,
-      }));
+      const response = await fetch(
+        new Request(request, {
+          cache: forceFresh ? "reload" : "no-cache",
+          signal: controller.signal,
+        }),
+      );
       if (!response.ok) return null;
-      const changed = Boolean(cached) &&
+      const changed =
+        Boolean(cached) &&
         cached.headers.get("ETag") !== response.headers.get("ETag");
       await cache.put(key, response.clone());
       if (servedCached && changed) {
-        // The user already sees the cached page. Synchronize its changed posts
-        // without reloading or disrupting an open modal.
-        const clients = await self.clients.matchAll({ type: "window", includeUncontrolled: true });
+        const clients = await self.clients.matchAll({
+          type: "window",
+          includeUncontrolled: true,
+        });
         for (const client of clients) {
           if (new URL(client.url).pathname === url.pathname) {
-            client.postMessage({ type: "meditord-page-cache-updated", path: url.pathname });
+            client.postMessage({
+              type: "meditord-page-cache-updated",
+              path: url.pathname,
+            });
           }
         }
       }
@@ -214,12 +228,10 @@ async function handleNavigation(event) {
   })();
 
   if (cached && !forceFresh) {
-    // A small network grace period favors fresh posts on fast connections;
-    // slow connections paint fully cached HTML rather than a blank viewport.
     let timer;
     const first = await Promise.race([
       network,
-      new Promise(resolve => {
+      new Promise((resolve) => {
         timer = setTimeout(() => resolve(null), 160);
       }),
     ]);
@@ -302,19 +314,14 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  if (
-    request.mode === "navigate" &&
-    APP_PAGES.has(url.pathname)
-  ) {
+  if (request.mode === "navigate" && APP_PAGES.has(url.pathname)) {
     event.respondWith(handleNavigation(event));
     return;
   }
 
   if (
-    (
-      url.pathname.startsWith("/api/media/") ||
-      url.pathname.startsWith("/api/media-thumbnail/")
-    ) &&
+    (url.pathname.startsWith("/api/media/") ||
+      url.pathname.startsWith("/api/media-thumbnail/")) &&
     url.searchParams.has("v") &&
     !url.searchParams.has("download") &&
     !request.headers.has("range")

@@ -87,7 +87,6 @@ body {
 }
 
 .reddit-gallery {
-    /* Restore the original responsive Grid sizing from the pre-Explorer main branch. */
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
     grid-auto-flow: row;
@@ -99,14 +98,11 @@ body {
     direction: ltr;
 }
 
-/* Do not let the last remaining post expand to the full gallery width. */
 .reddit-gallery.single-post {
     grid-template-columns: minmax(0, min(100%, 420px));
     justify-content: center;
 }
 
-/* Hold only the cards, not the page chrome, until first grid measurement.
-   The no-JS gallery still renders normally. */
 html.meditord-js .reddit-gallery:not(.masonry-ready) .gallery-card {
     visibility: hidden;
 }
@@ -169,7 +165,6 @@ html.meditord-js .reddit-gallery:not(.masonry-ready) .gallery-card {
 
 .gallery-media video {
     background: var(--ctp-crust);
-    /* No metadata-dependent height jump when video metadata finishes loading. */
     aspect-ratio: 16 / 9;
 }
 
@@ -363,7 +358,6 @@ html.meditord-js .reddit-gallery:not(.masonry-ready) .gallery-card {
     white-space: nowrap;
 }
 
-/* A text-level action, not a raised Win98 button. */
 .card-description .read-more-toggle,
 .card-description .read-more-toggle:active {
     display: inline;

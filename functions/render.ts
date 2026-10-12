@@ -30,10 +30,7 @@ function resolveBuildId(): string {
     const refMatch = /^ref:\s+(.+)$/.exec(head);
     const refPath = refMatch?.[1];
     if (refPath) {
-      const revision = readFileSync(
-        join(gitDirectory, refPath),
-        "utf8",
-      ).trim();
+      const revision = readFileSync(join(gitDirectory, refPath), "utf8").trim();
       if (/^[0-9a-f]{40}$/i.test(revision)) {
         return revision.slice(0, 12);
       }
@@ -50,10 +47,7 @@ const assetFingerprintCache = new Map<string, string>();
 export async function getAssetFingerprint(
   assetPath: string,
 ): Promise<string | null> {
-  const normalizedPath = (assetPath.split("?", 1)[0] ?? "").replace(
-    /^\/+/,
-    "",
-  );
+  const normalizedPath = (assetPath.split("?", 1)[0] ?? "").replace(/^\/+/, "");
   if (!normalizedPath) return null;
 
   const cached = assetFingerprintCache.get(normalizedPath);
@@ -295,8 +289,9 @@ function renderCard(
   priorityImageIndex: number,
 ): string {
   const youtubeThumbnailUrl = getYouTubeThumbnailUrl(post.url);
-  // Reserve each preview height in SSR before lazy images are decoded.
-  const imageBytes = !youtubeThumbnailUrl && post.hasMedia &&
+  const imageBytes =
+    !youtubeThumbnailUrl &&
+    post.hasMedia &&
     !post.mediaType?.startsWith("video/")
       ? post.hasThumbnail
         ? getDocumentThumbnail(post.title)
@@ -304,7 +299,9 @@ function renderCard(
       : null;
   const dimensions = youtubeThumbnailUrl
     ? { width: 480, height: 360 }
-    : imageBytes ? imageDimensions(imageBytes) : null;
+    : imageBytes
+      ? imageDimensions(imageBytes)
+      : null;
   const imageSize = dimensions
     ? ` width="${dimensions.width}" height="${dimensions.height}"`
     : "";
@@ -334,9 +331,7 @@ function renderCard(
           : index >= 3
             ? ' fetchpriority="low"'
             : "";
-      const displayUrl = post.hasThumbnail
-        ? getThumbnailUrl(post)
-        : mediaUrl;
+      const displayUrl = post.hasThumbnail ? getThumbnailUrl(post) : mediaUrl;
       const backfillAttributes =
         !post.hasThumbnail && post.mediaHash
           ? ` data-thumbnail-backfill="true" data-media-hash="${escapeHtml(post.mediaHash)}"`
@@ -424,14 +419,11 @@ async function renderPage(
       const posts = getAllDocuments();
       const priorityImage = getArchivePriorityImage(posts);
       if (priorityImage) {
-        pagePreloadHtml =
-          `<link rel="preload" as="image" href="${escapeHtml(priorityImage.url)}" fetchpriority="high" />`;
+        pagePreloadHtml = `<link rel="preload" as="image" href="${escapeHtml(priorityImage.url)}" fetchpriority="high" />`;
       }
       const priorityImageIndex = priorityImage?.index ?? -1;
       const cardsHtml = posts
-        .map((post, index) =>
-          renderCard(post, index, priorityImageIndex),
-        )
+        .map((post, index) => renderCard(post, index, priorityImageIndex))
         .join("\n");
       const postsJson = JSON.stringify(posts);
       content = content
@@ -444,11 +436,12 @@ async function renderPage(
     let html = layout
       .replaceAll("{{title}}", () => title)
       .replaceAll("{{build_id}}", () => escapeHtml(BUILD_ID))
-      .replace(
-        "{{page_stylesheet}}",
-        () => [
+      .replace("{{page_stylesheet}}", () =>
+        [
           `<link rel="stylesheet" href="${pageStylesheetPath}" />`,
-          ...(isArchive ? ['<link rel="stylesheet" href="/css/archive-explorer.css" />'] : []),
+          ...(isArchive
+            ? ['<link rel="stylesheet" href="/css/archive-explorer.css" />']
+            : []),
         ].join("\n        "),
       )
       .replace("{{body}}", () => content);
