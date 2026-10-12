@@ -54,19 +54,25 @@ function renderMessage(message, className = "empty-state") {
   tableBody.append(row);
 }
 
-
 function folderOf(title) {
   const index = title.lastIndexOf("/");
   return index < 0 ? "" : title.slice(0, index);
 }
-function leafName(title) { return title.slice(title.lastIndexOf("/") + 1); }
+function leafName(title) {
+  return title.slice(title.lastIndexOf("/") + 1);
+}
 function allFolders() {
-  const paths = new Set(state.items.filter(i => i.isDirectory).map(i => i.title));
+  const paths = new Set(
+    state.items.filter((i) => i.isDirectory).map((i) => i.title),
+  );
   for (const item of state.items) {
     let parent = folderOf(item.title);
-    while (parent) { paths.add(parent); parent = folderOf(parent); }
+    while (parent) {
+      paths.add(parent);
+      parent = folderOf(parent);
+    }
   }
-  return [...paths].sort((a,b) => a.localeCompare(b));
+  return [...paths].sort((a, b) => a.localeCompare(b));
 }
 function populateFolderSelect(selected = "") {
   const select = document.getElementById("editFolder");
@@ -81,20 +87,35 @@ function populateFolderSelect(selected = "") {
 }
 async function createFolder() {
   const name = await window.showAppPrompt("Folder path (e.g. Music/Ideas):", {
-    title:"New folder", inputLabel:"Folder path", confirmLabel:"Create"
+    title: "New folder",
+    inputLabel: "Folder path",
+    confirmLabel: "Create",
   });
   if (!name?.trim()) return;
-  const title = name.trim().split(String.fromCharCode(92)).join("/").replace(/^\/+|\/+$/g, "");
-  if (!title || title.split("/").some(s => !s || s === "." || s === "..")) {
-    await window.showAppAlert("Invalid folder path.", { title:"Invalid folder" }); return;
+  const title = name
+    .trim()
+    .split(String.fromCharCode(92))
+    .join("/")
+    .replace(/^\/+|\/+$/g, "");
+  if (!title || title.split("/").some((s) => !s || s === "." || s === "..")) {
+    await window.showAppAlert("Invalid folder path.", {
+      title: "Invalid folder",
+    });
+    return;
   }
-  if (state.items.some(item => item.title === title)) {
-    await window.showAppAlert("That folder or post already exists."); return;
+  if (state.items.some((item) => item.title === title)) {
+    await window.showAppAlert("That folder or post already exists.");
+    return;
   }
   try {
-    await request("/documents", {method:"POST",body:JSON.stringify({title,isFolder:true})});
+    await request("/documents", {
+      method: "POST",
+      body: JSON.stringify({ title, isFolder: true }),
+    });
     await loadItems();
-  } catch (error) { await window.showAppAlert(error.message || "Failed to create folder."); }
+  } catch (error) {
+    await window.showAppAlert(error.message || "Failed to create folder.");
+  }
 }
 
 function renderTable() {
@@ -114,7 +135,9 @@ function renderTable() {
   items.forEach((item) => {
     const row = document.createElement("tr");
     const title = document.createElement("td");
-    title.textContent = item.isDirectory ? "▰ " + item.title : leafName(item.title);
+    title.textContent = item.isDirectory
+      ? "▰ " + item.title
+      : leafName(item.title);
     row.append(title);
 
     if (item.isDirectory) {
@@ -267,7 +290,8 @@ async function saveEdit(event) {
   const leaf = document.getElementById("editTitle").value.trim();
   const folder = document.getElementById("editFolder").value;
   if (!leaf || leaf.includes("/") || leaf.includes(String.fromCharCode(92))) {
-    document.getElementById("editError").textContent = "Title cannot contain path separators.";
+    document.getElementById("editError").textContent =
+      "Title cannot contain path separators.";
     return;
   }
   form.set("title", folder ? `${folder}/${leaf}` : leaf);
@@ -340,7 +364,9 @@ document.getElementById("archiveButton").addEventListener("click", () => {
   window.location.href = "/archive.html";
 });
 document.getElementById("newPostButton").addEventListener("click", createPost);
-document.getElementById("newFolderButton").addEventListener("click", createFolder);
+document
+  .getElementById("newFolderButton")
+  .addEventListener("click", createFolder);
 document.getElementById("refreshButton").addEventListener("click", loadItems);
 document.getElementById("searchInput").addEventListener("input", (event) => {
   state.filter = event.target.value;

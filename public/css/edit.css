@@ -574,7 +574,6 @@ input.form-control-unit:focus {
     padding: 0 5px;
 }
 
-
 .mobile-view-switch,
 .mobile-markdown-toolbar,
 .mobile-editor-scrollbar {
@@ -707,11 +706,9 @@ input.form-control-unit:focus {
     .editor-right-pane {
         height: auto;
         min-height: 0;
-        padding:
-            clamp(12px, 4vw, 20px)
+        padding: clamp(12px, 4vw, 20px)
             max(clamp(12px, 4vw, 20px), var(--safe-right))
-            clamp(12px, 4vw, 20px)
-            max(clamp(12px, 4vw, 20px), var(--safe-left));
+            clamp(12px, 4vw, 20px) max(clamp(12px, 4vw, 20px), var(--safe-left));
     }
 
     .editor-left-pane {
@@ -874,10 +871,7 @@ input.form-control-unit:focus {
         overflow-x: auto;
         overscroll-behavior-x: contain;
         touch-action: pan-x;
-        padding:
-            6px
-            max(8px, var(--safe-right))
-            max(6px, var(--safe-bottom))
+        padding: 6px max(8px, var(--safe-right)) max(6px, var(--safe-bottom))
             max(8px, var(--safe-left));
         background: var(--win98-surface);
         border-top: 2px solid var(--win98-border-lightest);
@@ -891,7 +885,6 @@ input.form-control-unit:focus {
         padding: 6px 10px;
         font-family: "IBM Plex Mono", monospace;
     }
-
 
     .mobile-editor-scrollbar {
         position: absolute;
@@ -984,9 +977,7 @@ input.form-control-unit:focus {
     }
 
     .win98-modal-backdrop {
-        padding:
-            max(16px, var(--safe-top))
-            max(16px, var(--safe-right))
+        padding: max(16px, var(--safe-top)) max(16px, var(--safe-right))
             max(16px, calc(var(--safe-bottom) + var(--keyboard-offset)))
             max(16px, var(--safe-left));
     }

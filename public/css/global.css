@@ -139,7 +139,6 @@ body {
     min-height: 100dvh;
 }
 
-
 .hidden {
     display: none;
 }
@@ -242,7 +241,11 @@ button:active,
 .title-bar {
     position: relative;
     min-height: 36px;
-    background: linear-gradient(90deg, var(--ctp-lavender) 0%, var(--ctp-base) 100%);
+    background: linear-gradient(
+        90deg,
+        var(--ctp-lavender) 0%,
+        var(--ctp-base) 100%
+    );
     color: var(--ctp-base);
     font-weight: bold;
     font-size: var(--font-base);
@@ -344,9 +347,7 @@ button:active,
     z-index: 10000;
     display: grid;
     place-items: center;
-    padding:
-        max(20px, var(--safe-top))
-        max(20px, var(--safe-right))
+    padding: max(20px, var(--safe-top)) max(20px, var(--safe-right))
         max(20px, calc(var(--safe-bottom) + var(--keyboard-offset)))
         max(20px, var(--safe-left));
     background: rgba(17, 17, 27, 0.78);
@@ -464,7 +465,6 @@ button:active,
     outline: 2px solid var(--ctp-lavender);
     outline-offset: 2px;
 }
-
 
 @media (pointer: coarse) {
     button,

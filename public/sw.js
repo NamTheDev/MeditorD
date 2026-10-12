@@ -1,5 +1,4 @@
-const buildId =
-  new URL(self.location.href).searchParams.get("v") || "runtime";
+const buildId = new URL(self.location.href).searchParams.get("v") || "runtime";
 
 const PAGE_CACHE = `meditord-pages-${buildId}`;
 const ASSET_CACHE = `meditord-assets-${buildId}`;
@@ -59,9 +58,7 @@ self.addEventListener("activate", (event) => {
 
       const cacheNames = await caches.keys();
       const legacyMediaCaches = cacheNames.filter(
-        (name) =>
-          name.startsWith("meditord-media-") &&
-          name !== MEDIA_CACHE,
+        (name) => name.startsWith("meditord-media-") && name !== MEDIA_CACHE,
       );
 
       if (legacyMediaCaches.length) {
@@ -83,7 +80,9 @@ self.addEventListener("activate", (event) => {
           .filter(
             (name) =>
               name.startsWith(CACHE_PREFIX) &&
-              ![PAGE_CACHE, ASSET_CACHE, MEDIA_CACHE, DATA_CACHE].includes(name),
+              ![PAGE_CACHE, ASSET_CACHE, MEDIA_CACHE, DATA_CACHE].includes(
+                name,
+              ),
           )
           .map((name) => caches.delete(name)),
       );
@@ -97,8 +96,7 @@ async function revalidatePage(event, request, key, cachedResponse) {
   try {
     const preloaded = await event.preloadResponse;
     const response =
-      preloaded ||
-      (await fetch(new Request(request, { cache: "no-cache" })));
+      preloaded || (await fetch(new Request(request, { cache: "no-cache" })));
 
     if (!response?.ok) return;
 
@@ -132,8 +130,6 @@ async function handleNavigation(event) {
   const cache = await caches.open(PAGE_CACHE);
   const cached = await cache.match(key);
 
-  // Explicitly bypass stale-while-revalidate for layout diagnostics or
-  // troubleshooting. Normal navigation keeps the offline-first behavior.
   if (url.searchParams.get("fresh") === "1") {
     try {
       const response = await fetch(new Request(request, { cache: "reload" }));
@@ -223,19 +219,14 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  if (
-    request.mode === "navigate" &&
-    APP_PAGES.has(url.pathname)
-  ) {
+  if (request.mode === "navigate" && APP_PAGES.has(url.pathname)) {
     event.respondWith(handleNavigation(event));
     return;
   }
 
   if (
-    (
-      url.pathname.startsWith("/api/media/") ||
-      url.pathname.startsWith("/api/media-thumbnail/")
-    ) &&
+    (url.pathname.startsWith("/api/media/") ||
+      url.pathname.startsWith("/api/media-thumbnail/")) &&
     url.searchParams.has("v") &&
     !url.searchParams.has("download") &&
     !request.headers.has("range")
@@ -254,12 +245,10 @@ self.addEventListener("fetch", (event) => {
 
   if (
     url.searchParams.has("v") &&
-    (
-      url.pathname.startsWith("/css/") ||
+    (url.pathname.startsWith("/css/") ||
       url.pathname.startsWith("/js/") ||
       url.pathname.startsWith("/media/") ||
-      url.pathname.startsWith("/vendor/")
-    )
+      url.pathname.startsWith("/vendor/"))
   ) {
     event.respondWith(cacheFirst(request, ASSET_CACHE));
   }

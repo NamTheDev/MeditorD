@@ -7,7 +7,9 @@ const writeViewButton = document.getElementById("write-view-button");
 const previewViewButton = document.getElementById("preview-view-button");
 const markdownPreview = document.querySelector(".markdown-preview");
 const textareaWrapper = document.querySelector(".textarea-wrapper");
-const mobileMarkdownToolbar = document.querySelector(".mobile-markdown-toolbar");
+const mobileMarkdownToolbar = document.querySelector(
+  ".mobile-markdown-toolbar",
+);
 const editorContainer = document.querySelector(".editor-container");
 const editorLayout = document.getElementById("editor-layout");
 const mobileScrollbar = document.getElementById("editor-mobile-scrollbar");
@@ -126,17 +128,13 @@ function stopScrollbarDrag(event) {
     return;
   }
 
-  if (
-    event &&
-    mobileScrollbarThumb.hasPointerCapture?.(scrollbarDragPointer)
-  ) {
+  if (event && mobileScrollbarThumb.hasPointerCapture?.(scrollbarDragPointer)) {
     mobileScrollbarThumb.releasePointerCapture(scrollbarDragPointer);
   }
 
   scrollbarDragPointer = null;
   mobileScrollbarThumb.classList.remove("dragging");
 }
-
 
 function setDescriptionView(view) {
   const previewing = view === "preview";
@@ -437,7 +435,6 @@ window.addEventListener("keydown", (event) => {
     closeFeatureNotice();
   }
 });
-
 
 syncEditorLayoutMode();
 updateMarkdownPreview();

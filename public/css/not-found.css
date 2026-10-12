@@ -44,7 +44,6 @@
     dominant-baseline: central;
 }
 
-
 @media (max-width: 700px) {
     .heading-404 {
         top: max(8%, var(--safe-top));

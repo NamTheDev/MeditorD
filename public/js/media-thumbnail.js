@@ -57,11 +57,7 @@ async function fromFile(file) {
     try {
       const bitmap = await createImageBitmap(file);
       try {
-        return await thumbnailFromDrawable(
-          bitmap,
-          bitmap.width,
-          bitmap.height,
-        );
+        return await thumbnailFromDrawable(bitmap, bitmap.width, bitmap.height);
       } finally {
         bitmap.close?.();
       }

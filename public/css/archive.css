@@ -18,11 +18,8 @@ body {
     display: flex;
     flex-direction: column;
     background: var(--ctp-surface0);
-    padding:
-        max(3px, var(--safe-top))
-        max(3px, var(--safe-right))
-        max(3px, var(--safe-bottom))
-        max(3px, var(--safe-left));
+    padding: max(3px, var(--safe-top)) max(3px, var(--safe-right))
+        max(3px, var(--safe-bottom)) max(3px, var(--safe-left));
     font-size: var(--font-base);
 }
 
@@ -553,7 +550,6 @@ select:focus {
     margin-top: auto;
 }
 
-
 @media (max-width: 600px) {
     .menu-bar {
         height: auto;
@@ -635,11 +631,8 @@ select:focus {
     }
 
     .modal-overlay {
-        padding:
-            max(12px, var(--safe-top))
-            max(12px, var(--safe-right))
-            max(12px, var(--safe-bottom))
-            max(12px, var(--safe-left));
+        padding: max(12px, var(--safe-top)) max(12px, var(--safe-right))
+            max(12px, var(--safe-bottom)) max(12px, var(--safe-left));
     }
 
     .modal-window {

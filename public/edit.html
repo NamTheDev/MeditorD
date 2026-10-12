@@ -61,102 +61,114 @@
     <div class="editor-layout" id="editor-layout">
         <div class="editor-left-pane">
             <form class="editor-form">
-            <div class="form-row">
-                <label for="doc-title" class="field-label">Title:</label>
-                <input
-                    type="text"
-                    id="doc-title"
-                    class="form-control-unit"
-                    placeholder="Enter title..."
-                />
-            </div>
-
-            <div class="form-row">
-                <label for="doc-username" class="field-label">Username:</label>
-                <input
-                    type="text"
-                    id="doc-username"
-                    class="form-control-unit"
-                    placeholder="Enter username..."
-                />
-            </div>
-
-            <div class="form-row">
-                <label for="doc-url" class="field-label">URL:</label>
-                <input
-                    type="text"
-                    id="doc-url"
-                    class="form-control-unit"
-                    placeholder="https://example.com"
-                />
-            </div>
-
-            <div class="form-row">
-                <label class="field-label" for="doc-media">Media:</label>
-                <input type="file" id="doc-media" class="hidden" />
-                <label for="doc-media" class="upload-btn form-control-unit"
-                    >Upload File</label
-                >
-            </div>
-
-            <div class="form-row preview-row">
-                <label class="field-label">Preview:</label>
-                <div class="preview-box form-control-unit">
-                    No Media Selected
+                <div class="form-row">
+                    <label for="doc-title" class="field-label">Title:</label>
+                    <input
+                        type="text"
+                        id="doc-title"
+                        class="form-control-unit"
+                        placeholder="Enter title..."
+                    />
                 </div>
-            </div>
+
+                <div class="form-row">
+                    <label for="doc-username" class="field-label"
+                        >Username:</label
+                    >
+                    <input
+                        type="text"
+                        id="doc-username"
+                        class="form-control-unit"
+                        placeholder="Enter username..."
+                    />
+                </div>
+
+                <div class="form-row">
+                    <label for="doc-url" class="field-label">URL:</label>
+                    <input
+                        type="text"
+                        id="doc-url"
+                        class="form-control-unit"
+                        placeholder="https://example.com"
+                    />
+                </div>
+
+                <div class="form-row">
+                    <label class="field-label" for="doc-media">Media:</label>
+                    <input type="file" id="doc-media" class="hidden" />
+                    <label for="doc-media" class="upload-btn form-control-unit"
+                        >Upload File</label
+                    >
+                </div>
+
+                <div class="form-row preview-row">
+                    <label class="field-label">Preview:</label>
+                    <div class="preview-box form-control-unit">
+                        No Media Selected
+                    </div>
+                </div>
             </form>
         </div>
 
         <div class="editor-right-pane">
-        <div class="textarea-wrapper">
-            <div class="description-toolbar">
-                <span class="description-label">Description:</span>
-                <div
-                    class="mobile-view-switch"
-                    role="tablist"
-                    aria-label="Description view"
-                >
-                    <button
-                        type="button"
-                        class="mobile-view-tab active"
-                        id="write-view-button"
-                        role="tab"
-                        aria-selected="true"
+            <div class="textarea-wrapper">
+                <div class="description-toolbar">
+                    <span class="description-label">Description:</span>
+                    <div
+                        class="mobile-view-switch"
+                        role="tablist"
+                        aria-label="Description view"
                     >
-                        Write
-                    </button>
+                        <button
+                            type="button"
+                            class="mobile-view-tab active"
+                            id="write-view-button"
+                            role="tab"
+                            aria-selected="true"
+                        >
+                            Write
+                        </button>
+                        <button
+                            type="button"
+                            class="mobile-view-tab"
+                            id="preview-view-button"
+                            role="tab"
+                            aria-selected="false"
+                        >
+                            Preview
+                        </button>
+                    </div>
                     <button
                         type="button"
-                        class="mobile-view-tab"
-                        id="preview-view-button"
-                        role="tab"
-                        aria-selected="false"
+                        class="action-btn"
+                        id="preview-button"
                     >
                         Preview
                     </button>
                 </div>
-                <button type="button" class="action-btn" id="preview-button">
-                    Preview
-                </button>
-            </div>
-            <textarea
-                class="editor-textarea"
-                placeholder="Start typing..."
-            ></textarea>
-            <div class="markdown-preview hidden" aria-live="polite"></div>
-            <div
-                class="mobile-markdown-toolbar"
-                role="toolbar"
-                aria-label="Markdown formatting"
-            >
-                <button type="button" data-markdown-action="heading">#</button>
-                <button type="button" data-markdown-action="bold">B</button>
-                <button type="button" data-markdown-action="italic">I</button>
-                <button type="button" data-markdown-action="code">`</button>
-                <button type="button" data-markdown-action="list">−</button>
-                <button type="button" data-markdown-action="link">Link</button>
-            </div>
+                <textarea
+                    class="editor-textarea"
+                    placeholder="Start typing..."
+                ></textarea>
+                <div class="markdown-preview hidden" aria-live="polite"></div>
+                <div
+                    class="mobile-markdown-toolbar"
+                    role="toolbar"
+                    aria-label="Markdown formatting"
+                >
+                    <button type="button" data-markdown-action="heading">
+                        #
+                    </button>
+                    <button type="button" data-markdown-action="bold">B</button>
+                    <button type="button" data-markdown-action="italic">
+                        I
+                    </button>
+                    <button type="button" data-markdown-action="code">`</button>
+                    <button type="button" data-markdown-action="list">−</button>
+                    <button type="button" data-markdown-action="link">
+                        Link
+                    </button>
+                </div>
             </div>
         </div>
     </div>
