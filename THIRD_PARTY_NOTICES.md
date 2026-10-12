@@ -34,7 +34,11 @@ The dependency's own distributed license remains applicable to `markdown-it`.
 
 ## Google Fonts
 
-MeditorD loads fonts through Google Fonts rather than vendoring font files in this repository. Each font remains subject to its own upstream font license. If fonts are later bundled or self-hosted, their applicable license files and notices must be preserved.
+MeditorD self-hosts optimized WOFF2 files for IBM Plex Mono, IBM Plex Sans, Montserrat, Pixelify Sans, Press Start 2P, and Silkscreen, sourced from the Google Fonts service. Their upstream copyright and SIL Open Font License 1.1 terms remain applicable; their full notices are preserved under `public/fonts/licenses/`. These font files are not relicensed under MeditorD's MIT license.
+
+- Font source: https://fonts.google.com/
+- Original font repository and licensing: https://github.com/google/fonts
+- Local usage: `public/css/fonts.css` and `public/fonts/`
 
 ## Canva and Project Media
 

@@ -49,11 +49,59 @@ meditord/
 │   │   ├── database.css
 │   │   ├── edit.css
 │   │   ├── exit.css
+│   │   ├── fonts.css
 │   │   ├── global.css
 │   │   ├── home.css
 │   │   └── not-found.css
+│   ├── fonts/
+│   │   ├── 01c04f4d69ca47be.woff2
+│   │   ├── 06a00cf15830e987.woff2
+│   │   ├── 0b5c2db191621518.woff2
+│   │   ├── 0df26f35f561af8d.woff2
+│   │   ├── 0e213dc59c137688.woff2
+│   │   ├── 11ced52deb54070d.woff2
+│   │   ├── 155bc5d4aa04bfb0.woff2
+│   │   ├── 2532acb5e3041baf.woff2
+│   │   ├── 2d8cfbcbf9ec7629.woff2
+│   │   ├── 2eab9668f909a1cb.woff2
+│   │   ├── 33ff57e97518ac70.woff2
+│   │   ├── 3ac757485912968d.woff2
+│   │   ├── 4065b246a6a3a332.woff2
+│   │   ├── 466e6a68c4ee3f94.woff2
+│   │   ├── 4e183d488cda203f.woff2
+│   │   ├── 5778b1a208141d42.woff2
+│   │   ├── 629b63da958cc8b3.woff2
+│   │   ├── 7300d08cc3cf7909.woff2
+│   │   ├── 757e9d7228a62b17.woff2
+│   │   ├── 7744a5a46dc6d551.woff2
+│   │   ├── 784e5ede32c4cdea.woff2
+│   │   ├── 831b24d66d162c0f.woff2
+│   │   ├── 839c38410d1a25b2.woff2
+│   │   ├── 8998599c66c8fbe3.woff2
+│   │   ├── 917577ede7adc104.woff2
+│   │   ├── 9d44a92983acf712.woff2
+│   │   ├── 9db1dd0fa5bc64ca.woff2
+│   │   ├── a42b6e465d3ca536.woff2
+│   │   ├── b05e6a7c9b00e462.woff2
+│   │   ├── bde7db92496666b1.woff2
+│   │   ├── c3a25aa85495bee4.woff2
+│   │   ├── c4f4a8cd0b92a14a.woff2
+│   │   ├── cb1a242b907c798c.woff2
+│   │   ├── cf65f680c0c97e6e.woff2
+│   │   ├── da9e68f458e4d3db.woff2
+│   │   ├── efbd4e0b7034b5e3.woff2
+│   │   ├── f776288548a3e1d9.woff2
+│   │   ├── f798d93bcc10a932.woff2
+│   │   └── licenses/
+│   │       ├── ibmplexmono-OFL.txt
+│   │       ├── ibmplexsans-OFL.txt
+│   │       ├── montserrat-OFL.txt
+│   │       ├── pixelifysans-OFL.txt
+│   │       ├── pressstart2p-OFL.txt
+│   │       └── silkscreen-OFL.txt
 │   ├── js/
 │   │   ├── app-dialog.js
+│   │   ├── app-shell.js
 │   │   ├── archive.js
 │   │   ├── database.js
 │   │   ├── document-api.js
@@ -75,7 +123,8 @@ meditord/
 │   ├── global.html
 │   └── home.html
 ├── tests/
-│   └── api-data-integrity.test.ts
+│   ├── api-data-integrity.test.ts
+│   └── app-shell-cache.test.ts
 ├── .dockerignore
 ├── .gitignore
 ├── Dockerfile
@@ -100,7 +149,7 @@ meditord/
 - Bun's SQLite with `database/meditord.sqlite`.
 - Raw SQLite BLOB storage for original image and video uploads with generated gallery thumbnails, fingerprinted browser caching, and byte-range delivery.
 - markdown-it for rendering Markdown post descriptions.
-- HTML, CSS, browser JavaScript, and a service worker for offline-first runtime caching.
+- Versioned offline app-shell caching for HTML, CSS, JavaScript, images, and locally hosted WOFF2 fonts, with a cold-start loading screen.
 - Database-management table with folder properties for organizing saved posts.
 - Archive folder explorer with URL-persistent folder selection, contextual actions, and three-dot Add to folder / Remove from folder post moves.
 - Modal editing and creation for title, username, URL, date, media, and description.
@@ -115,7 +164,7 @@ meditord/
 4. Run `bun test` to verify the isolated data-integrity regression tests.
 5. Optionally set `PORT`, `HOST`, and `ROOT` in `.env`.
 6. Start the server with `bun run index.ts`.
-7. Open `http://localhost:3000` in a modern browser.
+7. Open `http://localhost:3000` in a modern browser. The offline app shell requires HTTPS or localhost for service-worker registration.
 8. Open `http://localhost:3000/database.html` to access the database page.
 9. Keep port 3000 on a trusted network, or protect it using authenticated HTTPS access before exposing it publicly. The built-in API does not authenticate write requests.
 

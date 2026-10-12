@@ -31,7 +31,9 @@ This color palette is used throughout the project. It is my favorite minimal and
 # Interface and Browser API References
 
 - [MDN: CSS Grid Layout](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_grid_layout) — responsive Archive masonry column layout.
-- [MDN: HTML Drag and Drop API](https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API) — moving archive posts onto Explorer folders.
+- [MDN: Service Worker API](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API) — versioned shell caching and offline navigation.
+- [MDN: Cache API](https://developer.mozilla.org/en-US/docs/Web/API/Cache) — local browser storage for app-shell assets and media.
+- [Google Fonts](https://fonts.google.com/) — self-hosted WOFF2 families used throughout the interface; applicable upstream licenses are preserved under `public/fonts/licenses/`.
 
 # Software
 
