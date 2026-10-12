@@ -80,6 +80,7 @@ function refresh(nav: FakeNode, doc: unknown, folder: string) {
     archiveCrumbs: nav,
     postsContainer: { querySelectorAll: () => [] },
     activeArchiveFolder: folder,
+    masonryInitialized: false,
     queueMasonryLayout: () => {},
     document: doc,
   });
