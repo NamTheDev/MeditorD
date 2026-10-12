@@ -430,7 +430,10 @@ async function renderPage(
       .replaceAll("{{build_id}}", () => escapeHtml(BUILD_ID))
       .replace(
         "{{page_stylesheet}}",
-        () => `<link rel="stylesheet" href="${pageStylesheetPath}" />`,
+        () => [
+          `<link rel="stylesheet" href="${pageStylesheetPath}" />`,
+          ...(isArchive ? ['<link rel="stylesheet" href="/css/archive-explorer.css" />'] : []),
+        ].join("\n        "),
       )
       .replace("{{body}}", () => content);
     if (pagePreloadHtml) {

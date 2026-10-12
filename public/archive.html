@@ -19,7 +19,36 @@
         <nav id="archiveFolderTree" aria-label="Archive folder navigation"></nav>
       </aside>
       <div class="archive-explorer-main">
-        <nav id="archiveBreadcrumbs" class="archive-breadcrumbs raised" aria-label="Folder location"></nav>
+        <nav id="archiveBreadcrumbs" class="archive-breadcrumbs raised" aria-label="Folder location" data-current-folder="">
+          <button type="button" data-archive-path="">All posts</button>
+        </nav>
+        <script>
+          // Paint the bookmarked folder breadcrumb immediately, before the folder API responds.
+          (() => {
+            const folder = new URLSearchParams(window.location.search).get("folder") || "";
+            if (!folder) return;
+            const nav = document.getElementById("archiveBreadcrumbs");
+            const fragment = document.createDocumentFragment();
+            let path = "";
+            const addButton = (label, destination) => {
+              const button = document.createElement("button");
+              button.type = "button";
+              button.dataset.archivePath = destination;
+              button.textContent = label;
+              fragment.append(button);
+            };
+            addButton("All posts", "");
+            for (const part of folder.split("/").filter(Boolean)) {
+              path = path ? path + "/" + part : part;
+              const separator = document.createElement("span");
+              separator.textContent = " / ";
+              fragment.append(separator);
+              addButton(part, path);
+            }
+            nav.replaceChildren(fragment);
+            nav.dataset.currentFolder = folder;
+          })();
+        </script>
     <div class="gallery-viewport sunken" id="galleryViewport">
         <div class="reddit-gallery" id="postsContainer">{{archive_posts}}</div>
         <script id="initialPosts" type="application/json">
@@ -51,5 +80,4 @@
     </div>
 </div>
 <script src="/js/media-thumbnail.js" defer></script>
-<link rel="stylesheet" href="/css/archive-explorer.css" />
 <script src="/js/archive.js" defer></script>

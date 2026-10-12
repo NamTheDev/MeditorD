@@ -10,6 +10,10 @@ const archiveTree = document.getElementById("archiveFolderTree");
 const archiveCrumbs = document.getElementById("archiveBreadcrumbs");
 const archiveSidebar = document.querySelector(".archive-explorer-sidebar");
 const folderMenu = document.getElementById("archiveFolderContextMenu");
+archiveCrumbs.addEventListener("click", event => {
+  const button = event.target.closest("button[data-archive-path]");
+  if (button && archiveCrumbs.contains(button)) chooseArchiveFolder(button.dataset.archivePath || "");
+});
 const archiveFolderParam = "folder";
 function archiveFolderFromUrl() {
   return new URL(window.location.href).searchParams.get(archiveFolderParam) || "";
@@ -36,20 +40,25 @@ function refreshArchiveFolderView() {
     if (card.hidden) card.style.display = "none";
     else card.style.removeProperty("display");
   }
-  archiveCrumbs.replaceChildren();
-  const crumbs = [{label:"All posts", path:""}];
-  let path = "";
-  for(const part of activeArchiveFolder.split("/").filter(Boolean)) {
-    path = path ? path + "/" + part : part;
-    crumbs.push({label:part,path});
+  // Keep existing breadcrumb nodes intact when refreshing the same folder.
+  // Replacing focused buttons after every API request causes a visible blink.
+  if (archiveCrumbs.dataset.currentFolder !== activeArchiveFolder) {
+    const fragment = document.createDocumentFragment();
+    const crumbs = [{label:"All posts", path:""}];
+    let path = "";
+    for (const part of activeArchiveFolder.split("/").filter(Boolean)) {
+      path = path ? path + "/" + part : part;
+      crumbs.push({label:part,path});
+    }
+    crumbs.forEach((entry,index)=>{
+      if(index) { const separator=document.createElement("span"); separator.textContent=" / "; fragment.append(separator); }
+      const btn=document.createElement("button");
+      btn.type="button";btn.dataset.archivePath=entry.path;btn.textContent=entry.label;
+      fragment.append(btn);
+    });
+    archiveCrumbs.replaceChildren(fragment);
+    archiveCrumbs.dataset.currentFolder = activeArchiveFolder;
   }
-  crumbs.forEach((entry,index)=>{
-    if(index) { const separator=document.createElement("span"); separator.textContent=" / "; archiveCrumbs.append(separator); }
-    const btn=document.createElement("button");
-    btn.type="button";btn.textContent=entry.label;
-    btn.addEventListener("click",()=>chooseArchiveFolder(entry.path));
-    archiveCrumbs.append(btn);
-  });
   queueMasonryLayout();
 }
 function syncArchiveFolderUrl(folder, replace = false) {
@@ -134,6 +143,8 @@ async function loadArchiveFolders() {
   }
   chooseArchiveFolder(activeArchiveFolder, { historyMode: "replace" });
 }
+// Paint the folder tree from server-supplied posts while the directory API loads.
+renderArchiveFolders();
 void loadArchiveFolders();
 
 async function archiveDocumentRequest(path, options = {}) {
@@ -549,6 +560,8 @@ const postsContainer = document.getElementById("postsContainer");
 // Original pre-Explorer masonry sizing, with a cap for a single visible post.
 const masonryEngine = "original-grid-single-cap";
 let masonryFrame = 0;
+// Filter cards on the first frame, rather than flashing all posts before fetch().
+refreshArchiveFolderView();
 
 function visibleMasonryCards() {
   return [...postsContainer.querySelectorAll(".gallery-card")].filter(
