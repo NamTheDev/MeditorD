@@ -102,7 +102,7 @@ meditord/
 - markdown-it for rendering Markdown post descriptions.
 - HTML, CSS, browser JavaScript, and a service worker for offline-first runtime caching.
 - Database-management table with folder properties for organizing saved posts.
-- Archive folder explorer with contextual folder actions and post moves through each post's three-dot menu.
+- Archive folder explorer with contextual folder actions and three-dot Add to folder / Remove from folder post moves.
 - Modal editing and creation for title, username, URL, date, media, and description.
 - JSON API for document, folder, and media operations.
 - Responsive phone, tablet, and desktop layouts with safe-area and virtual-keyboard handling.
