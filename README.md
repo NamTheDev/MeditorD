@@ -71,6 +71,8 @@ meditord/
 │   ├── exit.html
 │   ├── global.html
 │   └── home.html
+├── tests/
+│   └── api-data-integrity.test.ts
 ├── .dockerignore
 ├── .gitignore
 ├── Dockerfile
@@ -97,7 +99,7 @@ meditord/
 - markdown-it for rendering Markdown post descriptions.
 - HTML, CSS, browser JavaScript, and a service worker for offline-first runtime caching.
 - Database-management table with folder properties for organizing saved posts.
-- Archive folder explorer with contextual folder actions and drag-and-drop organization.
+- Archive folder explorer with contextual folder actions and post moves through each post's three-dot menu.
 - Modal editing and creation for title, username, URL, date, media, and description.
 - JSON API for document, folder, and media operations.
 - Responsive phone, tablet, and desktop layouts with safe-area and virtual-keyboard handling.
@@ -107,11 +109,12 @@ meditord/
 1. Install Bun v1.4.3 or newer, which supports the repository's Bun v2 lockfile.
 2. Clone this repository and change into its directory.
 3. Run `bun install --frozen-lockfile` to install the locked dependencies.
-4. Optionally set `PORT`, `HOST`, and `ROOT` in `.env`.
-5. Start the server with `bun run index.ts`.
-6. Open `http://localhost:3000` in a modern browser.
-7. Open `http://localhost:3000/database.html` to access the database page.
-8. Keep port 3000 on a trusted network, or protect it using authenticated HTTPS access before exposing it publicly. The built-in API does not authenticate write requests.
+4. Run `bun test` to verify the isolated data-integrity regression tests.
+5. Optionally set `PORT`, `HOST`, and `ROOT` in `.env`.
+6. Start the server with `bun run index.ts`.
+7. Open `http://localhost:3000` in a modern browser.
+8. Open `http://localhost:3000/database.html` to access the database page.
+9. Keep port 3000 on a trusted network, or protect it using authenticated HTTPS access before exposing it publicly. The built-in API does not authenticate write requests.
 
 ### Docker Alternative
 
