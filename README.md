@@ -4,7 +4,7 @@
 
 Built from human ideas with Gemini, DeepSeek, GitHub Copilot, and ChatGPT supporting design, research, implementation, testing, and documentation throughout development.
 
-> Since I have been more educated about the problems with AI, I decided to boycott platforms by companies such as OpenAI, Claude, and Google. I will still use a little bit of AI (maybe more responsible platforms or self-hosted) to assist in coding, but overall I will try to do stuff myself more. This notice is written by a human btw. _**18:12 | Mon, Oct 12 | 2026**_
+> Since I have been more educated about the problems with AI, I decided to boycott platforms by companies such as OpenAI, Claude, and Google. I will still use a little bit of AI (maybe more responsible platforms or self-hosted) to assist in coding, but overall I will try to do stuff myself more. This notice is written by a human btw. ***18:12 | Mon, Oct 12 | 2026***
 
 ## II. Introduction
 
@@ -95,35 +95,36 @@ meditord/
 1. Install latest version of Bun.
 2. Clone the repo and `cd` into it.
 3. Install locked dependencies:
-
 ```bash
 bun install --frozen-lockfile
 ```
-
 4. Run tests:
-
 ```bash
 bun test
 ```
-
 5. Optionally set `PORT`, `HOST`, and `ROOT` in `.env`.
 6. Start the server:
-
 ```bash
 bun run index.ts
 ```
-
 7. Open `http://localhost:3000`; database page: `http://localhost:3000/database.html`.
 8. Port 3000 has no auth for writes — keep it trusted or protect it with authenticated HTTPS.
 
 **Docker**
 
-Update, build, and run:
-
+1. Update the host repo:
 ```bash
-chmod +x build.sh
-./build.sh
+git pull --ff-only
 ```
+2. Build the image:
+```bash
+docker build --build-arg BUILD_ID="$(git rev-parse --short=12 HEAD)" -t meditord .
+```
+3. Run the container:
+```bash
+docker run --rm -p 3000:3000 -v "$(pwd)/database:/app/database" meditord
+```
+4. On updates, re-run the pull and build.
 
 ## IV. Resources and License
 
