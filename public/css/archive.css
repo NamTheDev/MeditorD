@@ -321,6 +321,8 @@ html.meditord-js .reddit-gallery:not(.masonry-ready) .gallery-card {
     font-size: calc(var(--font-base) * 0.9);
     line-height: 1.4;
     overflow: visible;
+    word-break: break-word;
+    overflow-wrap: anywhere;
 }
 
 .card-description p {
@@ -351,6 +353,7 @@ html.meditord-js .reddit-gallery:not(.masonry-ready) .gallery-card {
 
 .card-description a {
     color: var(--ctp-lavender);
+    word-break: break-word;
 }
 
 .card-description strong {
