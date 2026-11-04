@@ -45,16 +45,6 @@ I used Zed by Zed Industries to create this project. I prefer it to VS Code beca
 
 Canva was very helpful in creating the visual template that Gemini used to replicate the HTML, CSS, and JavaScript with 90% accuracy. You can check out the screenshots in [MeditorD/Canva_Designs](https://github.com/NamTheDev/MeditorD/tree/main/design/canva).
 
-## LLMs / AI Tools
-
-The LLMs and AI tools used in this project are Gemini, DeepSeek, GitHub Copilot, and ChatGPT.
-
-- Gemini was used to generate the HTML, CSS, and JavaScript templates.
-- DeepSeek was used for quick web search.
-- GitHub Copilot was used to assist with the project's overall coding and commit messages.
-- ChatGPT was used for cache architecture, implementation, debugging, local diagnostics, repository maintenance, and documentation updates.
-
-For more information about AI-assisted design and development discussions, check out the [MeditorD/Design_Chat_Logs](https://github.com/NamTheDev/MeditorD/tree/main/design/chat-logs) folder. Chat logs are currently available for Gemini, GitHub Copilot, and ChatGPT.
 
 ## Third-Party Licensing
 
