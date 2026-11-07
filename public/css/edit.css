@@ -318,7 +318,6 @@ input.form-control-unit:focus {
     flex: 0 0 auto;
     padding: 6px;
     background: var(--win98-surface);
-    border-bottom: 1px solid var(--win98-border-dark);
     display: flex;
     align-items: center;
     justify-content: space-between;

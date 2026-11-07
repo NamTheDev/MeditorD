@@ -1,160 +1,301 @@
+/* Win98 Explorer: a raised window around a sunken tree view.
+   Colors use MeditorD's Catppuccin Mocha system; geometry follows the
+   classic 1-2px Windows 95/98 bevel, with no rounded edges. */
 .archive-explorer-layout {
     flex: 1;
     min-height: 0;
     display: grid;
-    grid-template-columns: 225px minmax(0, 1fr);
+    grid-template-columns: 240px minmax(0, 1fr);
     gap: 5px;
     padding-top: 5px;
 }
+
 .archive-explorer-sidebar {
+    display: flex;
+    flex-direction: column;
     min-width: 0;
     min-height: 0;
-    overflow: auto;
-    padding: 6px 4px;
-    background: var(--ctp-mantle);
-    border: 1px solid var(--bevel-darkest);
-    box-shadow: none;
+    overflow: hidden;
+    padding: 3px;
+    background: var(--win98-surface);
+    border: 2px solid;
+    border-color:
+        var(--win98-border-lightest)
+        var(--win98-border-darkest)
+        var(--win98-border-darkest)
+        var(--win98-border-lightest);
+    box-shadow:
+        inset 1px 1px 0 var(--win98-border-light),
+        inset -1px -1px 0 var(--win98-border-dark);
+    font: 400 13px/1.3 "Courier New", Courier, monospace;
 }
+
+/* Only window title bars use gradients, as in the Windows 98 reference. */
 .archive-explorer-heading {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    flex: 0 0 auto;
     gap: 6px;
-    padding: 5px 7px 9px;
-    margin-bottom: 4px;
-    color: var(--ctp-subtext0);
-    background: transparent;
-    font: 400 0.85rem "Courier New", Courier, monospace;
-    letter-spacing: 0.09em;
+    min-height: 30px;
+    padding: 3px 4px 3px 7px;
+    color: #fff;
+    background: linear-gradient(90deg, #15205b, #46558f);
+    font: inherit;
+    letter-spacing: 0.02em;
 }
+
 .archive-new-folder-button {
-    display: grid;
-    place-items: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     flex: none;
-    width: 26px;
-    height: 26px;
-    padding: 2px;
-    color: var(--ctp-subtext1);
-    background: transparent;
-    border: 0;
-    box-shadow: none;
+    gap: 4px;
+    min-width: 66px;
+    height: 23px;
+    padding: 2px 5px;
+    border: none;
+    border-radius: 0;
+    color: var(--win98-text);
+    background: var(--win98-surface);
+    box-shadow:
+        inset -1px -1px 0 var(--win98-border-darkest),
+        inset 1px 1px 0 var(--win98-border-lightest),
+        inset -2px -2px 0 var(--win98-border-dark),
+        inset 2px 2px 0 var(--win98-border-light);
+    font: 400 11px "Courier New", Courier, monospace;
     cursor: pointer;
 }
-.archive-new-folder-button:hover,
-.archive-new-folder-button:focus-visible {
-    color: var(--ctp-lavender);
-    background: var(--ctp-surface1);
-}
+
 .archive-new-folder-button:active {
-    box-shadow: none;
-    padding: 2px;
+    box-shadow:
+        inset -1px -1px 0 var(--win98-border-lightest),
+        inset 1px 1px 0 var(--win98-border-darkest),
+        inset -2px -2px 0 var(--win98-border-light),
+        inset 2px 2px 0 var(--win98-border-dark);
 }
+
+/* A real scrollable tree well rather than scrolling the entire sidebar. */
+#archiveFolderTree {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: auto;
+    margin-top: 4px;
+    padding: 5px 3px;
+    background: var(--win98-window-bg);
+    box-shadow:
+        inset -1px -1px 0 var(--win98-border-lightest),
+        inset 1px 1px 0 var(--win98-border-darkest),
+        inset -2px -2px 0 var(--win98-border-light),
+        inset 2px 2px 0 var(--win98-border-dark);
+}
+
 .archive-folder-row {
+    --tree-indent: 0px;
+    position: relative;
     display: flex;
     align-items: center;
-    min-width: 0;
-    min-height: 28px;
+    width: 100%;
+    min-width: max-content;
+    min-height: 24px;
+    padding-left: calc(var(--tree-indent) + 4px);
+    background: transparent;
 }
-.archive-folder-row:hover {
-    background: var(--ctp-surface0);
+
+/* Dotted tree connectors terminate at the final sibling. */
+.archive-folder-row:not([data-depth="0"])::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: calc(var(--tree-indent) - 7px);
+    border-left: 1px dotted var(--ctp-overlay1);
+    pointer-events: none;
 }
-.archive-folder-row.selected {
-    background: var(--ctp-surface1);
+
+.archive-folder-row:not([data-depth="0"])::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: calc(var(--tree-indent) - 7px);
+    width: 9px;
+    border-top: 1px dotted var(--ctp-overlay1);
+    pointer-events: none;
 }
+
+.archive-folder-row.last-child::before {
+    bottom: 50%;
+}
+
 .archive-folder-toggle,
 .archive-folder-button {
-    color: var(--ctp-subtext1);
+    color: var(--win98-text);
     background: transparent;
     border: 0;
+    border-radius: 0;
     box-shadow: none;
     font: inherit;
+    font-weight: 400;
     cursor: pointer;
 }
+
 .archive-folder-toggle,
 .archive-folder-spacer {
-    flex: 0 0 17px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 18px;
+    width: 18px;
+    height: 24px;
     padding: 0;
-    font-size: 12px;
-    text-align: center;
-    color: var(--ctp-overlay1);
 }
+
+.archive-folder-toggle::first-letter {
+    font-size: 11px;
+}
+
+.archive-folder-toggle {
+    position: relative;
+    width: 12px;
+    height: 12px;
+    flex: 0 0 12px;
+    margin: 0 3px;
+    background: var(--ctp-surface1);
+    border: 1px solid var(--ctp-overlay1);
+    color: #fff;
+    font: 400 11px/9px "Courier New", Courier, monospace;
+    text-align: center;
+}
+
+.archive-folder-toggle:active {
+    background: var(--ctp-surface2);
+    border-color: var(--win98-border-darkest);
+}
+
 .archive-folder-button {
     display: flex;
     align-items: center;
-    justify-content: left;
+    justify-content: flex-start;
     flex: 1;
-    gap: 7px;
+    gap: 5px;
     min-width: 0;
-    min-height: 28px;
-    padding: 2px 5px 2px 0;
-    font-size: 0.87rem;
+    min-height: 24px;
+    padding: 1px 4px 1px 0;
+    text-align: left;
+    white-space: nowrap;
 }
+
 .archive-folder-label {
+    display: inline-block;
+    min-width: 0;
+    max-width: 100%;
+    padding: 2px 3px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
+
+.archive-folder-button.active .archive-folder-label {
+    background: #233377;
+    color: #fff;
+    outline: 1px dotted var(--ctp-text);
+    outline-offset: -1px;
+}
+
+.archive-folder-button:not(.active):hover .archive-folder-label {
+    background: var(--ctp-surface0);
+}
+
+.archive-folder-row.context-target .archive-folder-label {
+    outline: 1px dotted var(--ctp-lavender);
+    outline-offset: -1px;
+}
+
+/* Pixel-style folder icons: CSS rectangles, not vector or emoji glyphs. */
 .archive-folder-glyph,
 .archive-all-glyph {
     position: relative;
     display: inline-block;
-    flex: 0 0 15px;
-    width: 15px;
-    height: 13px;
-    color: var(--ctp-subtext0);
+    flex: 0 0 16px;
+    width: 16px;
+    height: 14px;
 }
+
 .archive-folder-glyph::before {
     content: "";
     position: absolute;
-    top: 0;
+    top: 1px;
     left: 1px;
-    width: 7px;
-    height: 4px;
-    background: currentColor;
+    width: 9px;
+    height: 5px;
+    background: var(--ctp-yellow);
+    border: 1px solid var(--ctp-peach);
+    border-bottom: 0;
 }
+
 .archive-folder-glyph::after {
     content: "";
     position: absolute;
-    inset: 3px 0 0;
-    background: currentColor;
+    inset: 4px 0 0;
+    background: var(--ctp-yellow);
+    border: 1px solid var(--ctp-peach);
+    box-shadow:
+        inset 1px 1px 0 var(--ctp-rosewater),
+        inset -1px -1px 0 var(--ctp-peach);
 }
+
+.archive-folder-row.expanded .archive-folder-glyph::after {
+    top: 5px;
+    transform: skewX(-8deg);
+    transform-origin: left bottom;
+}
+
 .archive-all-glyph {
-    border: 1px solid currentColor;
-    height: 12px;
+    background: var(--ctp-surface1);
+    border: 1px solid var(--ctp-text);
+    box-shadow: inset 1px 1px 0 var(--ctp-overlay0);
 }
+
+.archive-all-glyph::before,
 .archive-all-glyph::after {
     content: "";
     position: absolute;
-    top: 3px;
     left: 3px;
-    width: 7px;
-    border-top: 1px solid currentColor;
-    box-shadow: 0 3px 0 currentColor;
+    right: 3px;
+    border-top: 1px solid var(--ctp-text);
 }
-.archive-folder-button.active {
-    color: var(--ctp-text);
-    font-weight: 400;
-    box-shadow: none;
-}
-.archive-folder-toggle:active {
-    box-shadow: none;
-    padding: 0;
-}
-.archive-folder-button:active {
-    box-shadow: none;
-    padding: 2px 5px 2px 0;
-}
+
+.archive-all-glyph::before { top: 4px; }
+.archive-all-glyph::after { top: 8px; }
+
 .archive-folder-toggle:focus-visible,
 .archive-folder-button:focus-visible,
 .archive-new-folder-button:focus-visible {
     outline: 1px dotted var(--ctp-lavender);
     outline-offset: -1px;
 }
-.archive-folder-row.context-target {
-    background: var(--ctp-surface2);
-    outline: 1px dashed var(--ctp-lavender);
-    outline-offset: -1px;
+
+.archive-explorer-status {
+    flex: 0 0 auto;
+    min-height: 22px;
+    margin-top: 4px;
+    padding: 4px 6px 2px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    color: var(--ctp-subtext0);
+    background: var(--win98-surface);
+    font: 400 11px/1.2 "Courier New", Courier, monospace;
+    box-shadow:
+        inset -1px -1px 0 var(--win98-border-lightest),
+        inset 1px 1px 0 var(--win98-border-dark),
+        inset -2px -2px 0 var(--win98-border-lightest);
 }
+
+.archive-new-folder-icon {
+    flex: 0 0 16px;
+}
+
 .archive-explorer-main {
     min-width: 0;
     min-height: 0;
@@ -189,16 +330,31 @@
     top: 0;
     left: 0;
     right: auto;
-    min-width: 172px;
+    min-width: 184px;
+    padding: 2px;
     z-index: 3500;
+    color: var(--ctp-text);
+    background: var(--win98-surface);
+    border: 0;
+    box-shadow:
+        inset -1px -1px 0 var(--win98-border-darkest),
+        inset 1px 1px 0 var(--win98-border-lightest),
+        inset -2px -2px 0 var(--win98-border-dark),
+        inset 2px 2px 0 var(--win98-border-light);
 }
 .archive-folder-context-menu[hidden] {
     display: none;
 }
+.archive-folder-context-menu > button {
+    color: var(--ctp-text);
+    background: transparent;
+    font: 400 13px "Courier New", Courier, monospace;
+    text-align: left;
+}
 .archive-folder-context-menu > button:hover:not(:disabled),
 .archive-folder-context-menu > button:focus-visible {
-    background: var(--ctp-surface1);
-    color: var(--ctp-lavender);
+    background: #233377;
+    color: #fff;
 }
 .archive-folder-context-menu > button:disabled {
     color: var(--ctp-overlay1);
@@ -230,8 +386,10 @@
 }
 .archive-folder-picker-title {
     margin: 0 0 12px;
-    font: 400 1.1rem "Courier New", Courier, monospace;
-    color: var(--ctp-lavender);
+    padding: 4px 6px;
+    background: linear-gradient(90deg, #15205b, #46558f);
+    color: #fff;
+    font: 400 14px "Courier New", Courier, monospace;
 }
 .archive-folder-picker .win98-select {
     width: 100%;
@@ -248,15 +406,28 @@
 .archive-folder-picker-actions button {
     padding: 7px 15px;
     color: var(--ctp-text);
-    background: var(--ctp-surface1);
-    font: inherit;
+    background: var(--win98-surface);
+    border: 0;
+    font: 400 13px "Courier New", Courier, monospace;
+    box-shadow:
+        inset -1px -1px 0 var(--win98-border-darkest),
+        inset 1px 1px 0 var(--win98-border-lightest),
+        inset -2px -2px 0 var(--win98-border-dark),
+        inset 2px 2px 0 var(--win98-border-light);
+}
+.archive-folder-picker-actions button:active {
+    box-shadow:
+        inset -1px -1px 0 var(--win98-border-lightest),
+        inset 1px 1px 0 var(--win98-border-darkest),
+        inset -2px -2px 0 var(--win98-border-light),
+        inset 2px 2px 0 var(--win98-border-dark);
 }
 @media (max-width: 700px) {
     .archive-explorer-layout {
         grid-template-columns: 1fr;
     }
     .archive-explorer-sidebar {
-        max-height: 165px;
+        max-height: 205px;
     }
     .archive-folder-row,
     .archive-folder-button {

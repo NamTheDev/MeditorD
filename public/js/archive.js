@@ -69,7 +69,7 @@ function archiveFolderFromUrl() {
   );
 }
 let activeArchiveFolder = archiveFolderFromUrl();
-const openArchiveFolders = new Set();
+const openArchiveFolders = new Set([""]);
 function archiveParent(path) {
   const index = path.lastIndexOf("/");
   return index < 0 ? "" : path.slice(0, index);
@@ -145,6 +145,7 @@ function resolveArchiveFolder(folder) {
 }
 function chooseArchiveFolder(folder, { historyMode = "push" } = {}) {
   activeArchiveFolder = resolveArchiveFolder(folder);
+  openArchiveFolders.add(""); // Keep the Explorer root visible when navigating.
   if (historyMode !== "none")
     syncArchiveFolderUrl(activeArchiveFolder, historyMode === "replace");
   let path = activeArchiveFolder;
@@ -167,40 +168,50 @@ function renderArchiveFolders() {
   if (!archiveTree) return;
   archiveTree.replaceChildren();
   const folders = archiveFolders(archiveFolderRows);
-  const appendRow = (label, path, depth, children) => {
+  const status = document.getElementById("archiveExplorerStatus");
+
+  // Render the same folder paths as before, but using classic Win98 tree rows:
+  // pixel folders, +/- expanders, dotted branches, and a label-only highlight.
+  const appendRow = (label, path, depth, hasChildren, isLast = false) => {
+    const selected = activeArchiveFolder === path;
+    const expanded = openArchiveFolders.has(path);
     const row = document.createElement("div");
     row.className = "archive-folder-row";
-    row.dataset.folder = path;
-    row.style.paddingLeft = depth * 16 + 4 + "px";
-    row.classList.toggle("selected", activeArchiveFolder === path);
-    if (children) {
+    row.dataset.folder = path; // Used by the existing context-menu actions.
+    row.dataset.depth = String(depth);
+    row.style.setProperty("--tree-indent", depth * 18 + "px");
+    row.classList.toggle("selected", selected);
+    row.classList.toggle("expanded", expanded && hasChildren);
+    row.classList.toggle("last-child", isLast);
+
+    if (hasChildren) {
       const toggle = document.createElement("button");
       toggle.type = "button";
       toggle.className = "archive-folder-toggle";
-      toggle.textContent = openArchiveFolders.has(path) ? "▾" : "▸";
-      toggle.setAttribute(
-        "aria-expanded",
-        String(openArchiveFolders.has(path)),
-      );
-      toggle.setAttribute(
-        "aria-label",
-        (openArchiveFolders.has(path) ? "Collapse " : "Expand ") + label,
-      );
+      toggle.textContent = expanded ? "−" : "+";
+      toggle.setAttribute("aria-expanded", String(expanded));
+      toggle.setAttribute("aria-label", (expanded ? "Collapse " : "Expand ") + label);
       toggle.addEventListener("click", () => {
         if (openArchiveFolders.has(path)) openArchiveFolders.delete(path);
         else openArchiveFolders.add(path);
         renderArchiveFolders();
+        // The tree is rebuilt; restore keyboard focus to the new expander.
+        const nextRow = [...archiveTree.querySelectorAll(".archive-folder-row")]
+          .find((item) => item.dataset.folder === path);
+        nextRow?.querySelector(".archive-folder-toggle")?.focus();
       });
       row.append(toggle);
     } else {
       const spacer = document.createElement("span");
       spacer.className = "archive-folder-spacer";
+      spacer.setAttribute("aria-hidden", "true");
       row.append(spacer);
     }
+
     const button = document.createElement("button");
     button.type = "button";
-    button.className =
-      "archive-folder-button" + (activeArchiveFolder === path ? " active" : "");
+    button.className = "archive-folder-button" + (selected ? " active" : "");
+    if (selected) button.setAttribute("aria-current", "page");
     const glyph = document.createElement("span");
     glyph.className = path ? "archive-folder-glyph" : "archive-all-glyph";
     glyph.setAttribute("aria-hidden", "true");
@@ -213,20 +224,27 @@ function renderArchiveFolders() {
     row.append(button);
     archiveTree.append(row);
   };
-  appendRow("All posts", "", 0, false);
+
+  const topLevelFolders = folders.filter((path) => archiveParent(path) === "");
+  appendRow("All posts", "", 0, topLevelFolders.length > 0, true);
+
   function appendChildren(parent, depth) {
-    for (const folder of folders.filter(
-      (path) => archiveParent(path) === parent,
-    )) {
-      const hasChildren = folders.some(
-        (path) => archiveParent(path) === folder,
-      );
-      appendRow(folder.split("/").pop(), folder, depth, hasChildren);
+    const children = folders.filter((path) => archiveParent(path) === parent);
+    for (let index = 0; index < children.length; index++) {
+      const folder = children[index];
+      const hasChildren = folders.some((path) => archiveParent(path) === folder);
+      appendRow(folder.split("/").pop(), folder, depth, hasChildren,
+        index === children.length - 1);
       if (hasChildren && openArchiveFolders.has(folder))
         appendChildren(folder, depth + 1);
     }
   }
-  appendChildren("", 1);
+
+  if (openArchiveFolders.has("")) appendChildren("", 1);
+  if (status) {
+    status.textContent = activeArchiveFolder || "All posts";
+    status.title = status.textContent;
+  }
 }
 async function loadArchiveFolders() {
   try {
