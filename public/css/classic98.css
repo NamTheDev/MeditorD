@@ -546,3 +546,73 @@ body.classic98-404 .return-btn-404:hover { color: #000; background: #dfdfdf; }
 @media (prefers-reduced-motion: reduce) {
     .classic-taskbar *, .classic-home-window * { transition: none !important; }
 }
+
+/* Final touches: actionable close icons and the inset system status bar. */
+.classic-title-close {
+    position: absolute;
+    z-index: 5;
+    top: 6px;
+    right: 6px;
+    display: grid;
+    place-items: center;
+    width: 23px;
+    height: 23px;
+    background: #c0c0c0;
+    color: #b00020;
+    text-decoration: none;
+    box-shadow: var(--classic-raised);
+}
+.classic-title-close::before {
+    content: "";
+    width: 12px;
+    height: 12px;
+    background: #b00020;
+    -webkit-mask: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%3E%3Cpath%20d='M5%205L19%2019M19%205L5%2019'%20fill='none'%20stroke='black'%20stroke-width='2.7'%20stroke-linecap='square'/%3E%3C/svg%3E") center / contain no-repeat;
+    mask: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%3E%3Cpath%20d='M5%205L19%2019M19%205L5%2019'%20fill='none'%20stroke='black'%20stroke-width='2.7'%20stroke-linecap='square'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+.classic-title-close:active { box-shadow: var(--classic-sunken); }
+.classic-title-close:focus-visible { outline: 1px dotted #fff; outline-offset: 1px; }
+.workspace98-editor > header > nav { position: relative; }
+.workspace98-archive .menu-bar { position: relative; }
+.workspace98-database .database-titlebar { position: relative; padding-right: 44px; }
+.workspace98-archive #fullscreenApp { height: calc(100dvh - var(--classic-taskbar-height)); }
+.classic-workspace-status {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex: 0 0 auto;
+    gap: 8px;
+    min-height: 23px;
+    margin: 0 4px 3px;
+    padding: 3px 8px;
+    background: #c0c0c0;
+    color: #303030;
+    box-shadow: var(--classic-sunken);
+    font: 11px/1.25 Tahoma,Arial,sans-serif;
+}
+.classic-workspace-status > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.classic-workspace-status > span:first-child { font-weight: bold; }
+.classic-home-logo .brand-title {
+    display: inline;
+    font: inherit;
+    color: inherit;
+    letter-spacing: inherit;
+    line-height: inherit;
+    text-align: left;
+}
+body.workspace98 .classic-taskbar button,
+body.workspace98 .classic-taskbar a {
+    color: #000;
+    background: #c0c0c0;
+    box-shadow: var(--classic-raised);
+    font-family: Tahoma, Arial, sans-serif;
+}
+body.workspace98 .classic-start-menu a:hover,
+body.workspace98 .classic-start-menu a:focus-visible { color: #fff; background: #000080; }
+body.workspace98 .classic-task-current { box-shadow: var(--classic-sunken); }
+@media (max-width: 700px) {
+    .classic-workspace-status { min-height: 21px; font-size: 10px; }
+    .classic-workspace-status > span:last-child { max-width: 70%; }
+    .classic-title-close { width: 27px; height: 27px; top: 5px; right: 5px; }
+    .workspace98-editor .title-compartment { padding-right: 36px; }
+}
