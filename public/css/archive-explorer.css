@@ -280,8 +280,16 @@
 }
 .archive-search-input {
     display: flex;
+    align-items: center;
+    gap: 6px;
     flex: 1 1 200px;
     min-width: 150px;
+}
+.archive-search-input > span {
+    flex: none;
+    white-space: nowrap;
+    color: var(--ctp-subtext1);
+    font-size: 0.9rem;
 }
 .archive-search-input input,
 .archive-search-select select {
@@ -310,11 +318,6 @@
 .archive-search-select select:focus-visible {
     outline: 1px dotted var(--ctp-lavender);
     outline-offset: 1px;
-}
-.archive-search-status {
-    color: var(--ctp-subtext1);
-    font-size: 0.85rem;
-    white-space: nowrap;
 }
 @media (max-width: 700px) {
     .archive-search-toolbar {

@@ -242,7 +242,7 @@ nav {
     width: 65px;
     flex-shrink: 0;
     font-size: var(--font-base);
-    font-weight: bold;
+    font-weight: 400;
     color: var(--ctp-subtext1);
     white-space: nowrap;
 }
@@ -370,7 +370,7 @@ input.form-control-unit:focus {
 
 .description-label {
     font-size: var(--font-base);
-    font-weight: bold;
+    font-weight: 400;
     color: var(--ctp-subtext1);
     white-space: nowrap;
 }
@@ -406,7 +406,6 @@ input.form-control-unit:focus {
     padding: clamp(10px, 1.5vw, 20px);
     color: var(--win98-text);
     line-height: 1.5;
-    user-select: text;
 }
 
 .markdown-preview a {

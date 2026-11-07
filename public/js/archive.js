@@ -13,7 +13,6 @@ const folderMenu = document.getElementById("archiveFolderContextMenu");
 const archiveSearchInput = document.getElementById("archiveSearchInput");
 const archiveSearchMode = document.getElementById("archiveSearchMode");
 const archiveSortOrder = document.getElementById("archiveSortOrder");
-const archiveSearchStatus = document.getElementById("archiveSearchStatus");
 
 function openNewPostInFolder(folder = "") {
   const url = new URL("/edit.html", window.location.origin);
@@ -87,20 +86,14 @@ function refreshArchiveFolderView() {
   cards.sort(compareArchiveCards);
   // Preserve the existing cards and delegated handlers while changing grid order.
   postsContainer.append(...cards);
-  let visibleCount = 0;
   for (const card of cards) {
     const path = card.dataset.title || "";
     const insideFolder = !activeArchiveFolder ||
       path.startsWith(activeArchiveFolder + "/");
     card.hidden = !insideFolder || !archiveMatchesSearch(path);
     if (card.hidden) card.style.display = "none";
-    else {
-      card.style.removeProperty("display");
-      visibleCount++;
-    }
+    else card.style.removeProperty("display");
   }
-  archiveSearchStatus.textContent =
-    visibleCount + (visibleCount === 1 ? " post" : " posts") + " shown";
   if (archiveCrumbs.dataset.currentFolder !== activeArchiveFolder) {
     const fragment = document.createDocumentFragment();
     const crumbs = [{ label: "All posts", path: "" }];

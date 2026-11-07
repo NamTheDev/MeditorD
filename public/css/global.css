@@ -117,11 +117,19 @@
     padding: 0;
     box-sizing: border-box;
     border-radius: 0 !important;
+    -webkit-user-select: none;
+    user-select: none;
 }
 
 ::selection {
     background-color: var(--selection-bg);
     color: var(--selection-fg);
+}
+
+/* Text remains selectable where users compose or edit multiline content. */
+textarea {
+    -webkit-user-select: text;
+    user-select: text;
 }
 
 html,
@@ -334,7 +342,6 @@ button:active,
     overflow-y: auto;
     padding: 14px;
     margin: 2px 0 0;
-    user-select: text;
 }
 
 .modal-actions {

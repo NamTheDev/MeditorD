@@ -51,11 +51,11 @@
         </script>
     <div class="archive-search-toolbar raised" role="search" aria-label="Search and sort posts">
       <label class="archive-search-input">
-        <span class="visually-hidden">Search post titles</span>
-        <input id="archiveSearchInput" type="search" placeholder="Search titles..." autocomplete="off" />
+        <span>Search:</span>
+        <input id="archiveSearchInput" type="search" placeholder="Search..." autocomplete="off" />
       </label>
       <label class="archive-search-select">
-        <span>Match</span>
+        <span>Match:</span>
         <select id="archiveSearchMode">
           <option value="includes">Contains</option>
           <option value="starts">Starts with</option>
@@ -63,7 +63,7 @@
         </select>
       </label>
       <label class="archive-search-select">
-        <span>Sort</span>
+        <span>Sort:</span>
         <select id="archiveSortOrder">
           <option value="newest">Date: Newest first</option>
           <option value="oldest">Date: Oldest first</option>
@@ -71,7 +71,6 @@
           <option value="za">Title: Z–A</option>
         </select>
       </label>
-      <span id="archiveSearchStatus" class="archive-search-status" role="status" aria-live="polite"></span>
     </div>
     <div class="gallery-viewport sunken" id="galleryViewport">
         <div class="reddit-gallery" id="postsContainer">{{archive_posts}}</div>
