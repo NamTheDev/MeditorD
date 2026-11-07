@@ -1,6 +1,9 @@
 const state = {
   items: [],
   filter: "",
+  matchMode: "includes",
+  sortOrder: "newest",
+  folderFilter: "",
   editingTitle: "",
   editingFolder: "",
 };
@@ -120,11 +123,63 @@ async function createFolder() {
   }
 }
 
+function databasePostTime(item) {
+  const value = item.document?.created_at || "";
+  const date = new Date(value.includes(" ") ? value.replace(" ", "T") + "Z" : value);
+  return Number.isNaN(date.getTime()) ? 0 : date.getTime();
+}
+
+function compareDatabaseItems(a, b) {
+  // Folders have no post date; keep them together at the top of the list.
+  if (a.isDirectory !== b.isDirectory) return a.isDirectory ? -1 : 1;
+  const titleOrder =
+    leafName(a.title).localeCompare(leafName(b.title), undefined, { sensitivity: "base" }) ||
+    a.title.localeCompare(b.title, undefined, { sensitivity: "base" });
+  if (state.sortOrder === "az") return titleOrder;
+  if (state.sortOrder === "za") return -titleOrder;
+  if (a.isDirectory) return titleOrder;
+  const difference = databasePostTime(a) - databasePostTime(b);
+  return (state.sortOrder === "oldest" ? difference : -difference) || titleOrder;
+}
+
+function matchesDatabaseSearch(item) {
+  const term = state.filter.trim().toLocaleLowerCase();
+  if (!term) return true;
+  const name = leafName(item.title).toLocaleLowerCase();
+  if (state.matchMode === "starts") return name.startsWith(term);
+  if (state.matchMode === "ends") return name.endsWith(term);
+  // Preserve the previous Database behavior: search folder-qualified paths too.
+  return name.includes(term) || item.title.toLocaleLowerCase().includes(term);
+}
+
+function matchesDatabaseFolder(item) {
+  const folder = state.folderFilter;
+  return !folder || item.title === folder || item.title.startsWith(folder + "/");
+}
+
+function updateDatabaseFolderOptions() {
+  const select = document.getElementById("databaseFolderFilter");
+  const selected = state.folderFilter;
+  const paths = allFolders();
+  select.replaceChildren();
+  const all = document.createElement("option");
+  all.value = "";
+  all.textContent = "All folders";
+  select.append(all);
+  for (const path of paths) {
+    const option = document.createElement("option");
+    option.value = path;
+    option.textContent = path;
+    select.append(option);
+  }
+  state.folderFilter = paths.includes(selected) ? selected : "";
+  select.value = state.folderFilter;
+}
+
 function renderTable() {
-  const query = state.filter.trim().toLowerCase();
-  const items = state.items.filter((item) =>
-    item.title.toLowerCase().includes(query),
-  );
+  const items = state.items
+    .filter((item) => matchesDatabaseSearch(item) && matchesDatabaseFolder(item))
+    .sort(compareDatabaseItems);
   tableBody.replaceChildren();
 
   const count = document.getElementById("databaseResultCount");
@@ -137,7 +192,7 @@ function renderTable() {
 
   if (!items.length) {
     renderMessage(
-      state.items.length ? "No matching posts." : "No posts saved.",
+      state.items.length ? "No matching posts or folders." : "No posts saved.",
     );
     if (count) {
       count.textContent =
@@ -222,6 +277,7 @@ async function loadItems() {
   renderMessage("Loading database...");
   try {
     state.items = await request("/documents?database=true");
+    updateDatabaseFolderOptions();
     renderTable();
 
     const editTitle = new URLSearchParams(window.location.search).get("edit");
@@ -405,6 +461,18 @@ document
 document.getElementById("refreshButton").addEventListener("click", loadItems);
 document.getElementById("searchInput").addEventListener("input", (event) => {
   state.filter = event.target.value;
+  renderTable();
+});
+document.getElementById("databaseSearchMode").addEventListener("change", (event) => {
+  state.matchMode = event.target.value;
+  renderTable();
+});
+document.getElementById("databaseSortOrder").addEventListener("change", (event) => {
+  state.sortOrder = event.target.value;
+  renderTable();
+});
+document.getElementById("databaseFolderFilter").addEventListener("change", (event) => {
+  state.folderFilter = event.target.value;
   renderTable();
 });
 document.getElementById("editForm").addEventListener("submit", saveEdit);

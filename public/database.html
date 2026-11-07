@@ -18,21 +18,51 @@
     </header>
 
     <main class="database-main">
-        <div class="database-searchbar">
-            <label for="searchInput">Search:</label>
-            <input
-                id="searchInput"
-                type="search"
-                placeholder="Search posts and folders..."
-                autocomplete="off"
-            />
-            <output class="database-results-count" id="databaseResultCount" for="searchInput" aria-live="polite">Loading...</output>
-        </div>
+        <section class="database-searchbar" role="search" aria-label="Search, filter and sort entries">
+            <div class="database-search-line">
+                <label for="searchInput">Search:</label>
+                <input
+                    id="searchInput"
+                    type="search"
+                    placeholder="Search posts and folders..."
+                    autocomplete="off"
+                />
+                <output class="database-results-count" id="databaseResultCount" for="searchInput" aria-live="polite">Loading...</output>
+            </div>
+            <div class="database-filter-line">
+                <label class="database-filter-control" for="databaseSearchMode">
+                    <span>Match:</span>
+                    <span class="win98-select">
+                        <select id="databaseSearchMode">
+                            <option value="includes">Contains</option>
+                            <option value="starts">Starts with</option>
+                            <option value="ends">Ends with</option>
+                        </select>
+                    </span>
+                </label>
+                <label class="database-filter-control" for="databaseSortOrder">
+                    <span>Sort:</span>
+                    <span class="win98-select">
+                        <select id="databaseSortOrder">
+                            <option value="newest">Date: Newest first</option>
+                            <option value="oldest">Date: Oldest first</option>
+                            <option value="az">Title: A–Z</option>
+                            <option value="za">Title: Z–A</option>
+                        </select>
+                    </span>
+                </label>
+                <label class="database-filter-control" for="databaseFolderFilter">
+                    <span>Folder:</span>
+                    <span class="win98-select">
+                        <select id="databaseFolderFilter">
+                            <option value="">All folders</option>
+                        </select>
+                    </span>
+                </label>
+            </div>
+        </section>
         <div class="table-wrap">
-            <table>
-                <caption class="visually-hidden">
-                    Saved posts
-                </caption>
+            <table aria-label="Saved posts and folders">
                 <thead>
                     <tr>
                         <th scope="col">Title</th>
