@@ -207,6 +207,37 @@ body.workspace98 :is(.app-dialog-actions, .win98-modal-actions, .edit-modal-acti
     box-shadow: var(--w98-sunken);
 }
 
+/* SVG-mask close icon, shared by desktop and mobile workspace dialogs.
+   The original button label remains for accessible names and existing handlers,
+   but no text glyph is painted. Do not affect Home or Exit. */
+body.workspace98 :is(.app-dialog-close, .win98-modal-close, .modal-close-button, .modal-close) {
+    display: grid;
+    place-items: center;
+    min-width: 26px;
+    min-height: 26px;
+    padding: 0;
+    font-size: 0;
+    line-height: 0;
+    color: var(--ctp-red);
+    cursor: pointer;
+}
+
+body.workspace98 :is(.app-dialog-close, .win98-modal-close, .modal-close-button, .modal-close)::before {
+    content: "";
+    display: block;
+    width: 16px;
+    height: 16px;
+    flex: none;
+    background: var(--ctp-red);
+    -webkit-mask: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%3E%3Cpath%20d='M5%205L19%2019M19%205L5%2019'%20fill='none'%20stroke='black'%20stroke-width='2.7'%20stroke-linecap='square'/%3E%3C/svg%3E") center / contain no-repeat;
+    mask: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%3E%3Cpath%20d='M5%205L19%2019M19%205L5%2019'%20fill='none'%20stroke='black'%20stroke-width='2.7'%20stroke-linecap='square'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+body.workspace98 :is(.app-dialog-close, .win98-modal-close, .modal-close-button, .modal-close):is(:hover, :focus-visible) {
+    color: var(--ctp-red);
+    outline-color: var(--ctp-red);
+}
+
 /* ───────────────── EDITOR ───────────────── */
 body.workspace98-editor {
     height: 100dvh;
@@ -1554,5 +1585,97 @@ body.workspace98-archive .archive-folder-add-plus {
 @media (max-width: 450px) {
     .workspace98-archive .menu-bar {
         grid-template-rows: 29px 38px;
+    }
+}
+
+/* Mobile spacing rhythm: 4px within controls, 8px between related groups,
+   12px within major panels. Touch hit areas remain at least 44px. */
+@media (max-width: 700px) {
+    .workspace98-editor > header {
+        padding: max(5px, var(--safe-top)) max(6px, var(--safe-right))
+            4px max(6px, var(--safe-left));
+    }
+    .workspace98-editor > header > nav,
+    .workspace98-editor .editor-nav-actions {
+        gap: 4px;
+    }
+    .workspace98-editor .editor-container {
+        margin: 0 6px 6px;
+    }
+
+    .workspace98-archive #fullscreenApp {
+        gap: 6px;
+        padding: max(6px, var(--safe-top)) max(6px, var(--safe-right))
+            max(6px, var(--safe-bottom)) max(6px, var(--safe-left));
+    }
+    .workspace98-archive .menu-bar {
+        gap: 4px;
+        padding: 4px;
+    }
+    .workspace98-archive .archive-explorer-layout {
+        gap: 6px;
+        grid-template-rows: clamp(96px, 19dvh, 148px) minmax(0, 1fr);
+    }
+    .workspace98-archive .archive-explorer-sidebar {
+        padding: 4px;
+    }
+    .workspace98-archive .archive-search-toolbar {
+        gap: 8px;
+        padding: 8px;
+    }
+    .workspace98-archive .gallery-viewport {
+        padding: 10px;
+    }
+    .workspace98-archive .reddit-gallery {
+        gap: 10px;
+    }
+    .workspace98-archive .gallery-card {
+        padding: 6px;
+        margin-bottom: 10px;
+    }
+
+    .workspace98-database #databaseApp {
+        gap: 6px;
+        padding: max(6px, var(--safe-top)) max(6px, var(--safe-right))
+            max(6px, var(--safe-bottom)) max(6px, var(--safe-left));
+    }
+    .workspace98-database .database-header {
+        padding: 4px;
+    }
+    .workspace98-database .database-actions {
+        gap: 6px;
+        padding: 6px 4px 4px;
+    }
+    .workspace98-database .database-searchbar {
+        gap: 8px;
+        padding: 8px;
+    }
+    .workspace98-database .database-filter-line {
+        gap: 6px;
+    }
+}
+
+/* The Editor is container-responsive, so its forms stay compact even in
+   a narrow desktop tile; the 44px mobile inputs are not reduced. */
+@container editor-shell (max-width: 839px) {
+    .workspace98-editor .editor-layout {
+        padding: 6px 30px 9px 6px;
+    }
+    .workspace98-editor :is(.editor-left-pane, .editor-right-pane) {
+        padding: 10px;
+        margin-bottom: 6px;
+    }
+    .workspace98-editor .editor-form {
+        gap: 8px;
+    }
+    .workspace98-editor .form-row {
+        gap: 5px;
+    }
+    .workspace98-editor .description-toolbar {
+        min-height: 42px;
+        padding: 6px 8px;
+    }
+    .workspace98-editor :is(.editor-textarea, .markdown-preview) {
+        padding: 12px;
     }
 }

@@ -2,8 +2,8 @@
    Keep native scroll physics, wheel input, dragging, and keyboard behavior. */
 :root {
     --scroll98-size: 17px;
-    --scroll98-face: var(--win98-surface);
-    --scroll98-track: var(--ctp-mantle);
+    --scroll98-face: var(--ctp-base);  /* #1e1e2e: handle and arrow buttons */
+    --scroll98-track: var(--ctp-mantle); /* #181825: track */
 }
 
 /* Chromium/Vivaldi: four-tone raised controls inside a recessed track. */
@@ -14,11 +14,7 @@
 }
 
 ::-webkit-scrollbar-track {
-    background:
-        repeating-linear-gradient(45deg,
-            var(--ctp-mantle) 0 2px,
-            var(--ctp-surface0) 2px 3px,
-            var(--ctp-mantle) 3px 5px);
+    background: var(--scroll98-track);
     box-shadow:
         inset 1px 1px 0 var(--win98-border-darkest),
         inset -1px -1px 0 var(--win98-border-lightest);
@@ -80,11 +76,12 @@
     box-shadow: inset 1px 1px var(--win98-border-lightest);
 }
 
-/* Firefox cannot expose the same scrollbar-button pseudo-elements. */
-@supports not selector(::-webkit-scrollbar) {
+/* Firefox: native color properties preserve the same thumb and track.
+   Chromium/Vivaldi retain the detailed Win98 pseudo-element chrome above. */
+@supports (-moz-appearance: none) {
     * {
         scrollbar-width: auto;
-        scrollbar-color: var(--ctp-surface2) var(--ctp-mantle);
+        scrollbar-color: var(--scroll98-face) var(--scroll98-track);
     }
 }
 
@@ -107,14 +104,11 @@
 
     .mobile-scrollbar-track {
         margin: 1px;
-        background:
-            repeating-linear-gradient(45deg,
-                var(--ctp-mantle) 0 2px,
-                var(--ctp-surface0) 2px 3px,
-                var(--ctp-mantle) 3px 5px);
+        background: var(--scroll98-track);
     }
 
-    .mobile-scrollbar-thumb {
+    .mobile-scrollbar-thumb,
+    .mobile-scrollbar-thumb.dragging {
         left: 1px;
         right: 1px;
         min-height: 44px;
