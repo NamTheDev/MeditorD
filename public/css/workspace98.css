@@ -183,13 +183,6 @@ body.workspace98 :is(.app-dialog-titlebar h2, .win98-modal-titlebar h2, .edit-mo
     font: 400 13px/1.3 "Courier New", Courier, monospace;
 }
 
-body.workspace98 :is(.app-dialog-close, .win98-modal-close, .modal-close-button, .modal-close) {
-    flex-shrink: 0;
-    background: var(--w98-face);
-    color: var(--w98-text);
-    box-shadow: var(--w98-raised);
-}
-
 body.workspace98 :is(.app-dialog-window input, .app-dialog-window textarea, .edit-modal-box input, .edit-modal-box select, .edit-modal-box textarea, .archive-folder-picker select) {
     background: var(--w98-well);
     color: var(--w98-text);
@@ -207,41 +200,13 @@ body.workspace98 :is(.app-dialog-actions, .win98-modal-actions, .edit-modal-acti
     box-shadow: var(--w98-sunken);
 }
 
-/* SVG-mask close icon, shared by desktop and mobile workspace dialogs.
-   The original button label remains for accessible names and existing handlers,
-   but no text glyph is painted. Do not affect Home or Exit. */
+/* One close-button implementation shared by Editor, Archive, and Database.
+   Keep the original button and aria-label for existing handlers. A hidden
+   text glyph does NOT take up layout space: both visual layers are absolute
+   children of the same positioned button, not separate CSS grid cells. */
 body.workspace98 :is(.app-dialog-close, .win98-modal-close, .modal-close-button, .modal-close) {
-    display: grid;
-    place-items: center;
-    min-width: 26px;
-    min-height: 26px;
-    padding: 0;
-    font-size: 0;
-    line-height: 0;
-    color: var(--ctp-red);
-    cursor: pointer;
-}
-
-body.workspace98 :is(.app-dialog-close, .win98-modal-close, .modal-close-button, .modal-close)::before {
-    content: "";
+    position: relative;
     display: block;
-    width: 16px;
-    height: 16px;
-    flex: none;
-    background: var(--ctp-red);
-    -webkit-mask: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%3E%3Cpath%20d='M5%205L19%2019M19%205L5%2019'%20fill='none'%20stroke='black'%20stroke-width='2.7'%20stroke-linecap='square'/%3E%3C/svg%3E") center / contain no-repeat;
-    mask: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%3E%3Cpath%20d='M5%205L19%2019M19%205L5%2019'%20fill='none'%20stroke='black'%20stroke-width='2.7'%20stroke-linecap='square'/%3E%3C/svg%3E") center / contain no-repeat;
-}
-
-body.workspace98 :is(.app-dialog-close, .win98-modal-close, .modal-close-button, .modal-close):is(:hover, :focus-visible) {
-    color: var(--ctp-red);
-    outline-color: var(--ctp-red);
-}
-
-/* Dialog close controls: the red cross stays small and centered in a
-   24px Win98 face. On touch devices the hit target grows, not the face.
-   Existing buttons, accessible names, and click handlers stay unchanged. */
-body.workspace98 :is(.app-dialog-close, .win98-modal-close, .modal-close-button, .modal-close) {
     box-sizing: border-box;
     flex: 0 0 28px;
     width: 28px;
@@ -250,18 +215,19 @@ body.workspace98 :is(.app-dialog-close, .win98-modal-close, .modal-close-button,
     min-height: 28px;
     margin: 0;
     padding: 0;
+    overflow: visible;
     border: 0;
     border-radius: 0;
+    color: transparent;
     background: transparent;
     box-shadow: none;
+    font-size: 0;
+    line-height: 0;
     transform: none;
+    cursor: pointer;
 }
 
-body.workspace98 :is(.app-dialog-close, .win98-modal-close, .modal-close) {
-    position: relative;
-}
-
-/* Archive's inspector uses an absolutely positioned control. */
+/* Archive inspector close control is centered within its absolute titlebar. */
 body.workspace98 .modal-close-button {
     position: absolute;
     top: 50%;
@@ -269,13 +235,7 @@ body.workspace98 .modal-close-button {
     transform: translateY(-50%);
 }
 
-body.workspace98 :is(.app-dialog-close, .win98-modal-close, .modal-close-button, .modal-close)::before {
-    position: relative;
-    z-index: 1;
-    width: 13px;
-    height: 13px;
-}
-
+/* The raised Win98 face is 24px, independent of the touch hit box. */
 body.workspace98 :is(.app-dialog-close, .win98-modal-close, .modal-close-button, .modal-close)::after {
     content: "";
     position: absolute;
@@ -290,14 +250,36 @@ body.workspace98 :is(.app-dialog-close, .win98-modal-close, .modal-close-button,
     pointer-events: none;
 }
 
-body.workspace98 :is(.app-dialog-close, .win98-modal-close, .modal-close-button, .modal-close):active {
+/* The red icon uses the exact same anchor as the raised face. */
+body.workspace98 :is(.app-dialog-close, .win98-modal-close, .modal-close-button, .modal-close)::before {
+    content: "";
+    position: absolute;
+    display: block;
+    z-index: 1;
+    left: 50%;
+    top: 50%;
+    width: 13px;
+    height: 13px;
+    transform: translate(-50%, -50%);
+    background: var(--ctp-red);
+    -webkit-mask: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%3E%3Cpath%20d='M5%205L19%2019M19%205L5%2019'%20fill='none'%20stroke='black'%20stroke-width='2.7'%20stroke-linecap='square'/%3E%3C/svg%3E") center / contain no-repeat;
+    mask: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%3E%3Cpath%20d='M5%205L19%2019M19%205L5%2019'%20fill='none'%20stroke='black'%20stroke-width='2.7'%20stroke-linecap='square'/%3E%3C/svg%3E") center / contain no-repeat;
+    pointer-events: none;
+}
+
+body.workspace98 :is(.app-dialog-close, .win98-modal-close, .modal-close-button, .modal-close):is(:hover, :focus-visible) {
+    outline: 1px dotted var(--ctp-red);
+    outline-offset: -2px;
+}
+
+body.workspace98 :is(.app-dialog-close, .win98-modal-close, .modal-close-button, .modal-close):active:not(:disabled) {
     padding: 0;
     background: transparent;
     box-shadow: none;
     transform: none;
 }
 
-body.workspace98 .modal-close-button:active {
+body.workspace98 .modal-close-button:active:not(:disabled) {
     transform: translateY(-50%);
 }
 
