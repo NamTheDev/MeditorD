@@ -1,1 +1,145 @@
-/* Home uses the shared Classic '98 layout in /css/classic98.css. */
+.home-wrapper {
+    height: 100dvh;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    background: var(--media-home-background) center / 100% 100% no-repeat;
+    padding: max(16px, var(--safe-top)) max(16px, var(--safe-right))
+        max(16px, var(--safe-bottom)) max(16px, var(--safe-left));
+}
+
+.main-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(16px, 3.5vw, 55px);
+    width: 100%;
+    max-width: 1500px;
+    padding: 0 30px;
+}
+
+.brand-title {
+    display: block;
+    text-decoration: none;
+    font-family: "Press Start 2P", monospace;
+    font-size: clamp(2rem, 4.4vw, 5rem);
+    color: var(--ctp-text);
+    letter-spacing: -0.02em;
+    line-height: 1;
+    user-select: none;
+    text-align: center;
+}
+
+.accent-letter {
+    color: var(--accent);
+}
+
+.arrow-btn {
+    display: block;
+    text-decoration: none;
+    width: clamp(140px, 18vw, 290px);
+    flex-shrink: 0;
+    cursor: pointer;
+}
+
+.arrow-btn:hover {
+    filter: brightness(1.15);
+}
+
+.arrow-btn.left:hover {
+    transform: translateX(-8px);
+}
+
+.arrow-btn.right:hover {
+    transform: translateX(8px);
+}
+
+.arrow-svg {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.arrow-shape {
+    fill: var(--ctp-text);
+}
+
+.label-exit {
+    font-family: "Montserrat", sans-serif;
+    font-size: 38px;
+    font-weight: 800;
+    fill: var(--color-red);
+}
+
+.label-edit {
+    font-family: "Montserrat", sans-serif;
+    font-size: 38px;
+    font-weight: 800;
+    fill: var(--color-green);
+}
+
+.footer-note {
+    position: absolute;
+    bottom: 8%;
+    color: var(--fg);
+    font-size: clamp(0.9rem, 1.2vw, 1.35rem);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    opacity: 0.9;
+    user-select: none;
+}
+
+.green {
+    color: var(--color-green);
+}
+
+.red {
+    color: var(--color-red);
+}
+
+@media (max-width: 700px) {
+    .home-wrapper {
+        background-image: none;
+        background-color: var(--bg);
+    }
+
+    .main-container {
+        flex-direction: column;
+        gap: clamp(4px, 1.5dvh, 14px);
+        padding: 0 10px;
+    }
+
+    .brand-title {
+        order: -1;
+        margin-bottom: clamp(8px, 2dvh, 20px);
+        font-size: clamp(1.8rem, 9vw, 3.2rem);
+    }
+
+    .arrow-btn {
+        width: min(72vw, 250px);
+        min-height: 44px;
+    }
+
+    .footer-note {
+        right: max(14px, var(--safe-right));
+        bottom: max(18px, var(--safe-bottom));
+        left: max(14px, var(--safe-left));
+        font-size: clamp(0.78rem, 3.4vw, 1rem);
+        text-align: center;
+    }
+}
+
+@media (hover: none) {
+    .arrow-btn:hover {
+        filter: none;
+    }
+
+    .arrow-btn.left:hover,
+    .arrow-btn.right:hover {
+        transform: none;
+    }
+}
