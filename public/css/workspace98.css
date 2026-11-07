@@ -323,6 +323,30 @@ body.workspace98 :is(.app-dialog-close, .win98-modal-close, .modal-close-button,
     }
 }
 
+/* New Folder / prompt dialog: give its heading and compact red close
+   control a shared line-height without touching focus or prompt handling. */
+@media (max-width: 700px) {
+    body.workspace98-archive .app-dialog-titlebar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-height: 48px;
+        gap: 8px;
+        padding: 2px 6px 2px 12px;
+    }
+
+    body.workspace98-archive .app-dialog-titlebar > h2 {
+        flex: 1 1 auto;
+        min-width: 0;
+        overflow-wrap: anywhere;
+    }
+
+    body.workspace98-archive .app-dialog-close {
+        flex: 0 0 44px;
+        margin-left: auto;
+    }
+}
+
 /* ───────────────── EDITOR ───────────────── */
 body.workspace98-editor {
     height: 100dvh;
@@ -721,12 +745,12 @@ body.workspace98-archive {
     box-shadow: var(--w98-raised);
 }
 
-/* Match the actual Win98 Explorer caption layout: the new-folder command
-   lives next to the heading, not at the far edge of a full-width bar. */
+/* Explorer: keep caption left, New Folder command right, within one title bar.
+   Its visible 26px face stays compact within the separate mobile hit target. */
 .workspace98-archive .archive-explorer-heading {
     display: flex;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: space-between;
     gap: 8px;
     flex: 0 0 36px;
     min-height: 36px;
@@ -752,7 +776,7 @@ body.workspace98-archive {
     height: 32px;
     min-width: 32px;
     min-height: 32px;
-    margin: 0;
+    margin: 0 0 0 auto;
     padding: 3px;
     background: transparent;
     color: var(--w98-text);
@@ -1816,27 +1840,31 @@ body.workspace98-archive .archive-folder-add-plus {
     }
 }
 
-/* Editor folder picker: keep the raised arrow inside its recessed field.
-   One explicit wrapper height prevents the 32px / mobile 44px mismatch;
-   the icon face is square and does not stretch with the select. */
+/* Editor folder picker: one true control height at each viewport size.
+   The selector and its raised arrow are aligned from the SAME wrapper box. */
 body.workspace98-editor .win98-select.form-control-unit {
+    --folder-field-height: 32px;
     position: relative;
     display: block;
     box-sizing: border-box;
-    height: 32px;
-    min-height: 32px;
-    max-height: 32px;
+    width: 100%;
+    height: var(--folder-field-height);
+    min-height: var(--folder-field-height);
+    max-height: var(--folder-field-height);
+    flex: 0 0 auto;
+    margin: 0;
 }
 
 body.workspace98-editor .win98-select.form-control-unit > select {
     display: block;
     box-sizing: border-box;
     width: 100%;
-    height: 100%;
-    min-height: 0;
-    max-height: 100%;
+    height: var(--folder-field-height);
+    min-height: var(--folder-field-height);
+    max-height: var(--folder-field-height);
     margin: 0;
-    padding-right: 40px;
+    padding: 0 40px 0 10px;
+    vertical-align: top;
 }
 
 body.workspace98-editor .win98-select.form-control-unit::before {
@@ -1844,21 +1872,28 @@ body.workspace98-editor .win98-select.form-control-unit::before {
     right: 4px;
     bottom: auto;
     box-sizing: border-box;
-    width: 28px;
-    height: 28px;
+    width: 26px;
+    height: 26px;
+    min-height: 0;
     transform: translateY(-50%);
+    pointer-events: none;
 }
 
 body.workspace98-editor .win98-select.form-control-unit::after {
     top: 50%;
-    right: 14px;
+    right: 13px;
     transform: translateY(-50%);
+    pointer-events: none;
 }
 
 @media (max-width: 700px) {
     body.workspace98-editor .win98-select.form-control-unit {
+        --folder-field-height: 44px;
+    }
+
+    body.workspace98-editor input.form-control-unit {
         height: 44px;
         min-height: 44px;
-        max-height: 44px;
     }
 }
+
