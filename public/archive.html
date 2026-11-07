@@ -49,6 +49,30 @@
             nav.dataset.currentFolder = folder;
           })();
         </script>
+    <div class="archive-search-toolbar raised" role="search" aria-label="Search and sort posts">
+      <label class="archive-search-input">
+        <span class="visually-hidden">Search post titles</span>
+        <input id="archiveSearchInput" type="search" placeholder="Search titles..." autocomplete="off" />
+      </label>
+      <label class="archive-search-select">
+        <span>Match</span>
+        <select id="archiveSearchMode">
+          <option value="includes">Contains</option>
+          <option value="starts">Starts with</option>
+          <option value="ends">Ends with</option>
+        </select>
+      </label>
+      <label class="archive-search-select">
+        <span>Sort</span>
+        <select id="archiveSortOrder">
+          <option value="newest">Date: Newest first</option>
+          <option value="oldest">Date: Oldest first</option>
+          <option value="az">Title: A–Z</option>
+          <option value="za">Title: Z–A</option>
+        </select>
+      </label>
+      <span id="archiveSearchStatus" class="archive-search-status" role="status" aria-live="polite"></span>
+    </div>
     <div class="gallery-viewport sunken" id="galleryViewport">
         <div class="reddit-gallery" id="postsContainer">{{archive_posts}}</div>
         <script id="initialPosts" type="application/json">
@@ -61,6 +85,7 @@
 <div id="archiveFolderContextMenu" class="card-menu archive-folder-context-menu" role="menu" aria-label="Folder actions" hidden>
   <button type="button" role="menuitem" data-folder-action="new-folder">New folder</button>
   <button type="button" role="menuitem" data-folder-action="new-subfolder">New subfolder</button>
+  <button type="button" role="menuitem" data-folder-action="new-post">New post here</button>
   <button type="button" role="menuitem" data-folder-action="delete-folder">Delete folder</button>
 </div>
 <div class="modal-overlay" id="postModal">

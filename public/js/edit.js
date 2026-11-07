@@ -1,5 +1,90 @@
 const titleInput = document.getElementById("doc-title");
 const usernameInput = document.getElementById("doc-username");
+const folderSelect = document.getElementById("doc-folder");
+const createFolderValue = "__meditord_create_folder__";
+let pendingFolder = "";
+let selectedFolder = "";
+
+function isValidFolderSegment(value) {
+  return Boolean(value && value !== "." && value !== ".." &&
+    !/[\\/\u0000-\u001f]/.test(value));
+}
+
+function appendFolderOption(value, label = value) {
+  const option = document.createElement("option");
+  option.value = value;
+  option.textContent = label;
+  folderSelect.append(option);
+}
+
+async function loadEditorFolders() {
+  const requestedFolder = new URLSearchParams(window.location.search).get("folder") || "";
+  const available = new Set();
+  try {
+    const entries = await window.database.listDocuments();
+    for (const entry of entries) {
+      if (entry.isDirectory) available.add(entry.title);
+      let path = entry.title;
+      while (path.includes("/")) {
+        path = path.slice(0, path.lastIndexOf("/"));
+        if (path) available.add(path);
+      }
+    }
+  } catch (error) {
+    console.warn("Could not load folders:", error);
+  }
+  folderSelect.replaceChildren();
+  appendFolderOption("", "(Unfiled)");
+  [...available].sort((a, b) => a.localeCompare(b)).forEach((folder) => {
+    appendFolderOption(folder);
+  });
+  appendFolderOption(createFolderValue, "+ Create new folder...");
+  if (available.has(requestedFolder)) folderSelect.value = requestedFolder;
+  selectedFolder = folderSelect.value;
+}
+
+folderSelect.addEventListener("change", async () => {
+  if (folderSelect.value !== createFolderValue) {
+    selectedFolder = folderSelect.value;
+    pendingFolder = "";
+    folderSelect.querySelector('option[data-pending-folder="true"]')?.remove();
+    return;
+  }
+  const parent = selectedFolder;
+  const name = await window.showAppPrompt(
+    parent ? "New subfolder in " + parent + ":" : "New folder name:",
+    { title: "New folder", inputLabel: "Folder name", confirmLabel: "Use folder" },
+  );
+  if (name == null) {
+    folderSelect.value = selectedFolder;
+    return;
+  }
+  const leaf = name.trim();
+  if (!isValidFolderSegment(leaf)) {
+    await window.showAppAlert("Use a folder name without slashes or control characters.", {
+      title: "Invalid folder name",
+    });
+    folderSelect.value = selectedFolder;
+    return;
+  }
+  const path = parent ? parent + "/" + leaf : leaf;
+  if ([...folderSelect.options].some((option) => option.value === path)) {
+    await window.showAppAlert("A folder with this name already exists.", {
+      title: "Folder exists",
+    });
+    folderSelect.value = selectedFolder;
+    return;
+  }
+  folderSelect.querySelector('option[data-pending-folder="true"]')?.remove();
+  const option = document.createElement("option");
+  option.value = path;
+  option.textContent = "New: " + path + " (on save)";
+  option.dataset.pendingFolder = "true";
+  folderSelect.insertBefore(option, folderSelect.lastElementChild);
+  pendingFolder = path;
+  folderSelect.value = path;
+  selectedFolder = path;
+});
 const urlInput = document.getElementById("doc-url");
 const contentInput = document.querySelector(".editor-textarea");
 const previewButton = document.getElementById("preview-button");
@@ -228,7 +313,13 @@ function renderMediaPreview(file) {
 
 async function saveCurrentDocument() {
   const title = titleInput.value.trim();
+  const folder = folderSelect.value;
   const username = usernameInput.value.trim();
+  if (title.includes("/") || title.includes(String.fromCharCode(92)) ||
+    title === "." || title === "..") {
+    showFeatureNotice("Cannot Save Document", "Title cannot contain path separators.", titleInput);
+    return;
+  }
   const url = urlInput.value.trim();
   const media = mediaInput.files?.[0];
   if (!title) {
@@ -259,13 +350,20 @@ async function saveCurrentDocument() {
         : null;
 
     await window.database.saveDocument(
-      title,
+      folder ? folder + "/" + title : title,
       username,
       contentInput.value,
       url,
       media,
       thumbnail,
+      folder === pendingFolder ? pendingFolder : "",
     );
+    if (pendingFolder && folder === pendingFolder) {
+      folderSelect.querySelector('option[data-pending-folder="true"]')?.remove();
+      pendingFolder = "";
+      appendFolderOption(folder, folder);
+      folderSelect.value = folder;
+    }
     showFeatureNotice(
       "Upload Complete",
       "Content uploaded to database.",
@@ -441,3 +539,5 @@ updateMarkdownPreview();
 resizeMobileTextarea();
 setDescriptionView("write");
 queueMobileScrollbarSync();
+
+void loadEditorFolders();

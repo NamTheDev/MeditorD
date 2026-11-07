@@ -279,6 +279,7 @@ export async function handleApi(
       let media: File | undefined;
       let thumbnail: File | undefined;
       let isFolder = false;
+      let createFolder = "";
 
       if (contentType.includes("multipart/form-data")) {
         const form = await req.formData();
@@ -287,6 +288,7 @@ export async function handleApi(
         content = form.get("content")?.toString() ?? "";
         url = form.get("url")?.toString() ?? "";
         isFolder = form.get("isFolder") === "true";
+        createFolder = form.get("createFolder")?.toString() ?? "";
         const uploadedMedia = form.get("media");
         if (uploadedMedia instanceof File && uploadedMedia.size > 0) {
           if (
@@ -315,12 +317,14 @@ export async function handleApi(
           content?: string;
           url?: string;
           isFolder?: boolean;
+          createFolder?: string;
         };
         title = body.title;
         username = body.username ?? "";
         content = body.content ?? "";
         url = body.url ?? "";
         isFolder = body.isFolder ?? false;
+        createFolder = body.createFolder ?? "";
       }
 
       if (!title) {
@@ -356,6 +360,7 @@ export async function handleApi(
         url,
         media,
         thumbnail,
+        createFolder,
       );
       return Response.json(saved, { status: 201 });
     }
@@ -364,14 +369,14 @@ export async function handleApi(
       const oldTitle = decodeURIComponent(endpoint.slice("/documents/".length));
       const contentType = req.headers.get("content-type") ?? "";
       if (!contentType.includes("multipart/form-data")) {
-        const body = (await req.json()) as { newTitle?: string };
+        const body = (await req.json()) as { newTitle?: string; createFolder?: string };
         if (!body.newTitle) {
           return Response.json(
             { error: "New title is required" },
             { status: 400 },
           );
         }
-        const success = await db.renameItem(oldTitle, body.newTitle);
+        const success = await db.renameItem(oldTitle, body.newTitle, body.createFolder ?? "");
         if (!success) {
           return Response.json({ error: "Item not found" }, { status: 404 });
         }

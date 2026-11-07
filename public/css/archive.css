@@ -199,7 +199,7 @@ html.meditord-js .reddit-gallery:not(.masonry-ready) .gallery-card {
 
 .card-menu {
     position: absolute;
-    top: calc(100% + 4px);
+    top: 100%;
     right: 0;
     display: flex;
     flex-direction: column;

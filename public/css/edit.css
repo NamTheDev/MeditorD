@@ -1004,3 +1004,32 @@ input.form-control-unit:focus {
         color: inherit;
     }
 }
+
+/* Optional post folder selection matches the existing editor input styling. */
+select.form-control-unit {
+    min-width: 0;
+    height: var(--input-height);
+    padding: 0 clamp(6px, 0.8vw, 12px);
+    border: none;
+    border-radius: 0;
+    outline: none;
+    background: var(--win98-window-bg);
+    color: var(--win98-text);
+    font: inherit;
+    box-shadow:
+        inset -1px -1px 0 var(--win98-border-lightest),
+        inset 1px 1px 0 var(--win98-border-darkest),
+        inset -2px -2px 0 var(--win98-border-light),
+        inset 2px 2px 0 var(--win98-border-dark);
+}
+select.form-control-unit:focus-visible {
+    outline: 1px solid var(--win98-accent);
+    outline-offset: -1px;
+}
+@media (max-width: 700px) {
+    select.form-control-unit {
+        width: 100%;
+        min-height: 44px;
+        font-size: 16px;
+    }
+}

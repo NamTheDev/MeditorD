@@ -641,8 +641,13 @@ export async function saveDocument(
   url = "",
   media?: File,
   thumbnail?: File,
+  createFolderPath = "",
 ): Promise<DocumentRecord> {
   const normalizedTitle = normalizeTitle(title);
+  const folderToCreate = createFolderPath ? normalizeTitle(createFolderPath) : "";
+  if (folderToCreate && !normalizedTitle.startsWith(folderToCreate + "/")) {
+    throw new Error("New folder must contain the post");
+  }
   const mediaBytes = media ? new Uint8Array(await media.arrayBuffer()) : null;
   const mediaHash = mediaBytes ? createHash("sha256").update(mediaBytes).digest("hex") : null;
   const thumbnailBytes =
@@ -653,27 +658,28 @@ export async function saveDocument(
     ? createHash("sha256").update(thumbnailBytes).digest("hex")
     : null;
 
-  const inserted = database
-    .query(
-      `INSERT INTO documents (
-         title, is_directory, username, content, url,
-         media, media_name, media_type, media_hash, media_size, media_storage,
-         media_thumbnail, media_thumbnail_type, media_thumbnail_hash, media_thumbnail_size
-       )
-       VALUES (?, 0, ?, ?, ?, ?, ?, ?, ?, ?, 'identity', ?, ?, ?, ?)
-       ON CONFLICT(title) DO NOTHING`,
-    )
-    .run(
-      normalizedTitle, username, content, url,
-      mediaBytes, media?.name ?? null, media?.type || null, mediaHash,
-      mediaBytes?.byteLength ?? null,
-      thumbnailBytes, thumbnailBytes ? thumbnail?.type || "image/webp" : null,
-      thumbnailHash, thumbnailBytes?.byteLength ?? null,
-    );
-
-  if (!inserted.changes) {
-    throw new DocumentConflictError();
-  }
+  const inserted = database.transaction(() => {
+    if (folderToCreate) createFolder(folderToCreate);
+    const result = database
+      .query(
+        `INSERT INTO documents (
+           title, is_directory, username, content, url,
+           media, media_name, media_type, media_hash, media_size, media_storage,
+           media_thumbnail, media_thumbnail_type, media_thumbnail_hash, media_thumbnail_size
+         )
+         VALUES (?, 0, ?, ?, ?, ?, ?, ?, ?, ?, 'identity', ?, ?, ?, ?)
+         ON CONFLICT(title) DO NOTHING`,
+      )
+      .run(
+        normalizedTitle, username, content, url,
+        mediaBytes, media?.name ?? null, media?.type || null, mediaHash,
+        mediaBytes?.byteLength ?? null,
+        thumbnailBytes, thumbnailBytes ? thumbnail?.type || "image/webp" : null,
+        thumbnailHash, thumbnailBytes?.byteLength ?? null,
+      );
+    if (!result.changes) throw new DocumentConflictError();
+    return result;
+  }).immediate();
 
   if (mediaBytes && mediaHash) cacheMedia(mediaHash, mediaBytes);
   if (thumbnailBytes && thumbnailHash) cacheMedia(thumbnailHash, thumbnailBytes);
@@ -749,6 +755,24 @@ export async function updateDocument(
 
 export function createFolder(folderPath: string): boolean {
   const title = normalizeTitle(folderPath);
+  const parentIndex = title.lastIndexOf("/");
+  if (parentIndex >= 0) {
+    const parent = title.slice(0, parentIndex);
+    const row = database
+      .query<{ is_directory: number }, [string]>(
+        "SELECT is_directory FROM documents WHERE title = ?",
+      )
+      .get(parent);
+    const hasVirtualParent = !row && Boolean(
+      database.query("SELECT 1 FROM documents WHERE title LIKE ? LIMIT 1")
+        .get(parent.replace(/[\\%_]/g, "\\    if (!row || row.is_directory !== 1) {
+      throw new Error("Parent folder does not exist");
+    }") + "/%"),
+    );
+    if ((row && row.is_directory !== 1) || (!row && !hasVirtualParent)) {
+      throw new Error("Parent folder does not exist");
+    }
+  }
   const existing = database
     .query<{ is_directory: number }, [string]>(
       "SELECT is_directory FROM documents WHERE title = ?",
@@ -761,9 +785,13 @@ export function createFolder(folderPath: string): boolean {
   return true;
 }
 
-export function renameItem(oldPath: string, newPath: string): boolean {
+export function renameItem(oldPath: string, newPath: string, createFolderPath = ""): boolean {
   const oldTitle = normalizeTitle(oldPath);
   const newTitle = normalizeTitle(newPath);
+  const folderToCreate = createFolderPath ? normalizeTitle(createFolderPath) : "";
+  if (folderToCreate && !newTitle.startsWith(folderToCreate + "/")) {
+    throw new Error("New folder must contain the item");
+  }
   const item = database
     .query<{ is_directory: number }, [string]>(
       "SELECT is_directory FROM documents WHERE title = ?",
@@ -771,6 +799,9 @@ export function renameItem(oldPath: string, newPath: string): boolean {
     .get(oldTitle);
   if (!item) return false;
   if (newTitle === oldTitle) return true;
+  if (folderToCreate && item.is_directory === 1) {
+    throw new Error("Creating a folder while moving another folder is not supported");
+  }
   if (database.query("SELECT 1 FROM documents WHERE title = ?").get(newTitle)) {
     throw new DocumentConflictError("An item already exists at the destination");
   }
@@ -779,6 +810,7 @@ export function renameItem(oldPath: string, newPath: string): boolean {
   }
 
   const transaction = database.transaction(() => {
+    if (folderToCreate) createFolder(folderToCreate);
     if (item.is_directory === 1) {
       database
         .query(

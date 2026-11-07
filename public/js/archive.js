@@ -10,6 +10,47 @@ const archiveTree = document.getElementById("archiveFolderTree");
 const archiveCrumbs = document.getElementById("archiveBreadcrumbs");
 const archiveSidebar = document.querySelector(".archive-explorer-sidebar");
 const folderMenu = document.getElementById("archiveFolderContextMenu");
+const archiveSearchInput = document.getElementById("archiveSearchInput");
+const archiveSearchMode = document.getElementById("archiveSearchMode");
+const archiveSortOrder = document.getElementById("archiveSortOrder");
+const archiveSearchStatus = document.getElementById("archiveSearchStatus");
+
+function openNewPostInFolder(folder = "") {
+  const url = new URL("/edit.html", window.location.origin);
+  if (folder) url.searchParams.set("folder", folder);
+  window.location.href = url.pathname + url.search;
+}
+
+function archivePostDate(post) {
+  const value = post?.created_at || "";
+  const date = new Date(value.includes(" ") ? value.replace(" ", "T") + "Z" : value);
+  return Number.isNaN(date.getTime()) ? 0 : date.getTime();
+}
+
+function compareArchiveCards(a, b) {
+  const aTitle = a.dataset.title || "";
+  const bTitle = b.dataset.title || "";
+  const titleOrder = aTitle.localeCompare(bTitle, undefined, { sensitivity: "base" });
+  if (archiveSortOrder.value === "az") return titleOrder;
+  if (archiveSortOrder.value === "za") return -titleOrder;
+  const aPost = postsData.find((post) => post.title === aTitle);
+  const bPost = postsData.find((post) => post.title === bTitle);
+  const difference = archivePostDate(aPost) - archivePostDate(bPost);
+  return (archiveSortOrder.value === "oldest" ? difference : -difference) || titleOrder;
+}
+
+function archiveMatchesSearch(title) {
+  const keyword = archiveSearchInput.value.trim().toLocaleLowerCase();
+  if (!keyword) return true;
+  const name = title.slice(title.lastIndexOf("/") + 1).toLocaleLowerCase();
+  if (archiveSearchMode.value === "starts") return name.startsWith(keyword);
+  if (archiveSearchMode.value === "ends") return name.endsWith(keyword);
+  return name.includes(keyword);
+}
+
+archiveSearchInput.addEventListener("input", refreshArchiveFolderView);
+archiveSearchMode.addEventListener("change", refreshArchiveFolderView);
+archiveSortOrder.addEventListener("change", refreshArchiveFolderView);
 archiveCrumbs.addEventListener("click", (event) => {
   const button = event.target.closest("button[data-archive-path]");
   if (button && archiveCrumbs.contains(button))
@@ -43,14 +84,23 @@ function archiveFolders(rows) {
 }
 function refreshArchiveFolderView() {
   const cards = [...postsContainer.querySelectorAll(".gallery-card")];
+  cards.sort(compareArchiveCards);
+  // Preserve the existing cards and delegated handlers while changing grid order.
+  postsContainer.append(...cards);
+  let visibleCount = 0;
   for (const card of cards) {
     const path = card.dataset.title || "";
-    card.hidden = Boolean(
-      activeArchiveFolder && !path.startsWith(activeArchiveFolder + "/"),
-    );
+    const insideFolder = !activeArchiveFolder ||
+      path.startsWith(activeArchiveFolder + "/");
+    card.hidden = !insideFolder || !archiveMatchesSearch(path);
     if (card.hidden) card.style.display = "none";
-    else card.style.removeProperty("display");
+    else {
+      card.style.removeProperty("display");
+      visibleCount++;
+    }
   }
+  archiveSearchStatus.textContent =
+    visibleCount + (visibleCount === 1 ? " post" : " posts") + " shown";
   if (archiveCrumbs.dataset.currentFolder !== activeArchiveFolder) {
     const fragment = document.createDocumentFragment();
     const crumbs = [{ label: "All posts", path: "" }];
@@ -297,9 +347,9 @@ function openFolderContextMenu(event, row) {
   event.preventDefault();
   closeAllMenus();
   closeFolderContextMenu();
-  folderMenuPath = row?.dataset.folder || null;
+  folderMenuPath = row ? (row.dataset.folder ?? "") : null;
   row?.classList.add("context-target");
-  const canUseFolder = Boolean(folderMenuPath || activeArchiveFolder);
+  const canUseFolder = Boolean(folderMenuPath ?? activeArchiveFolder);
   folderMenu.querySelector('[data-folder-action="new-subfolder"]').disabled =
     !canUseFolder;
   folderMenu.querySelector('[data-folder-action="delete-folder"]').disabled =
@@ -342,7 +392,8 @@ folderMenu.addEventListener("click", (event) => {
   if (action === "new-folder")
     void createArchiveFolder(path ? archiveParent(path) : "");
   if (action === "new-subfolder")
-    void createArchiveFolder(path || activeArchiveFolder);
+    void createArchiveFolder(path ?? activeArchiveFolder);
+  if (action === "new-post") openNewPostInFolder(path ?? activeArchiveFolder);
   if (action === "delete-folder") void deleteArchiveFolder(path);
 });
 document
@@ -531,7 +582,7 @@ function closeModalOnBg(event) {
 
 document.getElementById("backButton").addEventListener("click", historyBack);
 document.getElementById("newPostButton").addEventListener("click", () => {
-  window.location.href = "/edit.html";
+  openNewPostInFolder(activeArchiveFolder);
 });
 document
   .querySelector(".modal-close-button")
@@ -894,7 +945,7 @@ function updateArchiveMovedPost(post, previousTitle, destination) {
 }
 
 const movingArchivePosts = new Set();
-async function moveArchivePost(title, folder) {
+async function moveArchivePost(title, folder, createFolder = "") {
   const post = postsData.find((item) => item.title === title);
   if (!post || movingArchivePosts.has(title)) return;
   const leaf = title.split("/").pop();
@@ -915,8 +966,9 @@ async function moveArchivePost(title, folder) {
     await archiveDocumentRequest("/" + encodeURIComponent(title), {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ newTitle: destination }),
+      body: JSON.stringify({ newTitle: destination, createFolder }),
     });
+    if (createFolder) archiveFolderRows.push({ title: createFolder, isDirectory: true });
     updateArchiveMovedPost(post, title, destination);
   } catch (error) {
     await window.showAppAlert(error.message || "Move failed.", {
@@ -947,6 +999,53 @@ function showArchiveFolderPicker(post) {
     select.append(option);
   }
   select.value = archiveParent(post.title);
+  const createValue = "__meditord_create_folder__";
+  const createOption = document.createElement("option");
+  createOption.value = createValue;
+  createOption.textContent = "+ Create new folder...";
+  select.append(createOption);
+  let lastFolder = select.value;
+  let pendingFolder = "";
+  select.addEventListener("change", async () => {
+    if (select.value !== createValue) {
+      lastFolder = select.value;
+      pendingFolder = "";
+      return;
+    }
+    const name = await window.showAppPrompt(
+      lastFolder ? "New subfolder in " + lastFolder + ":" : "New folder name:",
+      { title: "New folder", inputLabel: "Folder name", confirmLabel: "Use folder" },
+    );
+    const leaf = name?.trim() || "";
+    if (name === null) {
+      select.value = lastFolder;
+      return;
+    }
+    if (!validateFolderSegment(leaf)) {
+      await window.showAppAlert("Use a name without slashes or control characters.", {
+        title: "Invalid folder name",
+      });
+      select.value = lastFolder;
+      return;
+    }
+    const folder = lastFolder ? lastFolder + "/" + leaf : leaf;
+    if (archiveFolders(archiveFolderRows).includes(folder) ||
+      postsData.some((item) => item.title === folder)) {
+      await window.showAppAlert("A post or folder already exists with this name.", {
+        title: "Folder exists",
+      });
+      select.value = lastFolder;
+      return;
+    }
+    select.querySelector('option[data-pending-folder="true"]')?.remove();
+    const option = document.createElement("option");
+    option.value = folder;
+    option.textContent = "New: " + folder + " (on move)";
+    option.dataset.pendingFolder = "true";
+    select.insertBefore(option, createOption);
+    pendingFolder = folder;
+    select.value = folder;
+  });
   const actions = document.createElement("div");
   actions.className = "archive-folder-picker-actions";
   const cancel = document.createElement("button");
@@ -965,8 +1064,10 @@ function showArchiveFolderPicker(post) {
   cancel.addEventListener("click", close);
   move.addEventListener("click", () => {
     const destination = select.value;
+    if (destination === createValue) return;
+    const folderToCreate = destination === pendingFolder ? pendingFolder : "";
     close();
-    void moveArchivePost(post.title, destination);
+    void moveArchivePost(post.title, destination, folderToCreate);
   });
   overlay.addEventListener("click", (event) => {
     if (event.target === overlay) close();
@@ -1035,6 +1136,16 @@ async function deletePost(post, card) {
     await window.showAppAlert(error.message || "Delete failed.");
   }
 }
+
+// Right-click a post to access the same menu as its three-dot button.
+postsContainer.addEventListener("contextmenu", (event) => {
+  const card = event.target.closest(".gallery-card");
+  if (!card || event.target.closest(".card-submenu")) return;
+  event.preventDefault();
+  closeFolderContextMenu();
+  closeAllMenus();
+  card.querySelector(".card-menu")?.classList.remove("hidden");
+});
 
 postsContainer.addEventListener("click", async (event) => {
   const actionButton = event.target.closest("[data-action]");
