@@ -195,9 +195,10 @@ nav {
 }
 
 .form-row label.field-label {
-    width: 65px;
+    /* Allow room for "Username:" at the more readable regular UI size. */
+    width: 96px;
     flex-shrink: 0;
-    font-size: var(--font-base);
+    font-size: clamp(14px, 1.05vw, 16px);
     font-weight: 400;
     color: var(--ctp-subtext1);
     white-space: nowrap;
@@ -325,7 +326,7 @@ input.form-control-unit:focus {
 }
 
 .description-label {
-    font-size: var(--font-base);
+    font-size: clamp(14px, 1.05vw, 16px);
     font-weight: 400;
     color: var(--ctp-subtext1);
     white-space: nowrap;
@@ -608,6 +609,10 @@ input.form-control-unit:focus {
         display: grid;
         grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
         grid-template-rows: auto minmax(0, 1fr);
+        column-gap: clamp(16px, 2vw, 28px);
+        /* Surface-colored gutter replaces the line between Write and Preview. */
+        background: var(--win98-surface);
+        box-shadow: none;
     }
 
     .description-toolbar {
@@ -629,9 +634,19 @@ input.form-control-unit:focus {
         min-height: 0;
     }
 
+    /* Each side gets its own recessed field, not a shared divider. */
+    .editor-textarea,
+    .markdown-preview {
+        background: var(--win98-window-bg);
+        box-shadow:
+            inset -1px -1px 0 var(--win98-border-lightest),
+            inset 1px 1px 0 var(--win98-border-darkest),
+            inset -2px -2px 0 var(--win98-border-light),
+            inset 2px 2px 0 var(--win98-border-dark);
+    }
+
     .editor-textarea {
         grid-column: 1;
-        border-right: 1px solid var(--win98-border-dark);
     }
 
     .markdown-preview {
@@ -727,6 +742,7 @@ input.form-control-unit:focus {
 
     .mobile-view-switch {
         display: flex;
+        align-items: stretch;
         margin-left: auto;
         gap: 2px;
         padding: 2px;
@@ -762,7 +778,8 @@ input.form-control-unit:focus {
     .mobile-view-tab.active,
     .mobile-view-tab[aria-selected="true"],
     .mobile-view-tab:active {
-        padding: 6px 11px 4px 13px;
+        /* Keep the text aligned with the inactive tab; border indicates press. */
+        padding: 5px 12px;
         background: var(--ctp-surface1);
         color: var(--win98-accent);
         box-shadow:
