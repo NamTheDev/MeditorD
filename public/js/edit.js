@@ -399,7 +399,7 @@ mediaInput.addEventListener("change", () => {
 
 saveButton.addEventListener("click", saveCurrentDocument);
 archiveButton.addEventListener("click", () => {
-  window.location.href = "/archive.html";
+  window.meditordNavigate("/archive.html");
 });
 settingsButton.addEventListener("click", showSettingsNotice);
 previewButton.addEventListener("click", () => {

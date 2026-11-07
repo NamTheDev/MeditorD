@@ -17,7 +17,7 @@ const archiveSortOrder = document.getElementById("archiveSortOrder");
 function openNewPostInFolder(folder = "") {
   const url = new URL("/edit.html", window.location.origin);
   if (folder) url.searchParams.set("folder", folder);
-  window.location.href = url.pathname + url.search;
+  window.meditordNavigate(url.pathname + url.search);
 }
 
 function archiveDisplayTitle(path) {
@@ -495,7 +495,7 @@ function historyBack() {
     closeModal();
     return;
   }
-  window.location.href = "/home.html";
+  window.meditordNavigate("/home.html");
 }
 
 function openPostModal(post) {
@@ -1187,7 +1187,7 @@ postsContainer.addEventListener("click", async (event) => {
     }
     if (action === "edit") {
       closeAllMenus();
-      window.location.href = `/database.html?edit=${encodeURIComponent(post.title)}`;
+      window.meditordNavigate(`/database.html?edit=${encodeURIComponent(post.title)}`);
       return;
     }
 

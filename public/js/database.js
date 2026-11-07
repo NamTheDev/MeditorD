@@ -358,10 +358,10 @@ async function deleteItem(item) {
 }
 
 document.getElementById("backButton").addEventListener("click", () => {
-  window.location.href = "/home.html";
+  window.meditordNavigate("/home.html");
 });
 document.getElementById("archiveButton").addEventListener("click", () => {
-  window.location.href = "/archive.html";
+  window.meditordNavigate("/archive.html");
 });
 document.getElementById("newPostButton").addEventListener("click", createPost);
 document

@@ -31,6 +31,27 @@
                 font: 600 18px/1.5 system-ui, sans-serif;
                 text-align: center;
             }
+            /* Covers page content until it can fade in, including after cold starts. */
+            #pageTransitionOverlay {
+                display: none;
+                position: fixed;
+                inset: 0;
+                z-index: 2147483630;
+                background: #1e1e2e;
+                opacity: 1;
+                pointer-events: none;
+                transition: opacity 150ms ease-in-out;
+            }
+            html.meditord-js #pageTransitionOverlay {
+                display: block;
+            }
+            html.meditord-page-visible:not(.meditord-cold-shell) #pageTransitionOverlay {
+                opacity: 0;
+            }
+            html.meditord-page-leaving #pageTransitionOverlay {
+                opacity: 1;
+                pointer-events: auto;
+            }
             .app-loading-track {
                 width: min(300px, 76vw);
                 height: 16px;
@@ -47,6 +68,7 @@
             }
             @media (prefers-reduced-motion: reduce) {
                 .app-loading-fill { transition: none; }
+                #pageTransitionOverlay { transition: none; }
             }
         </style>
         <script>
@@ -59,6 +81,7 @@
             })();
         </script>
         <script src="/js/app-shell.js" defer></script>
+        <script src="/js/page-transition.js" defer></script>
         <link rel="stylesheet" href="/css/global.css" />
         {{page_stylesheet}}
     </head>
@@ -70,6 +93,7 @@
                 <span class="app-loading-fill"></span>
             </div>
         </div>
+        <div id="pageTransitionOverlay" aria-hidden="true"></div>
         {{body}}
         <div
             class="app-dialog-overlay"
