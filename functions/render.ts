@@ -451,14 +451,18 @@ async function renderPage(
           ...(isWorkspace
             ? ['<link rel="stylesheet" href="/css/workspace98.css" />']
             : []),
+          '<link rel="stylesheet" href="/css/classic98.css" />',
         ].join("\n        "),
       )
       .replace("{{body}}", () => content);
-    // Apply the Win98 reference only to the four selected pages; Home and Exit are unchanged.
-    if (isWorkspace) {
-      const workspaceClass = file === "edit" ? "editor" : file;
-      html = html.replace("<body>", `<body class="workspace98 workspace98-${workspaceClass}">`);
-    }
+    // Apply the Classic '98 desktop shell on every page, preserving workspace
+    // classes consumed by the existing editor/archive/database styles.
+    const bodyClasses = [
+      "classic98",
+      `classic98-${file}`,
+      ...(isWorkspace ? ["workspace98", `workspace98-${file === "edit" ? "editor" : file}`] : []),
+    ].join(" ");
+    html = html.replace("<body>", `<body class="${bodyClasses}">`);
     if (pagePreloadHtml) {
       html = html.replace("</head>", `${pagePreloadHtml}\n    </head>`);
     }
