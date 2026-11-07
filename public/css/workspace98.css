@@ -238,6 +238,91 @@ body.workspace98 :is(.app-dialog-close, .win98-modal-close, .modal-close-button,
     outline-color: var(--ctp-red);
 }
 
+/* Dialog close controls: the red cross stays small and centered in a
+   24px Win98 face. On touch devices the hit target grows, not the face.
+   Existing buttons, accessible names, and click handlers stay unchanged. */
+body.workspace98 :is(.app-dialog-close, .win98-modal-close, .modal-close-button, .modal-close) {
+    box-sizing: border-box;
+    flex: 0 0 28px;
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+    min-height: 28px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    transform: none;
+}
+
+body.workspace98 :is(.app-dialog-close, .win98-modal-close, .modal-close) {
+    position: relative;
+}
+
+/* Archive's inspector uses an absolutely positioned control. */
+body.workspace98 .modal-close-button {
+    position: absolute;
+    top: 50%;
+    right: 5px;
+    transform: translateY(-50%);
+}
+
+body.workspace98 :is(.app-dialog-close, .win98-modal-close, .modal-close-button, .modal-close)::before {
+    position: relative;
+    z-index: 1;
+    width: 13px;
+    height: 13px;
+}
+
+body.workspace98 :is(.app-dialog-close, .win98-modal-close, .modal-close-button, .modal-close)::after {
+    content: "";
+    position: absolute;
+    z-index: 0;
+    left: 50%;
+    top: 50%;
+    width: 24px;
+    height: 24px;
+    transform: translate(-50%, -50%);
+    background: var(--w98-face);
+    box-shadow: var(--w98-raised);
+    pointer-events: none;
+}
+
+body.workspace98 :is(.app-dialog-close, .win98-modal-close, .modal-close-button, .modal-close):active {
+    padding: 0;
+    background: transparent;
+    box-shadow: none;
+    transform: none;
+}
+
+body.workspace98 .modal-close-button:active {
+    transform: translateY(-50%);
+}
+
+body.workspace98 :is(.app-dialog-close, .win98-modal-close, .modal-close-button, .modal-close):active::after {
+    box-shadow: var(--w98-sunken);
+}
+
+@media (pointer: coarse) {
+    body.workspace98 :is(.app-dialog-close, .win98-modal-close, .modal-close-button, .modal-close) {
+        flex-basis: 44px;
+        width: 44px;
+        height: 44px;
+        min-width: 44px;
+        min-height: 44px;
+    }
+
+    body.workspace98 :is(.app-dialog-titlebar, .win98-modal-titlebar, .modal-window .title-bar, .edit-modal-header) {
+        min-height: 48px;
+    }
+
+    body.workspace98 .modal-close-button {
+        right: 3px;
+    }
+}
+
 /* ───────────────── EDITOR ───────────────── */
 body.workspace98-editor {
     height: 100dvh;
