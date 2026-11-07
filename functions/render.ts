@@ -456,7 +456,8 @@ async function renderPage(
       .replace("{{body}}", () => content);
     // Apply the reference design only to workspaces; Home, Exit, and 404 stay unchanged.
     if (isWorkspace) {
-      html = html.replace("<body>", `<body class="workspace98 workspace98-${file}">`);
+      const workspaceClass = file === "edit" ? "editor" : file;
+      html = html.replace("<body>", `<body class="workspace98 workspace98-${workspaceClass}">`);
     }
     if (pagePreloadHtml) {
       html = html.replace("</head>", `${pagePreloadHtml}\n    </head>`);
