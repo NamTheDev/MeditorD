@@ -8,16 +8,16 @@
  * Sunken: inverse. All dimensions deliberate and square-edged.
  */
 body.workspace98 {
-    /* Shared visual hierarchy across Editor, Archive, and Database:
-       Shell (Mantle) < work pane (Base) < toolbar/control (Surface 0)
-       < title/selected item (Surface 1). Lavender conveys emphasis. */
-    --w98-shell: var(--ctp-mantle);
+    /* Three-level Mocha depth:
+       Crust = outer background, Base = raised surfaces and title bars,
+       Mantle = recessed inputs/content wells. Keep selected states distinct. */
+    --w98-shell: var(--ctp-crust);
     --w98-pane: var(--ctp-base);
-    --w98-toolbar: var(--ctp-surface0);
-    --w98-face: var(--ctp-surface0);
+    --w98-toolbar: var(--ctp-base);
+    --w98-face: var(--ctp-base);
     --w98-face-hover: var(--ctp-surface1);
     --w98-well: var(--ctp-mantle);
-    --w98-titlebar: var(--ctp-surface1);
+    --w98-titlebar: var(--ctp-base);
     --w98-active-bg: var(--ctp-surface1);
     --w98-active-text: var(--ctp-lavender);
     --w98-text: var(--ctp-text);
