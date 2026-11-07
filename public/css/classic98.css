@@ -1,0 +1,548 @@
+/*
+ * MeditorD Classic '98
+ * Reference: Windows 95/98 Design Reference by Chris Lemke.
+ * This layer is loaded after existing page styles so the data, layout and
+ * interaction code remain unchanged. New visuals use a single token set.
+ */
+:root {
+    color-scheme: light;
+    --win98-desktop: #008080;
+    --win98-surface: #c0c0c0;
+    --win98-window-bg: #ffffff;
+    --win98-tooltip-bg: #ffffe1;
+    --win98-border-lightest: #ffffff;
+    --win98-border-light: #dfdfdf;
+    --win98-border-dark: #808080;
+    --win98-border-darkest: #000000;
+    --win98-text: #000000;
+    --win98-text-disabled: #808080;
+    --win98-accent: #000080;
+    --win98-titlebar-active: #000080;
+    --win98-titlebar-end: #1084d0;
+    --win98-selection-bg: #000080;
+    --win98-selection-text: #ffffff;
+
+    /* Bridge legacy component tokens until their stylesheet consolidation. */
+    --ctp-text: #000000;
+    --ctp-subtext1: #303030;
+    --ctp-subtext0: #444444;
+    --ctp-overlay2: #606060;
+    --ctp-overlay1: #707070;
+    --ctp-overlay0: #808080;
+    --ctp-surface2: #808080;
+    --ctp-surface1: #dfdfdf;
+    --ctp-surface0: #c0c0c0;
+    --ctp-base: #c0c0c0;
+    --ctp-mantle: #ffffff;
+    --ctp-crust: #000000;
+    --ctp-lavender: #000080;
+    --ctp-blue: #0000ff;
+    --ctp-mauve: #800080;
+    --ctp-red: #b00020;
+    --ctp-yellow: #e1b44b;
+    --ctp-peach: #df9d3d;
+    --ctp-green: #008040;
+    --ctp-teal: #008080;
+    --bg: var(--win98-desktop);
+    --bg-mantle: #ffffff;
+    --bg-crust: #000000;
+    --fg: #000000;
+    --fg-sub: #444444;
+    --fg-muted: #696969;
+    --accent: #000080;
+    --title: #000080;
+    --selection-bg: #000080;
+    --selection-fg: #ffffff;
+    --bevel-lightest: #ffffff;
+    --bevel-light: #dfdfdf;
+    --bevel-dark: #808080;
+    --bevel-darkest: #000000;
+    --font-ui: Tahoma, "MS Sans Serif", Arial, sans-serif;
+    --font-title: Tahoma, "MS Sans Serif", Arial, sans-serif;
+    --radius-sm: 0px;
+    --radius-md: 0px;
+    --radius-lg: 0px;
+    --classic-taskbar-height: 40px;
+    --classic-raised:
+        inset -1px -1px 0 #000000,
+        inset 1px 1px 0 #ffffff,
+        inset -2px -2px 0 #808080,
+        inset 2px 2px 0 #dfdfdf;
+    --classic-sunken:
+        inset -1px -1px 0 #ffffff,
+        inset 1px 1px 0 #000000,
+        inset -2px -2px 0 #dfdfdf,
+        inset 2px 2px 0 #808080;
+    --classic-title: linear-gradient(90deg, #000080 0%, #1084d0 100%);
+}
+html, body {
+    background: var(--win98-desktop);
+    color: #000;
+    font-family: var(--font-ui);
+    -webkit-font-smoothing: auto;
+}
+body {
+    padding-bottom: var(--classic-taskbar-height);
+}
+button, input, select, textarea {
+    font-family: var(--font-ui);
+    font-size: 12px;
+}
+a { color: #0000ff; }
+a:visited { color: #800080; }
+::selection { background: #000080; color: #fff; }
+:focus-visible { outline: 1px dotted #000; outline-offset: -4px; }
+[hidden], .classic-start-menu[hidden] { display: none !important; }
+.raised, .thin-raised { box-shadow: var(--classic-raised); }
+.sunken, .thin-sunken { box-shadow: var(--classic-sunken); }
+
+/* Shared desktop shell, taskbar and Start menu */
+.classic-taskbar {
+    position: fixed;
+    inset: auto 0 0;
+    z-index: 2147483000;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    height: var(--classic-taskbar-height);
+    padding: 3px max(5px, env(safe-area-inset-right, 0px)) max(3px, env(safe-area-inset-bottom, 0px)) max(5px, env(safe-area-inset-left, 0px));
+    border-top: 2px solid #fff;
+    background: #c0c0c0;
+    color: #000;
+    font: 12px/1.2 Tahoma, Arial, sans-serif;
+}
+.classic-taskbar button, .classic-taskbar a {
+    color: #000;
+    text-decoration: none;
+    border: 0;
+    border-radius: 0;
+    background: #c0c0c0;
+    box-shadow: var(--classic-raised);
+}
+.classic-start-wrap { position: relative; flex: none; }
+.classic-start-button {
+    height: 30px;
+    padding: 0 13px 0 9px;
+    font: bold 13px Tahoma, Arial, sans-serif;
+    white-space: nowrap;
+    cursor: pointer;
+}
+.classic-start-button::before {
+    content: "";
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    margin-right: 6px;
+    vertical-align: -2px;
+    background: linear-gradient(90deg,#e83e37 0 48%,#36a745 48% 100%);
+    border: 1px solid #454545;
+    box-shadow: inset 3px -4px 0 #315abe, inset -3px 3px 0 #f6cb2e;
+}
+.classic-start-button[aria-expanded="true"], .classic-task-current { box-shadow: var(--classic-sunken) !important; }
+.classic-task-divider { height: 26px; border-left: 1px solid #808080; border-right: 1px solid #fff; }
+.classic-task-current {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    width: min(210px, 34vw);
+    height: 29px;
+    padding: 0 10px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: bold;
+}
+.classic-task-current::before { content: "▣"; color: #000080; margin-right: 7px; }
+.classic-task-spacer { flex: 1; }
+.classic-tray {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 83px;
+    height: 27px;
+    padding: 0 7px;
+    background: #c0c0c0;
+    box-shadow: var(--classic-sunken);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+.classic-start-menu {
+    position: absolute;
+    bottom: calc(100% + 4px);
+    left: -2px;
+    width: min(264px, 90vw);
+    padding: 4px 4px 4px 31px;
+    background: #c0c0c0;
+    box-shadow: var(--classic-raised), 3px 3px 0 #0005;
+}
+.classic-start-menu::before {
+    content: "MeditorD 98";
+    position: absolute;
+    left: 4px; top: 4px; bottom: 4px;
+    display: flex; align-items: end;
+    padding: 9px 4px;
+    background: #808080; color: #fff;
+    font-weight: bold;
+    font-size: 14px;
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+}
+.classic-start-menu a {
+    display: block;
+    padding: 9px 10px;
+    margin: 0;
+    background: transparent;
+    box-shadow: none;
+    white-space: nowrap;
+    font: 12px Tahoma,Arial,sans-serif;
+}
+.classic-start-menu a:hover, .classic-start-menu a:focus-visible {
+    color: #fff;
+    background: #000080;
+    outline: none;
+}
+.classic-start-menu a + a { border-top: 1px solid #dfdfdf; }
+html.keyboard-visible .classic-taskbar { display: none; }
+
+/* Migrate the existing workspaces to the literal 95/98 palette. */
+body.workspace98 {
+    --w98-shell: #008080;
+    --w98-pane: #c0c0c0;
+    --w98-toolbar: #c0c0c0;
+    --w98-face: #c0c0c0;
+    --w98-face-hover: #d6d6d6;
+    --w98-well: #ffffff;
+    --w98-titlebar: var(--classic-title);
+    --w98-active-bg: #000080;
+    --w98-active-text: #fff;
+    --w98-text: #000;
+    --w98-muted: #515151;
+    --w98-highlight: #fff;
+    --w98-raised: var(--classic-raised);
+    --w98-sunken: var(--classic-sunken);
+    --w98-divider: #808080;
+    height: calc(100dvh - var(--classic-taskbar-height));
+    min-height: 0;
+    padding-bottom: 0;
+    color: #000;
+    background: #008080;
+    font: 12px/1.4 Tahoma, "MS Sans Serif", Arial, sans-serif;
+    -webkit-font-smoothing: auto;
+}
+body.workspace98 :is(button, input, select, textarea),
+body.workspace98 :is(.title-compartment, .gallery-title, .archive-explorer-heading, .archive-folder-row, .archive-folder-button, .archive-folder-toggle, .database-titlebar, .database-titlebar h1, .database-title-caption, .card-title, .card-description) {
+    font-family: Tahoma, "MS Sans Serif", Arial, sans-serif;
+    letter-spacing: 0;
+}
+body.workspace98 :is(button, .action-btn, .win98-button, .upload-btn):not(.archive-folder-button):not(.archive-folder-toggle):hover:not(:disabled) {
+    color: #000;
+}
+body.workspace98 :is(button, .action-btn, .win98-button, .upload-btn):focus-visible {
+    outline: 1px dotted #000;
+    outline-offset: -4px;
+}
+body.workspace98 :is(input:not([type="checkbox"]):not([type="file"]), textarea, .win98-select select) {
+    color: #000;
+    background: #fff;
+    box-shadow: var(--classic-sunken);
+}
+body.workspace98 :is(input, select, textarea)::placeholder { color: #6b6b6b; opacity: 1; }
+body.workspace98 :is(.app-dialog-window, .win98-modal, .modal-window, .edit-modal-box, .archive-folder-picker-window) {
+    background: #c0c0c0;
+    color: #000;
+    box-shadow: var(--classic-raised);
+    font-family: Tahoma,Arial,sans-serif;
+}
+body.workspace98 :is(.app-dialog-titlebar, .win98-modal-titlebar, .modal-window .title-bar, .edit-modal-header, .archive-folder-picker-title) {
+    background: var(--classic-title);
+    color: white;
+    font-family: Tahoma,Arial,sans-serif;
+    font-weight: 700;
+    letter-spacing: 0;
+}
+body.workspace98 :is(.app-dialog-titlebar h2, .win98-modal-titlebar h2, .edit-modal-header h2) { color: #fff; font: bold 12px Tahoma,Arial,sans-serif; }
+body.workspace98 :is(.app-dialog-content, .win98-modal-content, .modal-content-area, .archive-folder-picker-content) {
+    background: #c0c0c0;
+    color: #000;
+}
+body.workspace98 :is(.app-dialog-close, .win98-modal-close, .modal-close-button, .modal-close):focus-visible { outline-color: #fff; }
+body.workspace98 :is(.app-dialog-close, .win98-modal-close, .modal-close-button, .modal-close)::before { background: #b00020; }
+body.workspace98 :is(.app-dialog-close, .win98-modal-close, .modal-close-button, .modal-close)::after { background: #c0c0c0; }
+body.workspace98 input[type="checkbox"]:checked::after { color: #000; }
+body.workspace98 :is(.app-dialog-actions, .win98-modal-actions, .edit-modal-actions, .archive-folder-picker-actions) button { font-family: Tahoma,Arial,sans-serif; }
+body.workspace98 .win98-select::before { background: #c0c0c0; box-shadow: var(--classic-raised); }
+body.workspace98 .win98-select::after { border-top-color: #000; }
+
+/* Main window title bars use navy-blue gradient, compact menus and controls. */
+.workspace98-editor .title-compartment,
+.workspace98-archive .gallery-title,
+.workspace98-archive .archive-explorer-heading,
+.workspace98-database .database-titlebar {
+    color: #fff;
+    background: var(--classic-title);
+    font: bold 13px/1.2 Tahoma,Arial,sans-serif;
+    letter-spacing: 0;
+}
+.workspace98-editor .title-compartment { justify-content: flex-start; padding-left: 39px; }
+.workspace98-archive .gallery-title { justify-content: flex-start; padding-left: 10px; }
+.workspace98-database .database-titlebar { min-height: 29px; }
+.workspace98-database .database-titlebar h1,
+.workspace98-database .database-title-caption { color: white; font: bold 12px Tahoma,Arial,sans-serif; letter-spacing: 0; }
+.workspace98-editor > header,
+.workspace98-archive .menu-bar,
+.workspace98-database .database-header { background: #c0c0c0; }
+.workspace98-editor .editor-container { background: #008080; }
+.workspace98-editor :is(.editor-left-pane, .editor-right-pane),
+.workspace98-archive .archive-explorer-sidebar,
+.workspace98-database .database-main { background: #c0c0c0; }
+.workspace98-editor .description-toolbar {
+    color: #000;
+    background: #c0c0c0;
+    border-bottom: 1px solid #808080;
+}
+.workspace98-editor .description-label { color: #000; font-weight: bold; }
+.workspace98-editor .editor-textarea,
+.workspace98-editor .markdown-preview,
+.workspace98-editor .preview-box {
+    color: #000;
+    background: #fff;
+    box-shadow: var(--classic-sunken);
+}
+.workspace98-editor .markdown-preview { color: #000; }
+.workspace98-editor .markdown-preview a { color: #0000ff; }
+.workspace98-editor .form-row label.field-label { color: #000; font-weight: 500; }
+.workspace98-editor .editor-back-symbol { color: #000; }
+.workspace98-editor .editor-nav-actions .action-btn,
+.workspace98-archive .menu-bar :is(#backButton,#newPostButton) { color: #000; background: #c0c0c0; box-shadow: var(--classic-raised); font: 12px Tahoma,Arial,sans-serif; }
+.workspace98-editor .mobile-view-tab[aria-selected="true"],
+.workspace98-editor .mobile-view-tab.active {
+    color: #000;
+    background: #c0c0c0;
+    box-shadow: var(--classic-sunken);
+}
+.workspace98-editor .mobile-markdown-toolbar { background: #c0c0c0; border-color: #808080; }
+
+/* Windows Explorer tree: recessed white canvas, navy selection, no
+   decorative border around the All posts label. */
+.workspace98-archive .archive-explorer-layout { min-height: 0; }
+.workspace98-archive .archive-explorer-main { background: #c0c0c0; }
+body.workspace98-archive #archiveFolderTree { color: #000; background: #fff; box-shadow: var(--classic-sunken); }
+body.workspace98-archive #archiveFolderTree .archive-folder-row,
+body.workspace98-archive #archiveFolderTree .archive-folder-button { color: #000; }
+body.workspace98-archive #archiveFolderTree .archive-folder-row.selected .archive-folder-button,
+body.workspace98-archive #archiveFolderTree .archive-folder-button.active { color: #fff; background: #000080; }
+body.workspace98-archive #archiveFolderTree .archive-folder-button.active .archive-folder-label { color: #fff; background: transparent; border: 0; outline: 0; box-shadow: none; padding: 0; }
+body.workspace98-archive #archiveFolderTree .archive-folder-label { border: 0; box-shadow: none; }
+body.workspace98-archive #archiveFolderTree .archive-folder-row:hover:not(.selected) .archive-folder-button { background: #e5e5e5; }
+body.workspace98-archive #archiveFolderTree .archive-folder-toggle { color: #000; background: #fff; border-color: #808080; box-shadow: none; }
+.workspace98-archive .archive-breadcrumbs { background: #c0c0c0; color: #000; box-shadow: var(--classic-sunken); }
+.workspace98-archive .archive-breadcrumbs button { color: #000080; background: transparent; box-shadow: none; }
+.workspace98-archive .archive-search-toolbar { background: #c0c0c0; color: #000; box-shadow: var(--classic-raised); }
+.workspace98-archive .archive-search-input > span, .workspace98-archive .archive-search-select > span:first-child { color: #000; }
+.workspace98-archive .gallery-viewport { background: #fff; box-shadow: var(--classic-sunken); }
+.workspace98-archive .gallery-card { background: #c0c0c0; color: #000; box-shadow: var(--classic-raised); }
+.workspace98-archive .gallery-card:hover { background: #c0c0c0; }
+.workspace98-archive .gallery-media { background: #fff; box-shadow: var(--classic-sunken); }
+.workspace98-archive .card-info { background: #c0c0c0; color: #000; }
+.workspace98-archive .card-title { color: #000080; font-weight: bold; }
+.workspace98-archive .card-description { color: #000; }
+.workspace98-archive .card-meta { color: #444; border-top: 1px solid #808080; }
+.workspace98-archive .card-date { color: #444; }
+.workspace98-archive :is(.card-menu,.card-submenu,.archive-folder-context-menu) {
+    background: #c0c0c0;
+    box-shadow: var(--classic-raised), 2px 2px 0 #0003;
+}
+.workspace98-archive :is(.card-menu,.card-submenu,.archive-folder-context-menu) button { color: #000; background: #c0c0c0; box-shadow: none; }
+.workspace98-archive :is(.card-menu,.card-submenu,.archive-folder-context-menu) button:hover:not(:disabled) { color: #fff; background: #000080; }
+.workspace98-archive .card-menu-button { background: #c0c0c0; color: #000; box-shadow: var(--classic-raised); }
+.workspace98-archive .modal-post-description { color: #000; background: #fff; box-shadow: var(--classic-sunken); }
+.workspace98-archive .modal-post-description a { color: #0000ff; }
+
+/* Database: keep table readable, separate the toolbar from the white list. */
+.workspace98-database #databaseApp {
+    height: calc(100dvh - var(--classic-taskbar-height));
+    background: #008080;
+    max-width: none;
+}
+.workspace98-database .database-header { background: #c0c0c0; box-shadow: var(--classic-raised); }
+.workspace98-database .database-actions { background: #c0c0c0; }
+.workspace98-database .database-main { min-height: 0; background: #c0c0c0; box-shadow: var(--classic-raised); }
+.workspace98-database .database-searchbar { background: #c0c0c0; color: #000; }
+.workspace98-database .database-search-line input { background: #fff; color: #000; box-shadow: var(--classic-sunken); }
+.workspace98-database .database-results-count { color: #444; }
+.workspace98-database .table-wrap { background: #fff; box-shadow: var(--classic-sunken); }
+.workspace98-database .table-wrap table { background: #fff; color: #000; }
+.workspace98-database .table-wrap th { color: #000; background: #c0c0c0; box-shadow: inset 0 -1px #808080; border-right: 1px solid #808080; }
+.workspace98-database .table-wrap td { color: #000; background: #fff; border-bottom: 1px solid #dfdfdf; }
+.workspace98-database .table-wrap tbody tr:hover td { color: #fff; background: #000080; }
+.workspace98-database .table-wrap td a { color: #0000ff; }
+.workspace98-database .table-wrap tbody tr:hover a { color: #fff; }
+.workspace98-database .row-actions button, .workspace98-database .database-actions button { color: #000; background: #c0c0c0; box-shadow: var(--classic-raised); }
+.workspace98-database .database-folder-glyph { color: #806000; }
+.workspace98-database .edit-modal-box { background: #c0c0c0; }
+.workspace98-database .edit-modal-box label { color: #000; }
+
+/* Global app dialogs are also used from Home and Exit. */
+.app-dialog-overlay { background: #0008; }
+.app-dialog-window {
+    color: #000;
+    background: #c0c0c0;
+    padding: 4px;
+    box-shadow: var(--classic-raised);
+}
+.app-dialog-titlebar { background: var(--classic-title); color: #fff; min-height: 28px; }
+.app-dialog-titlebar h2 { color: #fff; font: bold 12px Tahoma,Arial,sans-serif; }
+.app-dialog-content { color: #000; background: #c0c0c0; border: 0; }
+.app-dialog-actions button, .app-dialog-close {
+    color: #000; background: #c0c0c0;
+    border: 0; box-shadow: var(--classic-raised);
+}
+.app-dialog-actions button:active, .app-dialog-close:active { box-shadow: var(--classic-sunken); }
+.app-dialog-input-wrap input { background: #fff; color: #000; border: 0; box-shadow: var(--classic-sunken); }
+.app-dialog-close { color: #b00020; font-weight: bold; }
+.app-dialog-actions button:focus-visible { outline: 1px dotted #000; outline-offset: -4px; }
+
+/* Native-like chunky, rectangular scrollbars. */
+:root { --scroll98-size: 17px; --scroll98-face: #c0c0c0; --scroll98-track: #dfdfdf; }
+* { scrollbar-color: #c0c0c0 #dfdfdf; scrollbar-width: auto; }
+::-webkit-scrollbar { width: 17px; height: 17px; background: #dfdfdf; }
+::-webkit-scrollbar-track { background: #dfdfdf; box-shadow: var(--classic-sunken); }
+::-webkit-scrollbar-thumb, ::-webkit-scrollbar-button:single-button {
+    background-color: #c0c0c0;
+    border: 0;
+    border-radius: 0;
+    box-shadow: var(--classic-raised);
+}
+::-webkit-scrollbar-corner { background: #c0c0c0; }
+
+/* Home: Windows desktop, open application window, functional launch buttons. */
+.classic-desktop-home {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 100%;
+    min-height: calc(100dvh - var(--classic-taskbar-height));
+    padding: 22px 24px;
+    background: #008080;
+}
+.classic-shortcuts {
+    position: absolute;
+    top: 18px; left: 15px;
+    display: grid; gap: 15px;
+}
+.classic-shortcut {
+    display: grid;
+    justify-items: center;
+    gap: 5px;
+    width: 86px;
+    padding: 5px 2px;
+    text-decoration: none;
+    text-align: center;
+    font: 12px/1.25 Tahoma,Arial,sans-serif;
+    color: #fff !important;
+}
+.classic-shortcut:hover .classic-shortcut-label, .classic-shortcut:focus-visible .classic-shortcut-label { background: #000080; outline: 1px dotted #fff; }
+.classic-shortcut-icon {
+    display: grid; place-items: center;
+    width: 34px; height: 34px;
+    color: #000080;
+    background: #dfdfdf;
+    box-shadow: var(--classic-raised);
+    font: bold 22px Georgia, serif;
+}
+.classic-shortcut-label { padding: 2px 3px; text-shadow: 1px 1px #000; }
+.classic-home-window {
+    width: min(590px, calc(100vw - 48px));
+    padding: 4px;
+    background: #c0c0c0;
+    box-shadow: var(--classic-raised), 4px 4px 0 #0005;
+}
+.classic-window-titlebar {
+    display: flex; align-items: center;
+    min-height: 29px; padding: 5px 9px;
+    background: var(--classic-title);
+    color: #fff; font: bold 13px Tahoma,Arial,sans-serif;
+}
+.classic-home-menubar { display: flex; gap: 0; padding: 3px 4px; border-bottom: 1px solid #808080; }
+.classic-home-menubar a { padding: 4px 10px; font: 12px Tahoma,Arial,sans-serif; color: #000; text-decoration: none; }
+.classic-home-menubar a:hover { background: #000080; color: #fff; }
+.classic-home-content { margin: 9px; padding: 22px; background: #fff; box-shadow: var(--classic-sunken); }
+.classic-home-logo { color: #000080; font: bold clamp(28px,6vw,48px)/1.2 Tahoma,Arial,sans-serif; letter-spacing: -.04em; }
+.classic-home-logo a { color: inherit; text-decoration: none; }
+.classic-home-subtitle { margin-top: 7px; font: 13px Tahoma,Arial,sans-serif; color: #333; }
+.classic-home-rule { margin: 20px 0; border: 0; border-top: 1px solid #808080; border-bottom: 1px solid #fff; }
+.classic-home-actions { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; }
+.classic-home-actions a {
+    min-height: 42px;
+    display: flex; align-items: center; justify-content: flex-start;
+    padding: 8px 14px;
+    background: #c0c0c0;
+    box-shadow: var(--classic-raised);
+    font: 12px Tahoma,Arial,sans-serif;
+    text-decoration: none; color: #000;
+}
+.classic-home-actions a:hover { background: #dfdfdf; }
+.classic-home-actions a:active { box-shadow: var(--classic-sunken); padding: 9px 13px 7px 15px; }
+.classic-home-status, .classic-exit-status {
+    margin: 5px 4px 1px; padding: 4px 8px;
+    min-height: 22px; background: #c0c0c0;
+    box-shadow: var(--classic-sunken);
+    font: 11px Tahoma,Arial,sans-serif; color: #333;
+}
+
+/* Exit is a system dialog rather than an unrelated splash illustration. */
+.classic-exit-screen {
+    display: grid; place-items: center;
+    min-height: calc(100dvh - var(--classic-taskbar-height));
+    background: #008080;
+    padding: 16px;
+}
+.classic-exit-window { width: min(440px,100%); padding: 4px; background: #c0c0c0; box-shadow: var(--classic-raised), 3px 3px #0005; }
+.classic-exit-content { display: flex; gap: 18px; align-items: center; padding: 27px 20px; font: 13px/1.5 Tahoma,Arial,sans-serif; }
+.classic-exit-icon { flex: none; display: grid; place-items: center; width: 42px; height: 42px; color: #fff; background: #008080; border: 2px solid #000; font: bold 26px Georgia,serif; }
+.classic-exit-title { font-size: 14px; font-weight: bold; }
+.classic-exit-actions { display: flex; justify-content: flex-end; padding: 0 16px 14px; }
+.classic-exit-actions a { padding: 8px 24px; min-width: 105px; text-align: center; text-decoration: none; color: #000; background: #c0c0c0; box-shadow: var(--classic-raised); }
+.classic-exit-actions a:active { box-shadow: var(--classic-sunken); }
+
+/* Existing 404 content, identical system chrome. */
+body.classic98-404 .not-found-shell { min-height: calc(100dvh - var(--classic-taskbar-height)); background: #008080; }
+body.classic98-404 .not-found-window { background: #c0c0c0; box-shadow: var(--classic-raised), 3px 3px #0005; }
+body.classic98-404 .not-found-titlebar { background: var(--classic-title); }
+body.classic98-404 .heading-404 { color: #fff; font: bold 13px Tahoma,Arial,sans-serif; }
+body.classic98-404 .not-found-content { background: #c0c0c0; box-shadow: none; }
+body.classic98-404 .return-btn-404 { color: #000; background: #c0c0c0; box-shadow: var(--classic-raised); font: 12px Tahoma,Arial,sans-serif; }
+body.classic98-404 .return-btn-404:hover { color: #000; background: #dfdfdf; }
+
+/* Responsive improvements that retain real UI controls, including previews. */
+@media (max-width: 700px) {
+    :root { --classic-taskbar-height: 38px; }
+    .classic-taskbar { gap: 4px; padding-left: 4px; padding-right: 4px; }
+    .classic-start-button { padding: 0 9px; }
+    .classic-task-current { width: min(145px,35vw); font-size: 11px; padding: 0 6px; }
+    .classic-tray { min-width: 63px; font-size: 10px; padding: 0 4px; }
+    .classic-desktop-home { padding: 98px 9px 16px; align-items: start; }
+    .classic-shortcuts { top: 8px; left: 9px; display: flex; gap: 8px; }
+    .classic-shortcut { width: 70px; font-size: 11px; }
+    .classic-shortcut-icon { width: 29px; height: 29px; font-size: 18px; }
+    .classic-home-window { width: 100%; }
+    .classic-home-content { padding: 16px 12px; }
+    .classic-home-actions { grid-template-columns: 1fr 1fr; gap: 8px; }
+    .classic-home-actions a { min-height: 44px; padding: 7px; font-size: 11px; }
+    .workspace98-editor .title-compartment, .workspace98-archive .gallery-title { font-size: 12px; }
+    .workspace98-archive .archive-explorer-heading { color: #fff; }
+    .workspace98-database .database-titlebar { min-height: 35px; }
+}
+@media (max-width: 400px) {
+    .classic-task-current { width: min(115px,30vw); }
+    .classic-task-current::before { display: none; }
+    .classic-home-actions { grid-template-columns: 1fr; }
+}
+@media (pointer: coarse) {
+    .classic-start-button, .classic-task-current { min-height: 30px; }
+    .classic-start-menu a { min-height: 44px; display: flex; align-items: center; }
+    .classic-home-actions a { min-height: 44px; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .classic-taskbar *, .classic-home-window * { transition: none !important; }
+}
