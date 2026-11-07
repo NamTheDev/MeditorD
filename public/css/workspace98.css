@@ -1815,3 +1815,50 @@ body.workspace98-archive .archive-folder-add-plus {
         padding: 12px;
     }
 }
+
+/* Editor folder picker: keep the raised arrow inside its recessed field.
+   One explicit wrapper height prevents the 32px / mobile 44px mismatch;
+   the icon face is square and does not stretch with the select. */
+body.workspace98-editor .win98-select.form-control-unit {
+    position: relative;
+    display: block;
+    box-sizing: border-box;
+    height: 32px;
+    min-height: 32px;
+    max-height: 32px;
+}
+
+body.workspace98-editor .win98-select.form-control-unit > select {
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    max-height: 100%;
+    margin: 0;
+    padding-right: 40px;
+}
+
+body.workspace98-editor .win98-select.form-control-unit::before {
+    top: 50%;
+    right: 4px;
+    bottom: auto;
+    box-sizing: border-box;
+    width: 28px;
+    height: 28px;
+    transform: translateY(-50%);
+}
+
+body.workspace98-editor .win98-select.form-control-unit::after {
+    top: 50%;
+    right: 14px;
+    transform: translateY(-50%);
+}
+
+@media (max-width: 700px) {
+    body.workspace98-editor .win98-select.form-control-unit {
+        height: 44px;
+        min-height: 44px;
+        max-height: 44px;
+    }
+}
