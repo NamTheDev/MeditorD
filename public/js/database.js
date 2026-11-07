@@ -45,6 +45,8 @@ function toDateTimeInput(value) {
 
 function renderMessage(message, className = "empty-state") {
   tableBody.replaceChildren();
+  const count = document.getElementById("databaseResultCount");
+  if (count) count.textContent = className === "error-state" ? "Unavailable" : message;
   const row = document.createElement("tr");
   const cell = document.createElement("td");
   cell.colSpan = 6;
@@ -125,64 +127,97 @@ function renderTable() {
   );
   tableBody.replaceChildren();
 
+  const count = document.getElementById("databaseResultCount");
+  if (count) {
+    count.textContent =
+      items.length === state.items.length
+        ? `${items.length} items`
+        : `${items.length} of ${state.items.length} items`;
+  }
+
   if (!items.length) {
     renderMessage(
       state.items.length ? "No matching posts." : "No posts saved.",
     );
+    if (count) {
+      count.textContent =
+        state.items.length ? `0 of ${state.items.length} items` : "0 items";
+    }
     return;
   }
 
   items.forEach((item) => {
     const row = document.createElement("tr");
-    const title = document.createElement("td");
-    title.textContent = item.isDirectory
-      ? "▰ " + item.title
-      : leafName(item.title);
-    row.append(title);
+    if (item.isDirectory) row.className = "database-folder-row";
 
+    const title = document.createElement("td");
+    title.className = "database-title-cell";
+    title.title = item.title;
+    const titleContent = document.createElement("span");
+    titleContent.className = "database-item";
     if (item.isDirectory) {
-      const folder = document.createElement("td");
-      folder.colSpan = 4;
-      folder.textContent = "Folder";
-      row.append(folder);
+      const glyph = document.createElement("span");
+      glyph.className = "database-folder-glyph";
+      glyph.setAttribute("aria-hidden", "true");
+      titleContent.append(glyph);
+    }
+    const name = document.createElement("span");
+    name.className = "database-item-name";
+    name.textContent = leafName(item.title);
+    titleContent.append(name);
+    title.append(titleContent);
+
+    const documentData = item.document;
+    const username = document.createElement("td");
+    username.textContent = item.isDirectory
+      ? "Folder"
+      : documentData?.username || "—";
+    if (item.isDirectory) username.className = "database-type-cell";
+
+    const url = document.createElement("td");
+    if (!item.isDirectory && documentData?.url) {
+      const link = document.createElement("a");
+      link.href = documentData.url;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      link.textContent = documentData.url;
+      link.title = documentData.url;
+      url.append(link);
     } else {
-      const documentData = item.document;
-      const username = document.createElement("td");
-      username.textContent = documentData?.username || "—";
-      const url = document.createElement("td");
-      if (documentData?.url) {
-        const link = document.createElement("a");
-        link.href = documentData.url;
-        link.target = "_blank";
-        link.rel = "noopener noreferrer";
-        link.textContent = documentData.url;
-        url.append(link);
-      } else {
-        url.textContent = "—";
-      }
-      const created = document.createElement("td");
-      created.textContent = formatDate(documentData?.created_at);
-      const folder = document.createElement("td");
-      folder.textContent = folderOf(item.title) || "—";
-      row.append(username, url, folder, created);
+      url.textContent = "—";
     }
 
+    const folder = document.createElement("td");
+    folder.textContent = folderOf(item.title) || "—";
+    folder.title = folderOf(item.title);
+
+    const created = document.createElement("td");
+    created.textContent = item.isDirectory
+      ? "—"
+      : formatDate(documentData?.created_at);
+
     const actions = document.createElement("td");
-    actions.className = "row-actions";
+    actions.className = "database-actions-cell";
+    const buttons = document.createElement("div");
+    buttons.className = "row-actions";
     const edit = document.createElement("button");
     edit.type = "button";
-    edit.textContent = "Edit";
+    edit.textContent = item.isDirectory ? "Rename" : "Edit";
+    edit.setAttribute("aria-label", `${edit.textContent} ${item.title}`);
     edit.addEventListener("click", () => editItem(item));
     const remove = document.createElement("button");
     remove.type = "button";
+    remove.className = "delete-action";
     remove.textContent = "Delete";
+    remove.setAttribute("aria-label", `Delete ${item.title}`);
     remove.addEventListener("click", () => deleteItem(item));
-    actions.append(edit, remove);
-    row.append(actions);
+    buttons.append(edit, remove);
+    actions.append(buttons);
+
+    row.append(title, username, url, folder, created, actions);
     tableBody.append(row);
   });
 }
-
 async function loadItems() {
   renderMessage("Loading database...");
   try {
