@@ -635,3 +635,16 @@ body.workspace98 .classic-start-button[aria-expanded="true"] { box-shadow: var(-
 /* Small phones and short landscape screens can scroll the desktop home. */
 body.classic98-home { overflow-y: auto; overflow-x: hidden; }
 body.classic98-home .classic-desktop-home { height: auto; }
+
+/* Editor's legacy 'nav' element selector must not turn the Start menu into
+   a full-width toolbar. Keep navigation layout scoped to the shell instead. */
+.classic-taskbar .classic-start-menu {
+    display: block;
+    height: auto;
+    min-height: 0;
+    width: min(264px, 90vw);
+    border: 0;
+    padding: 4px 4px 4px 31px;
+    box-shadow: var(--classic-raised), 3px 3px 0 #0005;
+}
+.classic-taskbar .classic-start-menu[hidden] { display: none; }
