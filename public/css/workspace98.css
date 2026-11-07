@@ -18,7 +18,7 @@ body.workspace98 {
     --w98-face-hover: var(--ctp-surface1);
     --w98-well: var(--ctp-mantle);
     --w98-titlebar: var(--ctp-base);
-    --w98-active-bg: var(--ctp-surface1);
+    --w98-active-bg: var(--ctp-base);
     --w98-active-text: var(--ctp-lavender);
     --w98-text: var(--ctp-text);
     --w98-muted: var(--ctp-subtext1);
@@ -509,6 +509,13 @@ body.workspace98-editor {
     .workspace98-editor .mobile-markdown-toolbar {
         font-family: "Courier New", Courier, monospace;
     }
+}
+
+/* Keep the Editor's selected Write/Preview tabs on the same Base surface
+   as active Explorer labels and menu items, with lavender for distinction. */
+.workspace98-editor :is(.mobile-view-tab.active, .mobile-view-tab[aria-selected="true"], .mobile-view-tab:active) {
+    background: var(--w98-active-bg);
+    color: var(--w98-active-text);
 }
 
 /* ───────────────── ARCHIVE ───────────────── */
