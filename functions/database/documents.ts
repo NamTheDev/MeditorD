@@ -763,11 +763,11 @@ export function createFolder(folderPath: string): boolean {
         "SELECT is_directory FROM documents WHERE title = ?",
       )
       .get(parent);
+    const prefix = parent + "/";
     const hasVirtualParent = !row && Boolean(
-      database.query("SELECT 1 FROM documents WHERE title LIKE ? LIMIT 1")
-        .get(parent.replace(/[\\%_]/g, "\\    if (!row || row.is_directory !== 1) {
-      throw new Error("Parent folder does not exist");
-    }") + "/%"),
+      database
+        .query("SELECT 1 FROM documents WHERE substr(title, 1, length(?)) = ? LIMIT 1")
+        .get(prefix, prefix),
     );
     if ((row && row.is_directory !== 1) || (!row && !hasVirtualParent)) {
       throw new Error("Parent folder does not exist");
