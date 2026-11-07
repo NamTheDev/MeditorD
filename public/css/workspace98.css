@@ -132,7 +132,6 @@ body.workspace98 input[type="checkbox"]:checked::after {
     font: 400 14px "Courier New", Courier, monospace;
 }
 
-
 body.workspace98 .win98-select > select {
     background: var(--w98-well);
     color: var(--w98-text);
@@ -604,32 +603,6 @@ body.workspace98-editor {
     }
     .workspace98-editor .textarea-wrapper {
         column-gap: 12px;
-    }
-}
-@container editor-shell (max-width: 839px) {
-    .workspace98-editor .editor-layout {
-        display: block;
-        height: 100%;
-        padding: 5px 32px 8px 5px;
-        overflow-y: auto;
-    }
-    .workspace98-editor :is(.editor-left-pane, .editor-right-pane) {
-        height: auto;
-        padding: 10px;
-        margin-bottom: 4px;
-    }
-    .workspace98-editor .editor-right-pane {
-        min-height: 340px;
-    }
-    .workspace98-editor .editor-form {
-        height: auto;
-    }
-    .workspace98-editor .form-row.preview-row {
-        min-height: 160px;
-    }
-    .workspace98-editor .mobile-view-switch,
-    .workspace98-editor .mobile-markdown-toolbar {
-        font-family: "Courier New", Courier, monospace;
     }
 }
 
@@ -1493,35 +1466,19 @@ body.workspace98-database {
     }
 }
 @media (max-width: 700px) {
-    .workspace98-archive .archive-explorer-layout {
-        grid-template-columns: minmax(0, 1fr);
-    }
-    .workspace98-archive .archive-explorer-sidebar {
-        max-height: 190px;
-    }
+
     .workspace98-archive #archiveFolderTree {
         min-height: 70px;
     }
     .workspace98-archive .archive-search-input {
         flex-basis: 100%;
     }
-    .workspace98-archive .gallery-viewport {
-        padding: 9px;
-    }
-    .workspace98-archive .reddit-gallery {
-        display: block;
-    }
-    .workspace98-archive .gallery-card {
-        margin-bottom: 11px;
-    }
+
     .workspace98-archive .card-menu-button {
         width: 36px;
         height: 36px;
     }
-    .workspace98-database .database-actions {
-        display: flex;
-        gap: 5px;
-    }
+    
     .workspace98-database :is(.database-actions-left, .database-actions-right) {
         display: flex;
         gap: 4px;
@@ -1557,47 +1514,6 @@ body.workspace98-database {
 }
 
 /* Touch targets grow without changing compact mouse/keyboard layouts. */
-@media (pointer: coarse) and (max-width: 700px) {
-    .workspace98-editor .editor-nav-actions .compartment,
-    .workspace98-editor .editor-nav-actions .action-btn {
-        height: 44px;
-        min-height: 44px;
-    }
-    .workspace98-archive .menu-bar > :is(#backButton, #newPostButton),
-    .workspace98-archive .archive-new-folder-button,
-    .workspace98-archive .card-menu-button {
-        height: 44px;
-        min-height: 44px;
-    }
-    .workspace98-archive .archive-new-folder-button,
-    .workspace98-archive .card-menu-button {
-        width: 44px;
-        min-width: 44px;
-    }
-    .workspace98-database :is(.database-actions button, .row-actions button) {
-        min-height: 44px;
-    }
-}
-
-/* A large invisible touch target does not make the button LOOK enormous. */
-@media (pointer: coarse) and (max-width: 700px) {
-    .workspace98-archive .archive-explorer-heading {
-        flex-basis: 48px;
-        min-height: 48px;
-        padding: 2px 8px;
-    }
-    .workspace98-archive .archive-new-folder-button {
-        flex: 0 0 44px;
-        width: 44px;
-        height: 44px;
-        min-width: 44px;
-        min-height: 44px;
-        padding: 9px;
-    }
-    .workspace98-archive .archive-new-folder-button:active {
-        padding: 9px;
-    }
-}
 
 /* New-folder button uses the same small yellow folder as every tree node. */
 body.workspace98-archive .archive-folder-add-icon {
@@ -1659,18 +1575,41 @@ body.workspace98-archive .archive-folder-add-plus {
     color: var(--w98-highlight);
 }
 
-/* Prevent tall touch controls from spilling out of fixed grid tracks. */
-@media (max-width: 700px) {
-    .workspace98-archive .archive-explorer-layout {
-        grid-template-columns: minmax(0, 1fr);
-        grid-template-rows: clamp(90px, 22dvh, 165px) minmax(0, 1fr);
-    }
-    .workspace98-archive .archive-explorer-sidebar {
-        max-height: none;
-        height: 100%;
-    }
-}
+/* Compact face, generous touch hit areas. */
 @media (pointer: coarse) and (max-width: 700px) {
+    .workspace98-editor .editor-nav-actions .compartment,
+    .workspace98-editor .editor-nav-actions .action-btn {
+        height: 44px;
+        min-height: 44px;
+    }
+    .workspace98-archive .menu-bar > :is(#backButton, #newPostButton),
+    .workspace98-archive .archive-new-folder-button,
+    .workspace98-archive .card-menu-button {
+        height: 44px;
+        min-height: 44px;
+    }
+    .workspace98-archive .archive-new-folder-button,
+    .workspace98-archive .card-menu-button {
+        width: 44px;
+        min-width: 44px;
+    }
+    .workspace98-database :is(.database-actions button, .row-actions button) {
+        min-height: 44px;
+    }
+
+    .workspace98-archive .archive-explorer-heading {
+        flex-basis: 48px;
+        min-height: 48px;
+        padding: 2px 8px;
+    }
+    .workspace98-archive .archive-new-folder-button {
+        flex: 0 0 44px;
+        padding: 9px;
+    }
+    .workspace98-archive .archive-new-folder-button:active {
+        padding: 9px;
+    }
+
     .workspace98-archive .menu-bar {
         grid-template-rows: 29px 46px;
     }
@@ -1685,42 +1624,6 @@ body.workspace98-archive .archive-folder-add-plus {
         width: 24px;
         height: 24px;
         min-height: 24px;
-    }
-}
-
-/* Retain the original Editor's dynamic textarea height and Markdown toolbar.
-   Higher-specificity workspace rules must not clip the narrow content area. */
-@container editor-shell (max-width: 839px) {
-    .workspace98-editor .editor-right-pane {
-        height: auto;
-        min-height: 0;
-        overflow: visible;
-        padding-bottom: calc(72px + var(--safe-bottom));
-    }
-    .workspace98-editor .textarea-wrapper {
-        height: auto;
-        min-height: 420px;
-        overflow: visible;
-    }
-    .workspace98-editor .description-toolbar {
-        position: sticky;
-        top: 0;
-        z-index: 5;
-    }
-    .workspace98-editor .editor-textarea {
-        flex: none;
-        min-height: 320px;
-        height: auto;
-        overflow-y: hidden;
-        padding: 14px 14px calc(68px + var(--safe-bottom));
-        font-size: 16px;
-    }
-    .workspace98-editor .markdown-preview {
-        flex: none;
-        min-height: 320px;
-        overflow: visible;
-        padding: 14px;
-        font-size: 16px;
     }
 }
 
@@ -1755,10 +1658,13 @@ body.workspace98-archive .archive-folder-add-plus {
         padding: 4px;
     }
     .workspace98-archive .archive-explorer-layout {
-        gap: 6px;
+        grid-template-columns: minmax(0, 1fr);
         grid-template-rows: clamp(96px, 19dvh, 148px) minmax(0, 1fr);
+        gap: 6px;
     }
     .workspace98-archive .archive-explorer-sidebar {
+        max-height: none;
+        height: 100%;
         padding: 4px;
     }
     .workspace98-archive .archive-search-toolbar {
@@ -1769,11 +1675,12 @@ body.workspace98-archive .archive-folder-add-plus {
         padding: 10px;
     }
     .workspace98-archive .reddit-gallery {
+        display: block;
         gap: 10px;
     }
     .workspace98-archive .gallery-card {
-        padding: 6px;
         margin-bottom: 10px;
+        padding: 6px;
     }
 
     .workspace98-database #databaseApp {
@@ -1785,6 +1692,7 @@ body.workspace98-archive .archive-folder-add-plus {
         padding: 4px;
     }
     .workspace98-database .database-actions {
+        display: flex;
         gap: 6px;
         padding: 6px 4px 4px;
     }
@@ -1797,23 +1705,66 @@ body.workspace98-archive .archive-folder-add-plus {
     }
 }
 
-/* The Editor is container-responsive, so its forms stay compact even in
-   a narrow desktop tile; the 44px mobile inputs are not reduced. */
+/* Narrow Editor: panes, previews, and Markdown controls share one scope. */
 @container editor-shell (max-width: 839px) {
+    .workspace98-editor .form-row.preview-row {
+        min-height: 160px;
+    }
+    .workspace98-editor .mobile-view-switch,
+    .workspace98-editor .mobile-markdown-toolbar {
+        font-family: "Courier New", Courier, monospace;
+    }
+
+    .workspace98-editor .editor-right-pane {
+        min-height: 0;
+        height: auto;
+        overflow: visible;
+        padding-bottom: calc(72px + var(--safe-bottom));
+    }
+    .workspace98-editor .textarea-wrapper {
+        height: auto;
+        min-height: 420px;
+        overflow: visible;
+    }
+    
+    .workspace98-editor .editor-textarea {
+        flex: none;
+        min-height: 320px;
+        height: auto;
+        overflow-y: hidden;
+        padding: 14px 14px calc(68px + var(--safe-bottom));
+        font-size: 16px;
+    }
+    .workspace98-editor .markdown-preview {
+        flex: none;
+        min-height: 320px;
+        overflow: visible;
+        padding: 14px;
+        font-size: 16px;
+    }
+
     .workspace98-editor .editor-layout {
+        display: block;
+        height: 100%;
         padding: 6px 30px 9px 6px;
+        overflow-y: auto;
     }
     .workspace98-editor :is(.editor-left-pane, .editor-right-pane) {
+        height: auto;
         padding: 10px;
         margin-bottom: 6px;
     }
     .workspace98-editor .editor-form {
+        height: auto;
         gap: 8px;
     }
     .workspace98-editor .form-row {
         gap: 5px;
     }
     .workspace98-editor .description-toolbar {
+        position: sticky;
+        top: 0;
+        z-index: 5;
         min-height: 42px;
         padding: 6px 8px;
     }
@@ -1878,4 +1829,3 @@ body.workspace98-editor .win98-select.form-control-unit::after {
         min-height: 44px;
     }
 }
-

@@ -995,25 +995,6 @@ input.form-control-unit:focus {
     }
 }
 
-/* Match the Windows 98 select field to the other editor inputs. */
-.win98-select.form-control-unit {
-    flex: 1;
-    min-width: 0;
-}
-
-.win98-select > select {
-    height: var(--input-height);
-}
-
-@media (max-width: 700px) {
-    .win98-select.form-control-unit,
-    .win98-select > select {
-        width: 100%;
-        min-height: 44px;
-        font-size: 16px;
-    }
-}
-
 /* Apply Courier New to shared dialogs only when the editor is open. */
 body .app-dialog-window {
     font-family: "Courier New", Courier, monospace;

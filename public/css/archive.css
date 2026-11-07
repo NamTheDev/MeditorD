@@ -233,20 +233,6 @@ html.meditord-js .reddit-gallery:not(.masonry-ready) .gallery-card {
     border-bottom: 0;
 }
 
-.card-submenu {
-    position: absolute;
-    top: 0;
-    right: 100%;
-    display: flex;
-    flex-direction: column;
-    min-width: 140px;
-    background: var(--ctp-surface0);
-    border: 2px solid var(--bevel-darkest);
-    border-top-color: var(--bevel-lightest);
-    border-left-color: var(--bevel-lightest);
-    z-index: 1001;
-}
-
 .card-menu-item {
     position: relative;
     width: 100%;
@@ -266,11 +252,19 @@ html.meditord-js .reddit-gallery:not(.masonry-ready) .gallery-card {
 }
 
 .card-submenu {
+    position: absolute;
     top: 0;
-    left: 100%;
     right: auto;
-    margin-left: 4px;
+    display: flex;
+    flex-direction: column;
     min-width: 160px;
+    background: var(--ctp-surface0);
+    border: 2px solid var(--bevel-darkest);
+    border-top-color: var(--bevel-lightest);
+    border-left-color: var(--bevel-lightest);
+    z-index: 1001;
+    left: 100%;
+    margin-left: 4px;
 }
 
 .card-submenu.open-left {
