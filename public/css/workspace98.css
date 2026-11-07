@@ -1,0 +1,1258 @@
+/*
+ * MeditorD workspace theme — Windows 95/98, Catppuccin Mocha, Lavender.
+ * Strictly opt-in: render.ts adds workspace98-* only to Editor, Archive,
+ * and Database. Home, Exit and 404 keep their original styles.
+ *
+ * Source palette: https://catppuccin.com/palette/ (Mocha)
+ * Raised: top/left highlights, bottom/right shadows.
+ * Sunken: inverse. All dimensions deliberate and square-edged.
+ */
+body.workspace98 {
+    --w98-face: var(--ctp-surface0);
+    --w98-face-hover: var(--ctp-surface1);
+    --w98-well: var(--ctp-base);
+    --w98-titlebar: var(--ctp-crust);
+    --w98-text: var(--ctp-text);
+    --w98-muted: var(--ctp-subtext1);
+    --w98-highlight: var(--ctp-lavender);
+    --w98-raised:
+        inset 1px 1px 0 var(--ctp-overlay1),
+        inset -1px -1px 0 var(--ctp-crust),
+        inset 2px 2px 0 var(--ctp-surface2),
+        inset -2px -2px 0 var(--ctp-mantle);
+    --w98-sunken:
+        inset 1px 1px 0 var(--ctp-crust),
+        inset -1px -1px 0 var(--ctp-overlay0),
+        inset 2px 2px 0 var(--ctp-mantle),
+        inset -2px -2px 0 var(--ctp-surface2);
+    --w98-divider: var(--ctp-surface2);
+    color: var(--w98-text);
+    background: var(--ctp-base);
+    font: 400 12px/1.4 "Courier New", Courier, monospace;
+    -webkit-font-smoothing: none;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body.workspace98 :is(button, input, select, textarea) {
+    font-family: "Courier New", Courier, monospace;
+    border-radius: 0;
+    letter-spacing: 0;
+}
+
+body.workspace98 :is(button, .win-btn, .win98-button, .upload-btn) {
+    background: var(--w98-face);
+    color: var(--w98-text);
+    border: 0;
+    box-shadow: var(--w98-raised);
+    font-weight: 400;
+    text-transform: none;
+    cursor: pointer;
+}
+
+body.workspace98 :is(button, .win-btn, .win98-button, .upload-btn):hover:not(:disabled) {
+    color: var(--w98-highlight);
+}
+
+body.workspace98 :is(button, .win-btn, .win98-button, .upload-btn):focus-visible {
+    outline: 1px dotted var(--w98-highlight);
+    outline-offset: -4px;
+}
+
+body.workspace98 :is(button, .win-btn, .win98-button, .upload-btn):disabled {
+    color: var(--ctp-overlay1);
+    cursor: default;
+}
+
+body.workspace98 :is(button, .win-btn, .win98-button, .upload-btn):active:not(:disabled) {
+    box-shadow: var(--w98-sunken);
+}
+
+body.workspace98 :is(input:not([type="checkbox"]):not([type="file"]), textarea) {
+    color: var(--w98-text);
+    background: var(--w98-well);
+    border: 0;
+    box-shadow: var(--w98-sunken);
+    outline: none;
+    -webkit-user-select: text;
+    user-select: text;
+}
+
+body.workspace98 :is(input, select, textarea):focus-visible {
+    outline: 1px dotted var(--w98-highlight);
+    outline-offset: -3px;
+}
+
+body.workspace98 :is(input, textarea)::placeholder {
+    color: var(--ctp-overlay1);
+    opacity: 1;
+}
+
+body.workspace98 input[type="file"]::file-selector-button {
+    min-height: 27px;
+    margin-right: 10px;
+    padding: 4px 10px;
+    border: 0;
+    border-radius: 0;
+    color: var(--w98-text);
+    background: var(--w98-face);
+    box-shadow: var(--w98-raised);
+    font: 400 12px "Courier New", Courier, monospace;
+    cursor: pointer;
+}
+
+body.workspace98 input[type="checkbox"] {
+    position: relative;
+    appearance: none;
+    flex: 0 0 14px;
+    width: 14px;
+    height: 14px;
+    min-width: 14px;
+    min-height: 14px;
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+    background: var(--w98-well);
+    box-shadow: var(--w98-sunken);
+    cursor: pointer;
+}
+
+body.workspace98 input[type="checkbox"]:checked::after {
+    content: "✓";
+    position: absolute;
+    inset: -3px 0 0 2px;
+    color: var(--w98-highlight);
+    font: 400 14px "Courier New", Courier, monospace;
+}
+
+
+body.workspace98 .win98-select > select {
+    background: var(--w98-well);
+    color: var(--w98-text);
+    box-shadow: var(--w98-sunken);
+    border: 0;
+    min-height: 30px;
+    font: inherit;
+    padding: 4px 31px 4px 8px;
+}
+
+body.workspace98 .win98-select::before {
+    background: var(--w98-face);
+    border: 0;
+    box-shadow: var(--w98-raised);
+}
+
+body.workspace98 .win98-select::after {
+    color: var(--w98-text);
+}
+
+body.workspace98 ::selection {
+    background: var(--w98-highlight);
+    color: var(--ctp-crust);
+}
+
+/* Native scrollbars and dialogs use the same chrome as the workspaces. */
+body.workspace98 :is(.app-dialog-window, .win98-modal, .modal-window, .edit-modal-box, .archive-folder-picker-window) {
+    color: var(--w98-text);
+    background: var(--w98-face);
+    border: 0;
+    box-shadow: var(--w98-raised);
+    border-radius: 0;
+    font-family: "Courier New", Courier, monospace;
+    font-weight: 400;
+}
+
+body.workspace98 :is(.app-dialog-titlebar, .win98-modal-titlebar, .modal-window .title-bar, .edit-modal-header, .archive-folder-picker-title) {
+    color: var(--w98-highlight);
+    background: var(--w98-titlebar);
+    border: 0;
+    box-shadow: none;
+    font: 400 13px/1.3 "Courier New", Courier, monospace;
+    letter-spacing: 0.05em;
+}
+
+body.workspace98 :is(.app-dialog-titlebar h2, .win98-modal-titlebar h2, .edit-modal-header h2) {
+    color: var(--w98-highlight);
+    font: 400 13px/1.3 "Courier New", Courier, monospace;
+}
+
+body.workspace98 :is(.app-dialog-close, .win98-modal-close, .modal-close-button, .modal-close) {
+    flex-shrink: 0;
+    background: var(--w98-face);
+    color: var(--w98-text);
+    box-shadow: var(--w98-raised);
+}
+
+body.workspace98 :is(.app-dialog-window input, .app-dialog-window textarea, .edit-modal-box input, .edit-modal-box select, .edit-modal-box textarea, .archive-folder-picker select) {
+    background: var(--w98-well);
+    color: var(--w98-text);
+    box-shadow: var(--w98-sunken);
+    font-family: "Courier New", Courier, monospace;
+}
+
+body.workspace98 :is(.app-dialog-actions, .win98-modal-actions, .edit-modal-actions, .archive-folder-picker-actions) button {
+    min-height: 27px;
+    font: 400 12px "Courier New", Courier, monospace;
+    box-shadow: var(--w98-raised);
+}
+
+body.workspace98 :is(.app-dialog-actions, .win98-modal-actions, .edit-modal-actions, .archive-folder-picker-actions) button:active {
+    box-shadow: var(--w98-sunken);
+}
+
+/* ───────────────── EDITOR ───────────────── */
+body.workspace98-editor {
+    height: 100dvh;
+    min-height: 100dvh;
+    overflow: hidden;
+    background: var(--w98-face);
+    --pane-padding: 11px;
+    --input-height: 32px;
+    --preview-padding: 12px;
+}
+
+.workspace98-editor > header {
+    flex: 0 0 auto;
+    padding: max(4px, var(--safe-top)) max(4px, var(--safe-right))
+        3px max(4px, var(--safe-left));
+    background: var(--w98-face);
+}
+
+/* Real Win98 title strip above a compact command toolbar, for every width. */
+.workspace98-editor > header > nav {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 3px;
+    height: auto;
+    min-height: 0;
+    padding: 3px;
+    border: 0;
+    background: var(--w98-face);
+    box-shadow: var(--w98-raised);
+}
+
+.workspace98-editor .title-compartment {
+    order: -1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    grid-area: auto;
+    flex: 0 0 29px;
+    width: 100%;
+    min-height: 29px;
+    height: 29px;
+    overflow: hidden;
+    padding: 0 35px;
+    color: var(--w98-highlight);
+    background: var(--w98-titlebar);
+    border: none;
+    box-shadow: none;
+    font: 400 15px/1 "Courier New", Courier, monospace;
+    letter-spacing: 0.22em;
+}
+
+.workspace98-editor .arrow-compartment {
+    position: absolute;
+    z-index: 2;
+    top: 6px;
+    left: 6px;
+    display: grid;
+    place-items: center;
+    grid-area: auto;
+    width: 23px;
+    height: 23px;
+    min-width: 23px;
+    min-height: 23px;
+    padding: 2px;
+    background: var(--w98-face);
+    border: 0;
+    box-shadow: var(--w98-raised);
+}
+
+.workspace98-editor .arrow-icon {
+    width: 16px;
+    height: 16px;
+}
+
+.workspace98-editor .editor-nav-actions {
+    order: 1;
+    display: grid;
+    grid-area: auto;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 3px;
+    width: 100%;
+    min-height: 0;
+    border: 0;
+}
+
+.workspace98-editor .editor-nav-actions .compartment {
+    grid-area: auto;
+    min-width: 0;
+    min-height: 0;
+    height: 32px;
+    padding: 0;
+    border: 0;
+    box-shadow: none;
+}
+
+.workspace98-editor .editor-nav-actions .action-btn {
+    display: block;
+    width: 100%;
+    height: 32px;
+    min-height: 32px;
+    max-width: none;
+    padding: 3px 7px;
+    background: var(--w98-face);
+    color: var(--w98-text);
+    box-shadow: var(--w98-raised);
+    font: 400 12px "Courier New", Courier, monospace;
+    letter-spacing: 0.025em;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+.workspace98-editor .editor-nav-actions .action-btn:active {
+    padding: 3px 7px;
+    box-shadow: var(--w98-sunken);
+}
+
+.workspace98-editor .editor-container {
+    min-height: 0;
+    margin: 0 4px 4px;
+    background: var(--w98-face);
+    border: 0;
+    box-shadow: var(--w98-raised);
+}
+
+.workspace98-editor .editor-layout {
+    gap: 4px;
+    padding: 4px;
+    grid-template-columns: minmax(280px, 0.9fr) minmax(360px, 1.1fr);
+    background: var(--w98-face);
+}
+
+.workspace98-editor :is(.editor-left-pane, .editor-right-pane) {
+    padding: 11px;
+    min-width: 0;
+    border: 0;
+    box-shadow: var(--w98-raised);
+    background: var(--w98-face);
+}
+
+.workspace98-editor .editor-left-pane {
+    overflow: auto;
+}
+
+.workspace98-editor .editor-form {
+    gap: 10px;
+}
+
+.workspace98-editor .form-row {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+}
+
+.workspace98-editor .form-row label.field-label {
+    width: auto;
+    flex: 0 0 auto;
+    padding: 0;
+    color: var(--w98-text);
+    font: 400 12px/1.3 "Courier New", Courier, monospace;
+}
+
+.workspace98-editor .form-control-unit {
+    min-width: 0;
+    width: 100%;
+    flex: 0 0 auto;
+}
+
+.workspace98-editor input.form-control-unit {
+    height: 32px;
+    padding: 6px 8px;
+    color: var(--w98-text);
+    background: var(--w98-well);
+    box-shadow: var(--w98-sunken);
+    font-size: 13px;
+}
+
+.workspace98-editor .win98-select.form-control-unit {
+    width: 100%;
+    flex: 0 0 auto;
+}
+
+.workspace98-editor .win98-select > select {
+    height: 32px;
+    font: 400 13px "Courier New", Courier, monospace;
+}
+
+.workspace98-editor .upload-btn {
+    height: 32px;
+    min-height: 32px;
+    display: flex;
+    flex: 0 0 32px;
+    padding: 5px 8px;
+    box-shadow: var(--w98-raised);
+    font: 400 12px "Courier New", Courier, monospace;
+}
+
+.workspace98-editor .form-row.preview-row {
+    flex: 1 0 150px;
+    align-items: stretch;
+    min-height: 150px;
+}
+
+.workspace98-editor .preview-box {
+    flex: 1 1 auto;
+    min-height: 138px;
+    padding: 12px;
+    background: var(--w98-well);
+    box-shadow: var(--w98-sunken);
+    color: var(--ctp-overlay1);
+    font: 400 11px/1.4 "Courier New", Courier, monospace;
+}
+
+.workspace98-editor .editor-right-pane {
+    overflow: hidden;
+}
+
+.workspace98-editor .textarea-wrapper {
+    min-height: 0;
+    background: var(--w98-face);
+    box-shadow: none;
+}
+
+.workspace98-editor .description-toolbar {
+    min-height: 32px;
+    padding: 3px 6px;
+    gap: 8px;
+    color: var(--w98-text);
+    background: var(--w98-face);
+    border-bottom: 0;
+}
+
+.workspace98-editor .description-label {
+    color: var(--w98-text);
+    font: 400 12px "Courier New", Courier, monospace;
+}
+
+.workspace98-editor .description-toolbar .action-btn {
+    min-height: 24px;
+    padding: 3px 10px;
+    box-shadow: var(--w98-raised);
+    font-size: 11px;
+}
+
+.workspace98-editor :is(.editor-textarea, .markdown-preview) {
+    min-width: 0;
+    min-height: 0;
+    padding: 12px;
+    color: var(--w98-text);
+    background: var(--w98-well);
+    box-shadow: var(--w98-sunken);
+    font: 400 13px/1.55 "Courier New", Courier, monospace;
+}
+
+.workspace98-editor .editor-textarea {
+    resize: none;
+}
+
+.workspace98-editor .markdown-preview {
+    overflow-y: auto;
+}
+
+.workspace98-editor .markdown-preview :is(a, strong) {
+    color: var(--w98-highlight);
+}
+
+/* Keep the existing responsive Write/Preview and touch scrollbar behaviors. */
+@container editor-shell (min-width: 1180px) {
+    .workspace98-editor .editor-layout {
+        grid-template-columns: minmax(300px, 0.78fr) minmax(760px, 2fr);
+    }
+    .workspace98-editor .textarea-wrapper {
+        column-gap: 12px;
+    }
+}
+@container editor-shell (max-width: 839px) {
+    .workspace98-editor .editor-layout {
+        display: block;
+        height: 100%;
+        padding: 5px 32px 8px 5px;
+        overflow-y: auto;
+    }
+    .workspace98-editor :is(.editor-left-pane, .editor-right-pane) {
+        height: auto;
+        padding: 10px;
+        margin-bottom: 4px;
+    }
+    .workspace98-editor .editor-right-pane {
+        min-height: 340px;
+    }
+    .workspace98-editor .editor-form {
+        height: auto;
+    }
+    .workspace98-editor .form-row.preview-row {
+        min-height: 160px;
+    }
+    .workspace98-editor .mobile-view-switch,
+    .workspace98-editor .mobile-markdown-toolbar {
+        font-family: "Courier New", Courier, monospace;
+    }
+}
+
+/* ───────────────── ARCHIVE ───────────────── */
+body.workspace98-archive {
+    height: 100dvh;
+    overflow: hidden;
+    --pane-padding: 13px;
+}
+
+.workspace98-archive #fullscreenApp {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: max(4px, var(--safe-top)) max(4px, var(--safe-right))
+        max(4px, var(--safe-bottom)) max(4px, var(--safe-left));
+    color: var(--w98-text);
+    background: var(--w98-face);
+}
+
+.workspace98-archive .menu-bar {
+    flex: 0 0 auto;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: 29px 30px;
+    align-items: stretch;
+    gap: 3px;
+    height: auto;
+    min-height: 0;
+    padding: 3px;
+    background: var(--w98-face);
+    border: 0;
+    box-shadow: var(--w98-raised);
+}
+
+.workspace98-archive .gallery-title {
+    position: static;
+    grid-column: 1 / -1;
+    grid-row: 1;
+    transform: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 29px;
+    padding: 0;
+    color: var(--w98-highlight);
+    background: var(--w98-titlebar);
+    font: 400 15px "Courier New", Courier, monospace;
+    letter-spacing: 0.22em;
+}
+
+.workspace98-archive .menu-bar > #backButton {
+    grid-column: 1;
+    grid-row: 2;
+}
+
+.workspace98-archive .menu-bar > #newPostButton {
+    grid-column: 2;
+    grid-row: 2;
+}
+
+.workspace98-archive .menu-bar > :is(#backButton, #newPostButton) {
+    width: 100%;
+    min-width: 0;
+    min-height: 30px;
+    height: 30px;
+    margin: 0;
+    padding: 4px 10px;
+    box-shadow: var(--w98-raised);
+    font: 400 12px "Courier New", Courier, monospace;
+}
+
+.workspace98-archive .archive-explorer-layout {
+    grid-template-columns: clamp(205px, 21vw, 274px) minmax(0, 1fr);
+    gap: 4px;
+    min-height: 0;
+    padding-top: 0;
+}
+
+.workspace98-archive .archive-explorer-sidebar {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    min-height: 0;
+    padding: 3px;
+    background: var(--w98-face);
+    border: 0;
+    box-shadow: var(--w98-raised);
+}
+
+.workspace98-archive .archive-explorer-heading {
+    flex: 0 0 30px;
+    min-height: 30px;
+    margin: 0 0 3px;
+    padding: 3px 5px 3px 8px;
+    color: var(--w98-highlight);
+    background: var(--w98-titlebar);
+    font: 400 12px "Courier New", Courier, monospace;
+    letter-spacing: 0.05em;
+}
+
+.workspace98-archive .archive-new-folder-button {
+    width: 23px;
+    height: 23px;
+    min-width: 23px;
+    min-height: 23px;
+    padding: 2px;
+    background: var(--w98-face);
+    color: var(--w98-text);
+    border: 0;
+    box-shadow: var(--w98-raised);
+}
+
+.workspace98-archive .archive-new-folder-button:active {
+    padding: 2px;
+    box-shadow: var(--w98-sunken);
+}
+
+.workspace98-archive #archiveFolderTree {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: auto;
+    padding: 5px 3px;
+    background: var(--w98-well);
+    box-shadow: var(--w98-sunken);
+}
+
+.workspace98-archive .archive-folder-row {
+    min-height: 26px;
+    margin: 0;
+    color: var(--w98-text);
+}
+
+.workspace98-archive .archive-folder-row:hover {
+    background: var(--ctp-surface0);
+}
+
+.workspace98-archive .archive-folder-row.selected {
+    background: var(--ctp-surface1);
+}
+
+.workspace98-archive :is(.archive-folder-button, .archive-folder-toggle) {
+    color: var(--w98-text);
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    font: 400 12px "Courier New", Courier, monospace;
+}
+
+.workspace98-archive .archive-folder-toggle {
+    padding: 0;
+    color: var(--ctp-subtext0);
+}
+
+.workspace98-archive .archive-folder-toggle:active {
+    box-shadow: none;
+    padding: 0;
+}
+
+.workspace98-archive .archive-folder-button:active {
+    box-shadow: none;
+    padding: 2px 4px 2px 0;
+}
+
+.workspace98-archive .archive-folder-button {
+    padding: 2px 4px 2px 0;
+    gap: 7px;
+    min-height: 26px;
+    font: 400 12px "Courier New", Courier, monospace;
+}
+
+.workspace98-archive .archive-folder-button.active {
+    color: var(--w98-highlight);
+    background: transparent;
+    box-shadow: none;
+}
+
+.workspace98-archive .archive-folder-glyph {
+    color: var(--ctp-lavender);
+}
+
+.workspace98-archive .archive-explorer-main {
+    min-width: 0;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.workspace98-archive .archive-breadcrumbs {
+    flex: 0 0 auto;
+    min-height: 31px;
+    gap: 3px;
+    margin: 0;
+    padding: 3px 7px;
+    color: var(--ctp-subtext1);
+    background: var(--w98-face);
+    box-shadow: var(--w98-raised);
+    font: 400 12px "Courier New", Courier, monospace;
+}
+
+.workspace98-archive .archive-breadcrumbs button {
+    background: transparent;
+    box-shadow: none;
+    border: 0;
+    min-height: 22px;
+    padding: 2px 5px;
+    color: var(--w98-text);
+    font: inherit;
+}
+
+.workspace98-archive .archive-breadcrumbs button:hover {
+    color: var(--w98-highlight);
+}
+
+.workspace98-archive .archive-search-toolbar {
+    flex: 0 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 7px;
+    padding: 7px;
+    margin: 0;
+    background: var(--w98-face);
+    box-shadow: var(--w98-raised);
+}
+
+.workspace98-archive :is(.archive-search-input, .archive-search-select) {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+    color: var(--w98-text);
+    font: 400 12px "Courier New", Courier, monospace;
+}
+
+.workspace98-archive .archive-search-input {
+    flex: 1 1 210px;
+}
+
+.workspace98-archive .archive-search-select {
+    flex: 0 1 220px;
+}
+
+.workspace98-archive .archive-search-input > span {
+    color: var(--w98-text);
+    font-size: 12px;
+}
+
+.workspace98-archive .archive-search-input input {
+    min-height: 31px;
+    padding: 5px 8px;
+    background: var(--w98-well);
+    box-shadow: var(--w98-sunken);
+    font: 400 12px "Courier New", Courier, monospace;
+}
+
+.workspace98-archive .archive-search-select .win98-select {
+    width: auto;
+    min-width: 0;
+    flex: 1 1 auto;
+}
+
+.workspace98-archive .gallery-viewport {
+    flex: 1 1 auto;
+    min-height: 0;
+    margin: 0;
+    padding: 13px;
+    background: var(--w98-well);
+    box-shadow: var(--w98-sunken);
+    overflow: auto;
+}
+
+.workspace98-archive .reddit-gallery {
+    gap: 14px;
+}
+
+.workspace98-archive .gallery-card {
+    padding: 6px;
+    margin: 0;
+    background: var(--w98-face);
+    border: 0;
+    box-shadow: var(--w98-raised);
+}
+
+.workspace98-archive .gallery-card:hover {
+    outline: 1px dotted var(--w98-highlight);
+    outline-offset: -3px;
+}
+
+.workspace98-archive .gallery-media {
+    background: var(--ctp-crust);
+    box-shadow: var(--w98-sunken);
+}
+
+.workspace98-archive .card-info {
+    padding: 8px 5px 4px;
+    gap: 6px;
+    color: var(--w98-text);
+    font-family: "Courier New", Courier, monospace;
+}
+
+.workspace98-archive .card-title {
+    color: var(--w98-text);
+    font: 400 14px/1.35 "Courier New", Courier, monospace;
+}
+
+.workspace98-archive .card-description {
+    color: var(--w98-muted);
+    font: 400 12px/1.45 "Courier New", Courier, monospace;
+}
+
+.workspace98-archive .card-description :is(a, strong),
+.workspace98-archive .card-description .read-more-toggle {
+    color: var(--w98-highlight);
+}
+
+.workspace98-archive .card-description strong {
+    white-space: normal;
+}
+
+/* Inline Markdown controls must never become bevelled buttons. */
+body.workspace98-archive .card-description .read-more-toggle,
+body.workspace98-archive .card-description .read-more-toggle:active {
+    display: inline;
+    position: static;
+    width: auto;
+    height: auto;
+    min-width: 0;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    color: var(--w98-highlight);
+    border: 0;
+    box-shadow: none;
+    font: inherit;
+    text-decoration: underline;
+}
+
+.workspace98-archive .card-meta {
+    border-top: 1px solid var(--ctp-surface2);
+    color: var(--w98-highlight);
+    padding-top: 6px;
+    font: 400 11px "Courier New", Courier, monospace;
+}
+
+.workspace98-archive .card-date {
+    color: var(--ctp-subtext0);
+    font: inherit;
+}
+
+.workspace98-archive .card-actions {
+    top: 7px;
+    right: 7px;
+}
+
+.workspace98-archive .card-menu-button {
+    display: grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    min-width: 26px;
+    min-height: 26px;
+    padding: 0;
+    border: 0;
+    color: var(--w98-text);
+    background: var(--w98-face);
+    box-shadow: var(--w98-raised);
+    font-size: 19px;
+    line-height: 1;
+}
+
+.workspace98-archive .card-menu-button:active {
+    padding: 0;
+    box-shadow: var(--w98-sunken);
+}
+
+.workspace98-archive :is(.card-menu, .card-submenu, .archive-folder-context-menu) {
+    background: var(--w98-face);
+    color: var(--w98-text);
+    border: 0;
+    box-shadow: var(--w98-raised);
+    padding: 3px;
+}
+
+.workspace98-archive :is(.card-menu, .card-submenu, .archive-folder-context-menu) button {
+    min-height: 27px;
+    width: 100%;
+    padding: 5px 8px;
+    background: transparent;
+    color: var(--w98-text);
+    border: 0;
+    box-shadow: none;
+    text-align: left;
+    justify-content: flex-start;
+    font: 400 12px "Courier New", Courier, monospace;
+}
+
+.workspace98-archive :is(.card-menu, .card-submenu, .archive-folder-context-menu) button:hover:not(:disabled) {
+    background: var(--w98-highlight);
+    color: var(--ctp-crust);
+}
+
+.workspace98-archive :is(.card-menu, .card-submenu, .archive-folder-context-menu) button:active {
+    padding: 5px 8px;
+    box-shadow: none;
+}
+
+.workspace98-archive .card-menu .share-link-fallback {
+    font-family: "Courier New", Courier, monospace;
+    background: var(--w98-well);
+    color: var(--w98-text);
+    box-shadow: var(--w98-sunken);
+}
+
+.workspace98-archive .modal-content-area {
+    background: var(--w98-well);
+    box-shadow: var(--w98-sunken);
+}
+
+.workspace98-archive .modal-post-description {
+    font: 400 13px/1.6 "Courier New", Courier, monospace;
+}
+
+.workspace98-archive .archive-folder-picker {
+    background: rgba(17, 17, 27, 0.8);
+}
+
+.workspace98-archive .archive-folder-picker-title {
+    margin: 0 0 8px;
+    padding: 5px 8px;
+}
+
+.workspace98-archive .skeleton-box {
+    background: var(--ctp-surface1);
+}
+
+/* ───────────────── DATABASE ───────────────── */
+body.workspace98-database {
+    overflow: hidden;
+    background: var(--w98-face);
+}
+
+.workspace98-database #databaseApp {
+    width: 100%;
+    max-width: none;
+    height: 100dvh;
+    min-height: 0;
+    padding: max(4px, var(--safe-top)) max(4px, var(--safe-right))
+        max(4px, var(--safe-bottom)) max(4px, var(--safe-left));
+    gap: 4px;
+    background: var(--w98-face);
+}
+
+.workspace98-database .database-header {
+    flex: 0 0 auto;
+    padding: 3px;
+    background: var(--w98-face);
+    box-shadow: var(--w98-raised);
+}
+
+.workspace98-database .database-titlebar {
+    min-height: 29px;
+    height: 29px;
+    padding: 3px 9px;
+    background: var(--w98-titlebar);
+    color: var(--w98-highlight);
+}
+
+.workspace98-database .database-titlebar h1 {
+    color: var(--w98-highlight);
+    font: 400 15px "Courier New", Courier, monospace;
+    letter-spacing: 0.18em;
+}
+
+.workspace98-database .database-title-caption {
+    color: var(--ctp-subtext1);
+    font: 400 10px "Courier New", Courier, monospace;
+}
+
+.workspace98-database .database-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px 12px;
+    padding: 5px 2px 1px;
+}
+
+.workspace98-database :is(.database-actions-left, .database-actions-right) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px;
+}
+
+.workspace98-database .database-actions button {
+    min-width: 80px;
+    min-height: 29px;
+    padding: 4px 12px;
+    color: var(--w98-text);
+    background: var(--w98-face);
+    box-shadow: var(--w98-raised);
+    font: 400 12px "Courier New", Courier, monospace;
+}
+
+.workspace98-database .database-actions button:active {
+    padding: 4px 12px;
+}
+
+.workspace98-database .database-main {
+    min-height: 0;
+    gap: 4px;
+}
+
+.workspace98-database .database-searchbar {
+    flex: 0 0 auto;
+    gap: 5px;
+    padding: 7px;
+    background: var(--w98-face);
+    box-shadow: var(--w98-raised);
+}
+
+.workspace98-database :is(.database-search-line, .database-filter-line) {
+    gap: 6px;
+}
+
+.workspace98-database .database-search-line > label,
+.workspace98-database .database-filter-control {
+    color: var(--w98-text);
+    font: 400 12px "Courier New", Courier, monospace;
+}
+
+.workspace98-database .database-search-line input {
+    height: 31px;
+    min-height: 31px;
+    background: var(--w98-well);
+    box-shadow: var(--w98-sunken);
+    font: 400 12px "Courier New", Courier, monospace;
+}
+
+.workspace98-database .database-filter-control {
+    flex: 1 1 200px;
+    max-width: none;
+}
+
+.workspace98-database .database-filter-control select {
+    height: 31px;
+    min-height: 31px;
+    font: 400 12px "Courier New", Courier, monospace;
+}
+
+.workspace98-database .database-results-count {
+    color: var(--ctp-subtext1);
+    font: 400 11px "Courier New", Courier, monospace;
+}
+
+.workspace98-database .table-wrap {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: auto;
+    padding: 2px;
+    background: var(--w98-well);
+    box-shadow: var(--w98-sunken);
+}
+
+.workspace98-database .table-wrap table {
+    table-layout: fixed;
+    width: 100%;
+    background: var(--w98-well);
+    color: var(--w98-text);
+    font-family: "Courier New", Courier, monospace;
+}
+
+.workspace98-database .table-wrap th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    height: 31px;
+    padding: 6px 8px;
+    color: var(--w98-text);
+    background: var(--w98-face);
+    border-right: 1px solid var(--ctp-mantle);
+    border-bottom: 1px solid var(--ctp-crust);
+    font: 400 11px "Courier New", Courier, monospace;
+    box-shadow: inset 0 1px 0 var(--ctp-overlay0);
+}
+
+.workspace98-database .table-wrap td {
+    height: 34px;
+    padding: 5px 8px;
+    color: var(--w98-text);
+    background: transparent;
+    border-bottom: 1px solid var(--ctp-surface0);
+    font: 400 12px "Courier New", Courier, monospace;
+}
+
+.workspace98-database .table-wrap tbody tr:hover {
+    background: var(--ctp-surface0);
+}
+
+.workspace98-database .table-wrap td a {
+    color: var(--ctp-blue);
+}
+
+.workspace98-database .database-folder-row .database-title-cell {
+    color: var(--w98-highlight);
+}
+
+.workspace98-database .database-folder-glyph {
+    color: var(--w98-highlight);
+}
+
+.workspace98-database .row-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 4px;
+}
+
+.workspace98-database .row-actions button {
+    min-width: 0;
+    min-height: 25px;
+    padding: 3px 8px;
+    background: var(--w98-face);
+    box-shadow: var(--w98-raised);
+    font: 400 11px "Courier New", Courier, monospace;
+}
+
+.workspace98-database .row-actions button:active {
+    padding: 3px 8px;
+}
+
+.workspace98-database .row-actions .delete-action:hover {
+    color: var(--ctp-red);
+}
+
+.workspace98-database .edit-modal-box {
+    padding: 4px;
+}
+
+.workspace98-database .edit-modal-header {
+    background: var(--w98-titlebar);
+    padding: 4px 7px;
+}
+
+.workspace98-database .edit-modal-box label {
+    color: var(--w98-text);
+    font: 400 12px "Courier New", Courier, monospace;
+}
+
+.workspace98-database .edit-modal-box input:not([type="checkbox"]),
+.workspace98-database .edit-modal-box select,
+.workspace98-database .edit-modal-box textarea {
+    font: 400 12px "Courier New", Courier, monospace;
+    background: var(--w98-well);
+    color: var(--w98-text);
+    box-shadow: var(--w98-sunken);
+}
+
+/* ───────────────── RESPONSIVE ───────────────── */
+@media (max-width: 900px) {
+    .workspace98-archive .archive-explorer-layout {
+        grid-template-columns: 192px minmax(0, 1fr);
+    }
+    .workspace98-archive .archive-search-select {
+        flex: 1 1 180px;
+    }
+}
+@media (max-width: 700px) {
+    .workspace98-archive .archive-explorer-layout {
+        grid-template-columns: minmax(0, 1fr);
+    }
+    .workspace98-archive .archive-explorer-sidebar {
+        max-height: 190px;
+    }
+    .workspace98-archive #archiveFolderTree {
+        min-height: 70px;
+    }
+    .workspace98-archive .archive-search-input {
+        flex-basis: 100%;
+    }
+    .workspace98-archive .gallery-viewport {
+        padding: 9px;
+    }
+    .workspace98-archive .reddit-gallery {
+        display: block;
+    }
+    .workspace98-archive .gallery-card {
+        margin-bottom: 11px;
+    }
+    .workspace98-archive .card-menu-button {
+        width: 36px;
+        height: 36px;
+    }
+    .workspace98-database .database-actions {
+        display: flex;
+        gap: 5px;
+    }
+    .workspace98-database :is(.database-actions-left, .database-actions-right) {
+        display: flex;
+        gap: 4px;
+    }
+    .workspace98-database .database-actions button {
+        min-width: 0;
+        min-height: 30px;
+        padding: 4px 7px;
+        font-size: 11px;
+    }
+    .workspace98-database .database-search-line input,
+    .workspace98-database .database-filter-control select {
+        min-height: 34px;
+        font-size: 13px;
+    }
+}
+@media (max-width: 450px) {
+    .workspace98-editor .editor-nav-actions .action-btn,
+    .workspace98-archive .menu-bar > :is(#backButton, #newPostButton) {
+        min-height: 36px;
+        height: 36px;
+    }
+    .workspace98-editor .editor-nav-actions .compartment {
+        min-height: 36px;
+        height: 36px;
+    }
+    .workspace98-database .database-title-caption {
+        display: none;
+    }
+    .workspace98-database .database-filter-control {
+        flex-basis: 100%;
+    }
+}
+
+/* Touch targets grow without changing compact mouse/keyboard layouts. */
+@media (pointer: coarse) and (max-width: 700px) {
+    .workspace98-editor .editor-nav-actions .compartment,
+    .workspace98-editor .editor-nav-actions .action-btn {
+        height: 44px;
+        min-height: 44px;
+    }
+    .workspace98-archive .menu-bar > :is(#backButton, #newPostButton),
+    .workspace98-archive .archive-new-folder-button,
+    .workspace98-archive .card-menu-button {
+        height: 44px;
+        min-height: 44px;
+    }
+    .workspace98-archive .archive-new-folder-button,
+    .workspace98-archive .card-menu-button {
+        width: 44px;
+        min-width: 44px;
+    }
+    .workspace98-database :is(.database-actions button, .row-actions button) {
+        min-height: 44px;
+    }
+}

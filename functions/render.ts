@@ -378,6 +378,7 @@ async function renderPage(
   req?: Request,
 ): Promise<Response> {
   const isArchive = file === "archive";
+  const isWorkspace = file === "archive" || file === "edit" || file === "database";
   const cacheKey = `${file}:${title}`;
   const archiveValidator = isArchive ? getArchiveValidator() : null;
   const etag =
@@ -447,9 +448,16 @@ async function renderPage(
           ...(file === "archive" || file === "edit"
             ? ['<link rel="stylesheet" href="/css/win98-scrollbars.css" />']
             : []),
+          ...(isWorkspace
+            ? ['<link rel="stylesheet" href="/css/workspace98.css" />']
+            : []),
         ].join("\n        "),
       )
       .replace("{{body}}", () => content);
+    // Apply the reference design only to workspaces; Home, Exit, and 404 stay unchanged.
+    if (isWorkspace) {
+      html = html.replace("<body>", `<body class="workspace98 workspace98-${file}">`);
+    }
     if (pagePreloadHtml) {
       html = html.replace("</head>", `${pagePreloadHtml}\n    </head>`);
     }
