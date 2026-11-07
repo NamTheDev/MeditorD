@@ -177,7 +177,7 @@ function renderArchiveFolders() {
       const toggle = document.createElement("button");
       toggle.type = "button";
       toggle.className = "archive-folder-toggle";
-      toggle.textContent = openArchiveFolders.has(path) ? "▾" : "▸";
+      // CSS draws a fixed-size triangle from aria-expanded.
       toggle.setAttribute(
         "aria-expanded",
         String(openArchiveFolders.has(path)),

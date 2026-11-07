@@ -78,11 +78,22 @@
     text-align: center;
     color: var(--ctp-overlay1);
 }
-/* Make the existing folder disclosure arrows easier to see without
-   changing Explorer layout, indentation, or folder icons. */
+/* Fixed-size disclosure icons do not depend on font glyph metrics.
+   Keep the existing 17px control width and folder-tree indentation. */
 .archive-folder-toggle {
-    font-size: 18px;
+    display: grid;
+    place-items: center;
     line-height: 1;
+}
+.archive-folder-toggle::before {
+    content: "";
+    width: 13px;
+    height: 13px;
+    background: currentColor;
+    clip-path: polygon(0 0, 100% 50%, 0 100%);
+}
+.archive-folder-toggle[aria-expanded="true"]::before {
+    clip-path: polygon(0 0, 100% 0, 50% 100%);
 }
 .archive-folder-button {
     display: flex;
