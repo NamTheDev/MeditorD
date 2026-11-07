@@ -378,7 +378,7 @@ async function renderPage(
   req?: Request,
 ): Promise<Response> {
   const isArchive = file === "archive";
-  const isWorkspace = file === "archive" || file === "edit" || file === "database";
+  const isWorkspace = ["404", "archive", "database", "edit"].includes(file);
   const cacheKey = `${file}:${title}`;
   const archiveValidator = isArchive ? getArchiveValidator() : null;
   const etag =
@@ -454,7 +454,7 @@ async function renderPage(
         ].join("\n        "),
       )
       .replace("{{body}}", () => content);
-    // Apply the reference design only to workspaces; Home, Exit, and 404 stay unchanged.
+    // Apply the Win98 reference only to the four selected pages; Home and Exit are unchanged.
     if (isWorkspace) {
       const workspaceClass = file === "edit" ? "editor" : file;
       html = html.replace("<body>", `<body class="workspace98 workspace98-${workspaceClass}">`);
