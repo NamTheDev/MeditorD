@@ -636,31 +636,60 @@ body.workspace98-archive {
     box-shadow: var(--w98-raised);
 }
 
+/* Match the actual Win98 Explorer caption layout: the new-folder command
+   lives next to the heading, not at the far edge of a full-width bar. */
 .workspace98-archive .archive-explorer-heading {
-    flex: 0 0 30px;
-    min-height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
+    flex: 0 0 36px;
+    min-height: 36px;
     margin: 0 0 3px;
-    padding: 3px 5px 3px 8px;
+    padding: 3px 8px;
     color: var(--w98-highlight);
     background: var(--w98-titlebar);
     font: 400 12px "Courier New", Courier, monospace;
     letter-spacing: 0.05em;
 }
 
+.workspace98-archive .archive-explorer-heading > span {
+    flex: 0 0 auto;
+    line-height: 1;
+}
+
+/* The button has a compact 26px visible face, independent of its hit area. */
 .workspace98-archive .archive-new-folder-button {
-    width: 23px;
-    height: 23px;
-    min-width: 23px;
-    min-height: 23px;
-    padding: 2px;
-    background: var(--w98-face);
+    display: grid;
+    place-items: center;
+    flex: 0 0 32px;
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    min-height: 32px;
+    margin: 0;
+    padding: 3px;
+    background: transparent;
     color: var(--w98-text);
     border: 0;
-    box-shadow: var(--w98-raised);
+    box-shadow: none;
+}
+
+.workspace98-archive .archive-new-folder-button:is(:hover, :focus-visible) {
+    background: transparent;
+}
+
+.workspace98-archive .archive-new-folder-button:focus-visible {
+    outline: 1px dotted var(--ctp-lavender);
+    outline-offset: -1px;
 }
 
 .workspace98-archive .archive-new-folder-button:active {
-    padding: 2px;
+    padding: 3px;
+    box-shadow: none;
+}
+
+.workspace98-archive .archive-new-folder-button:active .archive-folder-add-icon {
     box-shadow: var(--w98-sunken);
 }
 
@@ -1459,19 +1488,41 @@ body.workspace98-database {
     }
 }
 
+/* A large invisible touch target does not make the button LOOK enormous. */
+@media (pointer: coarse) and (max-width: 700px) {
+    .workspace98-archive .archive-explorer-heading {
+        flex-basis: 48px;
+        min-height: 48px;
+        padding: 2px 8px;
+    }
+    .workspace98-archive .archive-new-folder-button {
+        flex: 0 0 44px;
+        width: 44px;
+        height: 44px;
+        min-width: 44px;
+        min-height: 44px;
+        padding: 9px;
+    }
+    .workspace98-archive .archive-new-folder-button:active {
+        padding: 9px;
+    }
+}
+
 /* New-folder button uses the same small yellow folder as every tree node. */
 body.workspace98-archive .archive-folder-add-icon {
     position: relative;
     display: block;
-    width: 18px;
-    height: 17px;
+    width: 26px;
+    height: 26px;
+    background: var(--w98-face);
+    box-shadow: var(--w98-raised);
 }
 
 body.workspace98-archive .archive-folder-add-shape::before {
     content: "";
     position: absolute;
-    top: 1px;
-    left: 1px;
+    top: 5px;
+    left: 5px;
     width: 7px;
     height: 4px;
     background: var(--ctp-yellow);
@@ -1481,8 +1532,8 @@ body.workspace98-archive .archive-folder-add-shape::before {
 body.workspace98-archive .archive-folder-add-shape::after {
     content: "";
     position: absolute;
-    top: 4px;
-    left: 0;
+    top: 8px;
+    left: 4px;
     width: 16px;
     height: 10px;
     background: var(--ctp-yellow);
@@ -1494,8 +1545,8 @@ body.workspace98-archive .archive-folder-add-shape::after {
 body.workspace98-archive .archive-folder-add-plus {
     position: absolute;
     z-index: 1;
-    right: -2px;
-    bottom: -2px;
+    right: 1px;
+    bottom: 1px;
     display: grid;
     place-items: center;
     width: 10px;
