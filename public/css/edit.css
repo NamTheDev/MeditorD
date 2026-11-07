@@ -27,8 +27,8 @@ header {
 nav {
     z-index: 10;
     display: grid;
-    grid-template-columns: clamp(52px, 5.5vw, 72px) minmax(110px, 1fr)
-        minmax(175px, 1.8fr) minmax(110px, 1fr) minmax(84px, 0.7fr);
+    grid-template-columns: clamp(38px, 4.5vw, 64px) minmax(68px, 1fr)
+        minmax(105px, 1.8fr) minmax(76px, 1fr) minmax(68px, 0.7fr);
     grid-template-areas: "back save title archive reset";
     grid-template-rows: minmax(0, 1fr);
     align-items: stretch;
@@ -564,7 +564,9 @@ input.form-control-unit:focus {
     display: none !important;
 }
 
-@media (max-width: 839px) {
+/* Keep the desktop toolbar in narrow tiled windows.
+   Switch to the stacked mobile toolbar only for touch-first devices. */
+@media (max-width: 839px) and (pointer: coarse) {
     nav {
         height: auto;
         min-height: calc(var(--nav-height) + 44px);
