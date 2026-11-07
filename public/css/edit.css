@@ -21,14 +21,17 @@ header {
     background: var(--win98-surface);
 }
 
+/* A dedicated second row keeps SAVE, ARCHIVE and RESET together at every width. */
 nav {
     background: var(--win98-surface);
     z-index: 10;
-    height: var(--nav-height);
-    display: flex;
-    align-items: center;
     width: 100%;
-    flex-shrink: 0;
+    height: auto;
+    min-height: calc(var(--nav-height) + 44px);
+    display: grid;
+    grid-template-columns: var(--nav-height) minmax(0, 1fr) var(--nav-height);
+    grid-template-rows: var(--nav-height) 44px;
+    align-items: stretch;
     border: 2px solid var(--win98-border-darkest);
     border-top-color: var(--win98-border-lightest);
     border-left-color: var(--win98-border-lightest);
@@ -38,26 +41,50 @@ nav {
 }
 
 .compartment {
-    flex: 1;
     height: 100%;
+    min-width: 0;
     border-right: 1px solid var(--win98-border-dark);
     box-shadow: 1px 0 0 var(--win98-border-light);
     display: flex;
     align-items: center;
     justify-content: center;
-    text-decoration: none;
+    padding: 0 5px;
     color: var(--win98-text);
-    padding: 0 clamp(4px, 1vw, 16px);
+    text-decoration: none;
 }
 
 .compartment:last-child {
-    border-right: none;
+    border-right: 0;
     box-shadow: none;
 }
 
 .arrow-compartment {
+    grid-column: 1;
+    grid-row: 1;
     cursor: pointer;
     color: var(--win98-text);
+}
+
+.editor-nav-spacer {
+    grid-column: 3;
+    grid-row: 1;
+    border-left: 1px solid var(--win98-border-dark);
+    box-shadow: inset 1px 0 0 var(--win98-border-light);
+}
+
+.editor-nav-actions {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(88px, 0.36fr);
+    min-width: 0;
+    min-height: 0;
+    border-top: 1px solid var(--win98-border-dark);
+}
+
+.editor-nav-actions .compartment {
+    min-width: 0;
+    padding: 2px 4px;
 }
 
 .pixel-icon {
@@ -116,20 +143,34 @@ nav {
 }
 
 .title-compartment {
-    flex: 2;
+    grid-column: 2;
+    grid-row: 1;
+    min-width: 0;
     height: 100%;
-    border-right: 1px solid var(--win98-border-dark);
-    box-shadow: 1px 0 0 var(--win98-border-light);
     display: flex;
     align-items: center;
     justify-content: center;
+    overflow: hidden;
+    color: var(--win98-accent);
     font-family: "Courier New", Courier, monospace;
     font-size: var(--font-title);
     font-weight: 400;
     text-transform: uppercase;
     letter-spacing: 0.35em;
-    color: var(--win98-accent);
+    white-space: nowrap;
     user-select: none;
+}
+
+.editor-nav-actions .action-btn {
+    width: 100%;
+    height: 38px;
+    min-height: 38px;
+    min-width: 0;
+    padding: 4px 10px;
+}
+
+.editor-nav-actions .action-btn:active {
+    padding: 4px 10px;
 }
 
 .editor-container {
@@ -541,61 +582,35 @@ input.form-control-unit:focus {
 
 @media (max-width: 839px) {
     nav {
-        height: auto;
-        min-height: calc(var(--nav-height) + 44px);
-        display: grid;
-        grid-template-columns: 44px minmax(0, 1fr) minmax(0, 1fr) 44px;
+        grid-template-columns: 44px minmax(0, 1fr) 44px;
         grid-template-rows: var(--nav-height) 44px;
-        align-items: stretch;
-    }
-
-    .arrow-compartment {
-        grid-column: 1;
-        grid-row: 1;
-    }
-
-    nav > .compartment:nth-child(2) {
-        grid-column: 1 / 3;
-        grid-row: 2;
-    }
-
-    .title-compartment {
-        grid-column: 2 / 4;
-        grid-row: 1;
-        min-width: 0;
-        border-right: 0;
-        box-shadow: none;
-        font-size: clamp(15px, 5vw, 22px);
-        letter-spacing: 0.22em;
-    }
-
-    nav > .compartment:nth-child(4) {
-        grid-column: 4;
-        grid-row: 1;
-    }
-
-    nav > .compartment:nth-child(5) {
-        grid-column: 3 / 5;
-        grid-row: 2;
-        border-right: 0;
-        box-shadow: none;
-    }
-
-    .compartment {
-        min-width: 0;
-        padding: 0 4px;
-    }
-
-    .compartment .action-btn {
-        width: 100%;
-        min-height: 40px;
-        padding-inline: 8px;
-        font-size: clamp(11px, 3.2vw, 14px);
     }
 
     .arrow-compartment {
         min-width: 44px;
         min-height: 44px;
+    }
+
+    .title-compartment {
+        font-size: clamp(15px, 5vw, 22px);
+        letter-spacing: 0.22em;
+    }
+
+    .editor-nav-actions {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(76px, 0.48fr);
+    }
+
+    .editor-nav-actions .compartment {
+        padding: 2px 3px;
+    }
+
+    .editor-nav-actions .action-btn {
+        font-size: clamp(11px, 3.2vw, 14px);
+        padding: 4px 5px;
+    }
+
+    .editor-nav-actions .action-btn:active {
+        padding: 4px 5px;
     }
 }
 

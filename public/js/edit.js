@@ -109,7 +109,7 @@ const mobileScrollbarArrows = mobileScrollbar.querySelectorAll(
 );
 const mediaInput = document.getElementById("doc-media");
 const previewBox = document.querySelector(".preview-box");
-const saveButton = document.querySelector(".action-btn");
+const saveButton = document.getElementById("save-button");
 const archiveButton = document.getElementById("archive-button");
 const resetButton = document.getElementById("reset-button");
 const featureModal = document.getElementById("feature-modal");
