@@ -201,13 +201,16 @@ function renderArchiveFolders() {
     button.type = "button";
     button.className =
       "archive-folder-button" + (activeArchiveFolder === path ? " active" : "");
-    const glyph = document.createElement("span");
-    glyph.className = path ? "archive-folder-glyph" : "archive-all-glyph";
-    glyph.setAttribute("aria-hidden", "true");
+    if (path) {
+      const glyph = document.createElement("span");
+      glyph.className = "archive-folder-glyph";
+      glyph.setAttribute("aria-hidden", "true");
+      button.append(glyph);
+    }
     const name = document.createElement("span");
     name.className = "archive-folder-label";
     name.textContent = label;
-    button.append(glyph, name);
+    button.append(name);
     button.title = path || "All posts";
     button.addEventListener("click", () => chooseArchiveFolder(path));
     row.append(button);
