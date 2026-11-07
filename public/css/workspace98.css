@@ -926,8 +926,6 @@ body.workspace98-archive #archiveFolderTree .archive-folder-button.active {
 body.workspace98-archive #archiveFolderTree .archive-folder-button.active .archive-folder-label {
     color: var(--w98-active-text);
     background: var(--w98-active-bg);
-    outline: 1px dotted var(--w98-active-text);
-    outline-offset: -2px;
 }
 
 body.workspace98-archive #archiveFolderTree .archive-folder-button:not(.active):hover .archive-folder-label {
