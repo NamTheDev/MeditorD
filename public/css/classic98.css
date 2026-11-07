@@ -183,7 +183,11 @@ a:visited { color: var(--ctp-mauve); }
 .classic-start-menu a + a { border-top: 1px solid var(--ctp-surface1); }
 html.keyboard-visible .classic-taskbar { display: none; }
 
-/* Migrate the existing workspaces to the literal 95/98 palette. */
+
+/* Classic Windows chrome on the existing Mocha workspace implementation.
+ * Layout, controls, explorer tree, cards, and mobile behavior remain owned by
+ * workspace98.css. This layer adds only the later title-bar styling and
+ * preserved shared shell rather than repainting every control a second time. */
 body.workspace98 {
     --w98-shell: var(--ctp-crust);
     --w98-pane: var(--ctp-base);
@@ -191,11 +195,11 @@ body.workspace98 {
     --w98-face: var(--ctp-base);
     --w98-face-hover: var(--ctp-surface1);
     --w98-well: var(--ctp-mantle);
-    --w98-titlebar: var(--classic-title);
+    --w98-titlebar: var(--ctp-base);
     --w98-active-bg: var(--ctp-base);
     --w98-active-text: var(--ctp-lavender);
     --w98-text: var(--ctp-text);
-    --w98-muted: var(--ctp-subtext0);
+    --w98-muted: var(--ctp-subtext1);
     --w98-highlight: var(--ctp-lavender);
     --w98-raised: var(--classic-raised);
     --w98-sunken: var(--classic-sunken);
@@ -203,196 +207,87 @@ body.workspace98 {
     height: calc(100dvh - var(--classic-taskbar-height));
     min-height: 0;
     padding-bottom: 0;
-    color: var(--ctp-text);
-    background: var(--ctp-crust);
+    background: var(--w98-shell);
+    color: var(--w98-text);
     font: 12px/1.4 Tahoma, "MS Sans Serif", Arial, sans-serif;
-    -webkit-font-smoothing: auto;
 }
 body.workspace98 :is(button, input, select, textarea),
-body.workspace98 :is(.title-compartment, .gallery-title, .archive-explorer-heading, .archive-folder-row, .archive-folder-button, .archive-folder-toggle, .database-titlebar, .database-titlebar h1, .database-title-caption, .card-title, .card-description) {
+body.workspace98 :is(
+  .title-compartment, .gallery-title, .archive-explorer-heading,
+  .archive-folder-row, .archive-folder-button, .archive-folder-toggle,
+  .database-titlebar, .database-titlebar h1,
+  .database-title-caption, .card-title, .card-description
+) {
     font-family: Tahoma, "MS Sans Serif", Arial, sans-serif;
     letter-spacing: 0;
 }
-body.workspace98 :is(button, .action-btn, .win98-button, .upload-btn):not(.archive-folder-button):not(.archive-folder-toggle):hover:not(:disabled) {
-    color: var(--ctp-text);
-}
-body.workspace98 :is(button, .action-btn, .win98-button, .upload-btn):focus-visible {
-    outline: 1px dotted var(--ctp-crust);
-    outline-offset: -4px;
-}
-body.workspace98 :is(input:not([type="checkbox"]):not([type="file"]), textarea, .win98-select select) {
-    color: var(--ctp-text);
-    background: var(--ctp-mantle);
-    box-shadow: var(--classic-sunken);
-}
-body.workspace98 :is(input, select, textarea)::placeholder { color: var(--ctp-overlay1); opacity: 1; }
-body.workspace98 :is(.app-dialog-window, .win98-modal, .modal-window, .edit-modal-box, .archive-folder-picker-window) {
-    background: var(--ctp-base);
-    color: var(--ctp-text);
-    box-shadow: var(--classic-raised);
-    font-family: Tahoma,Arial,sans-serif;
-}
-body.workspace98 :is(.app-dialog-titlebar, .win98-modal-titlebar, .modal-window .title-bar, .edit-modal-header, .archive-folder-picker-title) {
-    background: var(--classic-title);
-    color: var(--ctp-text);
-    font-family: Tahoma,Arial,sans-serif;
-    font-weight: 700;
-    letter-spacing: 0;
-}
-body.workspace98 :is(.app-dialog-titlebar h2, .win98-modal-titlebar h2, .edit-modal-header h2) { color: var(--ctp-text); font: bold 12px Tahoma,Arial,sans-serif; }
-body.workspace98 :is(.app-dialog-content, .win98-modal-content, .modal-content-area, .archive-folder-picker-content) {
-    background: var(--ctp-base);
-    color: var(--ctp-text);
-}
-body.workspace98 :is(.app-dialog-close, .win98-modal-close, .modal-close-button, .modal-close):focus-visible { outline-color: var(--ctp-text); }
-body.workspace98 :is(.app-dialog-close, .win98-modal-close, .modal-close-button, .modal-close)::before { background: var(--ctp-red); }
-body.workspace98 :is(.app-dialog-close, .win98-modal-close, .modal-close-button, .modal-close)::after { background: var(--ctp-base); }
-body.workspace98 input[type="checkbox"]:checked::after { color: var(--ctp-text); }
-body.workspace98 :is(.app-dialog-actions, .win98-modal-actions, .edit-modal-actions, .archive-folder-picker-actions) button { font-family: Tahoma,Arial,sans-serif; }
-body.workspace98 .win98-select::before { background: var(--ctp-base); box-shadow: var(--classic-raised); }
-body.workspace98 .win98-select::after { border-top-color: var(--ctp-text); }
-
-/* Main window title bars use navy-blue gradient, compact menus and controls. */
+/* Keep exactly the title bars added by the redesign. */
 .workspace98-editor .title-compartment,
 .workspace98-archive .gallery-title,
 .workspace98-archive .archive-explorer-heading,
 .workspace98-database .database-titlebar {
     color: var(--ctp-text);
-    background: var(--classic-title);
-    font: bold 13px/1.2 Tahoma,Arial,sans-serif;
+    background: var(--ctp-base);
+    font: bold 13px/1.2 Tahoma, Arial, sans-serif;
     letter-spacing: 0;
 }
-.workspace98-editor .title-compartment { justify-content: flex-start; padding-left: 39px; }
-.workspace98-archive .gallery-title { justify-content: flex-start; padding-left: 10px; }
-.workspace98-database .database-titlebar { min-height: 29px; }
-.workspace98-database .database-titlebar h1,
-.workspace98-database .database-title-caption { color: var(--ctp-text); font: bold 12px Tahoma,Arial,sans-serif; letter-spacing: 0; }
-.workspace98-editor > header,
-.workspace98-archive .menu-bar,
-.workspace98-database .database-header { background: var(--ctp-base); }
-.workspace98-editor .editor-container { background: var(--ctp-crust); }
-.workspace98-editor :is(.editor-left-pane, .editor-right-pane),
-.workspace98-archive .archive-explorer-sidebar,
-.workspace98-database .database-main { background: var(--ctp-base); }
-.workspace98-editor .description-toolbar {
-    color: var(--ctp-text);
-    background: var(--ctp-base);
-    border-bottom: 1px solid var(--ctp-surface2);
+.workspace98-editor .title-compartment {
+    justify-content: flex-start;
+    padding-left: 39px;
 }
-.workspace98-editor .description-label { color: var(--ctp-text); font-weight: bold; }
-.workspace98-editor .editor-textarea,
-.workspace98-editor .markdown-preview,
-.workspace98-editor .preview-box {
-    color: var(--ctp-text);
-    background: var(--ctp-mantle);
-    box-shadow: var(--classic-sunken);
+.workspace98-archive .gallery-title {
+    justify-content: flex-start;
+    padding-left: 10px;
 }
-.workspace98-editor .markdown-preview { color: var(--ctp-text); }
-.workspace98-editor .markdown-preview a { color: var(--ctp-blue); }
-.workspace98-editor .form-row label.field-label { color: var(--ctp-text); font-weight: 500; }
+.workspace98-database .database-titlebar {
+    min-height: 29px;
+}
+.workspace98-database :is(.database-titlebar h1, .database-title-caption) {
+    color: var(--ctp-text);
+    font: bold 12px Tahoma, Arial, sans-serif;
+    letter-spacing: 0;
+}
 .workspace98-editor .editor-back-symbol { color: var(--ctp-text); }
 .workspace98-editor .editor-nav-actions .action-btn,
-.workspace98-archive .menu-bar :is(#backButton,#newPostButton) { color: var(--ctp-text); background: var(--ctp-base); box-shadow: var(--classic-raised); font: 12px Tahoma,Arial,sans-serif; }
-.workspace98-editor .mobile-view-tab[aria-selected="true"],
-.workspace98-editor .mobile-view-tab.active {
-    color: var(--ctp-text);
-    background: var(--ctp-base);
-    box-shadow: var(--classic-sunken);
+.workspace98-archive .menu-bar :is(#backButton, #newPostButton) {
+    font: 12px Tahoma, Arial, sans-serif;
 }
-.workspace98-editor .mobile-markdown-toolbar { background: var(--ctp-base); border-color: var(--ctp-surface2); }
-
-/* Windows Explorer tree: recessed white canvas, navy selection, no
-   decorative border around the All posts label. */
-.workspace98-archive .archive-explorer-layout { min-height: 0; }
-.workspace98-archive .archive-explorer-main { background: var(--ctp-base); }
-body.workspace98-archive #archiveFolderTree { color: var(--ctp-text); background: var(--ctp-mantle); box-shadow: var(--classic-sunken); }
-body.workspace98-archive #archiveFolderTree .archive-folder-row,
-body.workspace98-archive #archiveFolderTree .archive-folder-button { color: var(--ctp-text); }
-body.workspace98-archive #archiveFolderTree .archive-folder-row.selected .archive-folder-button,
-body.workspace98-archive #archiveFolderTree .archive-folder-button.active { color: var(--ctp-text); background: var(--ctp-base); }
-body.workspace98-archive #archiveFolderTree .archive-folder-button.active .archive-folder-label { color: var(--ctp-text); background: transparent; border: 0; outline: 0; box-shadow: none; padding: 0; }
-body.workspace98-archive #archiveFolderTree .archive-folder-label { border: 0; box-shadow: none; }
-body.workspace98-archive #archiveFolderTree .archive-folder-row:hover:not(.selected) .archive-folder-button { background: var(--ctp-surface1); }
-body.workspace98-archive #archiveFolderTree .archive-folder-toggle { color: var(--ctp-text); background: var(--ctp-mantle); border-color: var(--ctp-surface2); box-shadow: none; }
-.workspace98-archive .archive-breadcrumbs { background: var(--ctp-base); color: var(--ctp-text); box-shadow: var(--classic-sunken); }
-.workspace98-archive .archive-breadcrumbs button { color: var(--ctp-lavender); background: transparent; box-shadow: none; }
-.workspace98-archive .archive-search-toolbar { background: var(--ctp-base); color: var(--ctp-text); box-shadow: var(--classic-raised); }
-.workspace98-archive .archive-search-input > span, .workspace98-archive .archive-search-select > span:first-child { color: var(--ctp-text); }
-.workspace98-archive .gallery-viewport { background: var(--ctp-mantle); box-shadow: var(--classic-sunken); }
-.workspace98-archive .gallery-card { background: var(--ctp-base); color: var(--ctp-text); box-shadow: var(--classic-raised); }
-.workspace98-archive .gallery-card:hover { background: var(--ctp-base); }
-.workspace98-archive .gallery-media { background: var(--ctp-mantle); box-shadow: var(--classic-sunken); }
-.workspace98-archive .card-info { background: var(--ctp-base); color: var(--ctp-text); }
-.workspace98-archive .card-title { color: var(--ctp-lavender); font-weight: bold; }
-.workspace98-archive .card-description { color: var(--ctp-text); }
-.workspace98-archive .card-meta { color: var(--ctp-subtext0); border-top: 1px solid var(--ctp-surface2); }
-.workspace98-archive .card-date { color: var(--ctp-subtext0); }
-.workspace98-archive :is(.card-menu,.card-submenu,.archive-folder-context-menu) {
-    background: var(--ctp-base);
-    box-shadow: var(--classic-raised), 2px 2px 0 rgba(17,17,27,.2);
+/* Preserve the recessed Explorer tree and its original single selected label.
+ * The All posts label has no unnecessary border. */
+body.workspace98-archive #archiveFolderTree .archive-folder-label {
+    border: 0;
+    box-shadow: none;
 }
-.workspace98-archive :is(.card-menu,.card-submenu,.archive-folder-context-menu) button { color: var(--ctp-text); background: var(--ctp-base); box-shadow: none; }
-.workspace98-archive :is(.card-menu,.card-submenu,.archive-folder-context-menu) button:hover:not(:disabled) { color: var(--ctp-text); background: var(--ctp-base); }
-.workspace98-archive .card-menu-button { background: var(--ctp-base); color: var(--ctp-text); box-shadow: var(--classic-raised); }
-.workspace98-archive .modal-post-description { color: var(--ctp-text); background: var(--ctp-mantle); box-shadow: var(--classic-sunken); }
-.workspace98-archive .modal-post-description a { color: var(--ctp-blue); }
-
-/* Database: keep table readable, separate the toolbar from the white list. */
+body.workspace98-archive #archiveFolderTree .archive-folder-button.active .archive-folder-label {
+    color: var(--ctp-lavender);
+    background: var(--ctp-base);
+    border: 0;
+    box-shadow: none;
+}
+body.workspace98-archive #archiveFolderTree .archive-folder-button:not(.active):hover .archive-folder-label {
+    color: var(--ctp-lavender);
+}
+.workspace98-archive #fullscreenApp {
+    height: calc(100dvh - var(--classic-taskbar-height));
+}
 .workspace98-database #databaseApp {
     height: calc(100dvh - var(--classic-taskbar-height));
-    background: var(--ctp-crust);
-    max-width: none;
 }
-.workspace98-database .database-header { background: var(--ctp-base); box-shadow: var(--classic-raised); }
-.workspace98-database .database-actions { background: var(--ctp-base); }
-.workspace98-database .database-main { min-height: 0; background: var(--ctp-base); box-shadow: var(--classic-raised); }
-.workspace98-database .database-searchbar { background: var(--ctp-base); color: var(--ctp-text); }
-.workspace98-database .database-search-line input { background: var(--ctp-mantle); color: var(--ctp-text); box-shadow: var(--classic-sunken); }
-.workspace98-database .database-results-count { color: var(--ctp-subtext0); }
-.workspace98-database .table-wrap { background: var(--ctp-mantle); box-shadow: var(--classic-sunken); }
-.workspace98-database .table-wrap table { background: var(--ctp-mantle); color: var(--ctp-text); }
-.workspace98-database .table-wrap th { color: var(--ctp-text); background: var(--ctp-base); box-shadow: inset 0 -1px var(--ctp-surface2); border-right: 1px solid var(--ctp-surface2); }
-.workspace98-database .table-wrap td { color: var(--ctp-text); background: var(--ctp-mantle); border-bottom: 1px solid var(--ctp-surface1); }
-.workspace98-database .table-wrap tbody tr:hover td { color: var(--ctp-text); background: var(--ctp-base); }
-.workspace98-database .table-wrap td a { color: var(--ctp-blue); }
-.workspace98-database .table-wrap tbody tr:hover a { color: var(--ctp-text); }
-.workspace98-database .row-actions button, .workspace98-database .database-actions button { color: var(--ctp-text); background: var(--ctp-base); box-shadow: var(--classic-raised); }
-.workspace98-database .database-folder-glyph { color: var(--ctp-yellow); }
-.workspace98-database .edit-modal-box { background: var(--ctp-base); }
-.workspace98-database .edit-modal-box label { color: var(--ctp-text); }
-
-/* Global app dialogs are also used from Home and Exit. */
-.app-dialog-overlay { background: rgba(17,17,27,.55); }
-.app-dialog-window {
+.workspace98-editor :is(.editor-textarea, .markdown-preview),
+.workspace98-archive .gallery-viewport,
+.workspace98-database .table-wrap {
+    background: var(--ctp-mantle);
     color: var(--ctp-text);
-    background: var(--ctp-base);
-    padding: 4px;
-    box-shadow: var(--classic-raised);
 }
-.app-dialog-titlebar { background: var(--classic-title); color: var(--ctp-text); min-height: 28px; }
-.app-dialog-titlebar h2 { color: var(--ctp-text); font: bold 12px Tahoma,Arial,sans-serif; }
-.app-dialog-content { color: var(--ctp-text); background: var(--ctp-base); border: 0; }
-.app-dialog-actions button, .app-dialog-close {
-    color: var(--ctp-text); background: var(--ctp-base);
-    border: 0; box-shadow: var(--classic-raised);
+body.workspace98 :is(input:not([type="checkbox"]):not([type="file"]), textarea) {
+    caret-color: var(--ctp-text);
 }
-.app-dialog-actions button:active, .app-dialog-close:active { box-shadow: var(--classic-sunken); }
-.app-dialog-input-wrap input { background: var(--ctp-mantle); color: var(--ctp-text); border: 0; box-shadow: var(--classic-sunken); }
-.app-dialog-close { color: var(--ctp-red); font-weight: bold; }
-.app-dialog-actions button:focus-visible { outline: 1px dotted var(--ctp-crust); outline-offset: -4px; }
-
-/* Native-like chunky, rectangular scrollbars. */
-:root { --scroll98-size: 17px; --scroll98-face: var(--ctp-base); --scroll98-track: var(--ctp-surface1); }
-* { scrollbar-color: var(--ctp-base) var(--ctp-surface1); scrollbar-width: auto; }
-::-webkit-scrollbar { width: 17px; height: 17px; background: var(--ctp-surface1); }
-::-webkit-scrollbar-track { background: var(--ctp-surface1); box-shadow: var(--classic-sunken); }
-::-webkit-scrollbar-thumb, ::-webkit-scrollbar-button:single-button {
-    background-color: var(--ctp-base);
-    border: 0;
-    border-radius: 0;
-    box-shadow: var(--classic-raised);
+/* The existing image-free X icon stays red, centered and clickable. */
+body.workspace98 :is(
+  .app-dialog-close, .win98-modal-close, .modal-close-button, .modal-close
+)::before {
+    background: var(--ctp-red);
 }
-::-webkit-scrollbar-corner { background: var(--ctp-base); }
 
 /* Existing 404 content, identical system chrome. */
 body.classic98-404 .not-found-shell { min-height: calc(100dvh - var(--classic-taskbar-height)); background: var(--ctp-crust); }
@@ -410,14 +305,6 @@ body.classic98-404 .return-btn-404:hover { color: var(--ctp-text); background: v
     .classic-start-button { padding: 0 9px; }
     .classic-task-current { width: min(145px,35vw); font-size: 11px; padding: 0 6px; }
     .classic-tray { min-width: 63px; font-size: 10px; padding: 0 4px; }
-    .classic-desktop-home { padding: 98px 9px 16px; align-items: start; }
-    .classic-shortcuts { top: 8px; left: 9px; display: flex; gap: 8px; }
-    .classic-shortcut { width: 70px; font-size: 11px; }
-    .classic-shortcut-icon { width: 29px; height: 29px; font-size: 18px; }
-    .classic-home-window { width: 100%; }
-    .classic-home-content { padding: 16px 12px; }
-    .classic-home-actions { grid-template-columns: 1fr 1fr; gap: 8px; }
-    .classic-home-actions a { min-height: 44px; padding: 7px; font-size: 11px; }
     .workspace98-editor .title-compartment, .workspace98-archive .gallery-title { font-size: 12px; }
     .workspace98-archive .archive-explorer-heading { color: var(--ctp-text); }
     .workspace98-database .database-titlebar { min-height: 35px; }
@@ -425,12 +312,10 @@ body.classic98-404 .return-btn-404:hover { color: var(--ctp-text); background: v
 @media (max-width: 400px) {
     .classic-task-current { width: min(115px,30vw); }
     .classic-task-current::before { display: none; }
-    .classic-home-actions { grid-template-columns: 1fr; }
 }
 @media (pointer: coarse) {
     .classic-start-button, .classic-task-current { min-height: 30px; }
     .classic-start-menu a { min-height: 44px; display: flex; align-items: center; }
-    .classic-home-actions a { min-height: 44px; }
 }
 @media (prefers-reduced-motion: reduce) {
     .classic-taskbar *, .classic-home-window * { transition: none !important; }
