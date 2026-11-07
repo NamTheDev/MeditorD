@@ -73,13 +73,11 @@ nav {
 
 .arrow-compartment:hover,
 .action-btn:hover,
-.settings-btn:hover,
 .upload-btn:hover {
     color: var(--win98-accent);
 }
 
-.arrow-compartment:active,
-.settings-btn:active {
+.arrow-compartment:active {
     transform: translate(1px, 1px);
 }
 
@@ -115,25 +113,6 @@ nav {
 .action-btn:focus {
     outline: 1px dotted var(--win98-accent);
     outline-offset: -4px;
-}
-
-.settings-btn {
-    background: transparent;
-    border: none;
-    outline: none;
-    width: var(--icon-size);
-    height: var(--icon-size);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    color: var(--win98-text);
-    padding: 0;
-}
-
-.settings-btn .gear-icon {
-    width: calc(var(--icon-size) * 0.85);
-    height: calc(var(--icon-size) * 0.85);
 }
 
 .title-compartment {
@@ -614,7 +593,6 @@ input.form-control-unit:focus {
         font-size: clamp(11px, 3.2vw, 14px);
     }
 
-    .settings-btn,
     .arrow-compartment {
         min-width: 44px;
         min-height: 44px;
@@ -975,7 +953,6 @@ input.form-control-unit:focus {
 @media (hover: none) {
     .arrow-compartment:hover,
     .action-btn:hover,
-    .settings-btn:hover,
     .upload-btn:hover {
         color: inherit;
     }

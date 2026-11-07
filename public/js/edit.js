@@ -111,7 +111,7 @@ const mediaInput = document.getElementById("doc-media");
 const previewBox = document.querySelector(".preview-box");
 const saveButton = document.querySelector(".action-btn");
 const archiveButton = document.getElementById("archive-button");
-const settingsButton = document.querySelector(".settings-btn");
+const resetButton = document.getElementById("reset-button");
 const featureModal = document.getElementById("feature-modal");
 const featureModalTitle = document.getElementById("feature-modal-title");
 const featureModalMessage = document.getElementById("feature-modal-message");
@@ -374,8 +374,26 @@ async function saveCurrentDocument() {
   }
 }
 
-function showSettingsNotice() {
-  showFeatureNotice("Settings", "Feature coming soon.");
+function resetEditor() {
+  // Reset the whole draft, including a folder created only for this post.
+  titleInput.value = "";
+  usernameInput.value = "";
+  urlInput.value = "";
+  contentInput.value = "";
+  mediaInput.value = "";
+
+  folderSelect.querySelector('option[data-pending-folder="true"]')?.remove();
+  pendingFolder = "";
+  selectedFolder = "";
+  folderSelect.value = "";
+
+  // renderMediaPreview also revokes any temporary object URL.
+  renderMediaPreview(null);
+  updateMarkdownPreview();
+  setDescriptionView("write");
+  editorLayout.scrollTop = 0;
+  queueMobileScrollbarSync();
+  titleInput.focus();
 }
 
 function showFeatureNotice(title, message, returnFocus = null) {
@@ -401,7 +419,7 @@ saveButton.addEventListener("click", saveCurrentDocument);
 archiveButton.addEventListener("click", () => {
   window.meditordNavigate("/archive.html");
 });
-settingsButton.addEventListener("click", showSettingsNotice);
+resetButton.addEventListener("click", resetEditor);
 previewButton.addEventListener("click", () => {
   const isPreviewing = !markdownPreview.classList.contains("hidden");
   setDescriptionView(isPreviewing ? "write" : "preview");
