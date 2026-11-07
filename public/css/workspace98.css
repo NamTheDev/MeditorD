@@ -11,7 +11,20 @@ body.workspace98 {
     --w98-face: var(--ctp-surface0);
     --w98-face-hover: var(--ctp-surface1);
     --w98-well: var(--ctp-base);
-    --w98-titlebar: var(--ctp-crust);
+    /* Native Mocha gradients, restricted to the workspaces. */
+    --w98-titlebar: linear-gradient(
+        90deg,
+        var(--ctp-crust) 0%,
+        var(--ctp-mantle) 40%,
+        var(--ctp-surface1) 100%
+    );
+    --w98-navbar: linear-gradient(
+        180deg,
+        var(--ctp-surface1) 0%,
+        var(--ctp-surface0) 100%
+    );
+    --w98-active-bg: var(--ctp-surface1);
+    --w98-active-text: var(--ctp-lavender);
     --w98-text: var(--ctp-text);
     --w98-muted: var(--ctp-subtext1);
     --w98-highlight: var(--ctp-lavender);
@@ -146,8 +159,8 @@ body.workspace98 .win98-select::after {
 }
 
 body.workspace98 ::selection {
-    background: var(--w98-highlight);
-    color: var(--ctp-crust);
+    background: var(--w98-active-bg);
+    color: var(--w98-active-text);
 }
 
 /* Native scrollbars and dialogs use the same chrome as the workspaces. */
@@ -228,7 +241,7 @@ body.workspace98-editor {
     min-height: 0;
     padding: 3px;
     border: 0;
-    background: var(--w98-face);
+    background: var(--w98-navbar);
     box-shadow: var(--w98-raised);
 }
 
@@ -530,7 +543,7 @@ body.workspace98-archive {
     height: auto;
     min-height: 0;
     padding: 3px;
-    background: var(--w98-face);
+    background: var(--w98-navbar);
     border: 0;
     box-shadow: var(--w98-raised);
 }
@@ -779,15 +792,15 @@ body.workspace98-archive #archiveFolderTree .archive-folder-label {
 
 /* Win98 highlights the selected label, not an entire raised row. */
 body.workspace98-archive #archiveFolderTree .archive-folder-button.active {
-    color: var(--ctp-crust);
+    color: var(--w98-active-text);
     background: transparent;
     box-shadow: none;
 }
 
 body.workspace98-archive #archiveFolderTree .archive-folder-button.active .archive-folder-label {
-    color: var(--ctp-crust);
-    background: var(--ctp-lavender);
-    outline: 1px dotted var(--ctp-crust);
+    color: var(--w98-active-text);
+    background: var(--w98-active-bg);
+    outline: 1px dotted var(--w98-active-text);
     outline-offset: -2px;
 }
 
@@ -851,7 +864,7 @@ body.workspace98-archive #archiveFolderTree .archive-folder-glyph::after {
     margin: 0;
     padding: 3px 7px;
     color: var(--ctp-subtext1);
-    background: var(--w98-face);
+    background: var(--w98-navbar);
     box-shadow: var(--w98-raised);
     font: 400 12px "Courier New", Courier, monospace;
 }
@@ -878,7 +891,7 @@ body.workspace98-archive #archiveFolderTree .archive-folder-glyph::after {
     gap: 7px;
     padding: 7px;
     margin: 0;
-    background: var(--w98-face);
+    background: var(--w98-navbar);
     box-shadow: var(--w98-raised);
 }
 
@@ -1055,8 +1068,8 @@ body.workspace98-archive .card-description .read-more-toggle:active {
 }
 
 .workspace98-archive :is(.card-menu, .card-submenu, .archive-folder-context-menu) button:hover:not(:disabled) {
-    background: var(--w98-highlight);
-    color: var(--ctp-crust);
+    background: var(--w98-active-bg);
+    color: var(--w98-active-text);
 }
 
 .workspace98-archive :is(.card-menu, .card-submenu, .archive-folder-context-menu) button:active {
@@ -1143,6 +1156,7 @@ body.workspace98-database {
     flex-wrap: wrap;
     gap: 4px 12px;
     padding: 5px 2px 1px;
+    background: var(--w98-navbar);
 }
 
 .workspace98-database :is(.database-actions-left, .database-actions-right) {
