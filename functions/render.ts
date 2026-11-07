@@ -353,6 +353,7 @@ function renderCard(
       <div class="card-menu hidden" role="menu" aria-label="Post actions">
         <button type="button" data-action="edit">Edit</button>
         <button type="button" data-action="add-to-folder">Add to folder...</button>
+        <button type="button" data-action="copy-post-link">Copy post link</button>
         ${post.title.includes("/") ? '<button type="button" data-action="remove-from-folder">Remove from folder</button>' : ""}
         ${downloadActions}
         <button type="button" data-action="delete">Delete</button>

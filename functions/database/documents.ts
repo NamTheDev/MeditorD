@@ -7,7 +7,7 @@ import { Database } from "bun:sqlite";
 const DB_DIRECTORY = join(process.cwd(), "database");
 const DB_PATH = join(DB_DIRECTORY, "meditord.sqlite");
 
-export const POST_SCHEMA_VERSION = 4;
+export const POST_SCHEMA_VERSION = 5;
 
 await mkdir(DB_DIRECTORY, { recursive: true });
 
@@ -24,6 +24,7 @@ database.run(`
   CREATE TABLE IF NOT EXISTS documents (
     title TEXT PRIMARY KEY,
     is_directory INTEGER NOT NULL DEFAULT 0,
+    share_id TEXT,
     username TEXT NOT NULL DEFAULT '',
     content TEXT NOT NULL DEFAULT '',
     url TEXT NOT NULL DEFAULT '',
@@ -80,6 +81,7 @@ const documentColumns = new Set(
 );
 
 for (const [column, definition] of [
+  ["share_id", "TEXT"],
   ["media_size", "INTEGER"],
   ["media_thumbnail", "BLOB"],
   ["media_thumbnail_type", "TEXT"],
@@ -90,6 +92,15 @@ for (const [column, definition] of [
     database.run(`ALTER TABLE documents ADD COLUMN ${column} ${definition}`);
   }
 }
+
+// Stable IDs are independent of the folder-qualified title and survive renames.
+// Run once on upgrade, and fill any legacy posts missing an ID.
+database.run(
+  "UPDATE documents SET share_id = lower(hex(randomblob(16))) WHERE is_directory = 0 AND (share_id IS NULL OR share_id = '')",
+);
+database.run(
+  "CREATE UNIQUE INDEX IF NOT EXISTS idx_documents_share_id ON documents(share_id) WHERE share_id IS NOT NULL",
+);
 
 database.run(
   `UPDATE documents
@@ -216,6 +227,7 @@ export interface DatabaseItemRecord extends FileRecord {
 
 export interface DocumentRecord {
   title: string;
+  shareId: string;
   username: string;
   content: string;
   url: string;
@@ -309,6 +321,7 @@ function normalizeTitle(title: string): string {
 
 function toDocumentRecord(row: {
   title: string;
+  share_id: string;
   username: string;
   content: string;
   url: string;
@@ -321,6 +334,7 @@ function toDocumentRecord(row: {
 }): DocumentRecord {
   return {
     title: row.title,
+    shareId: row.share_id,
     username: row.username,
     content: row.content,
     url: row.url,
@@ -358,7 +372,7 @@ export function getArchiveValidator(): string {
 export function getAllDocuments(): DocumentRecord[] {
   const rows = database
     .query<DocumentRow, []>(
-      "SELECT title, username, content, url, media_name, media_type, media_hash, media_thumbnail_type, media_thumbnail_hash, created_at FROM documents WHERE is_directory = 0 ORDER BY datetime(created_at) DESC, title ASC",
+      "SELECT title, share_id, username, content, url, media_name, media_type, media_hash, media_thumbnail_type, media_thumbnail_hash, created_at FROM documents WHERE is_directory = 0 ORDER BY datetime(created_at) DESC, title ASC",
     )
     .all();
   return rows.map(toDocumentRecord);
@@ -419,6 +433,7 @@ export function getDocumentByTitle(title: string): DocumentRecord | null {
     .query<
       {
         title: string;
+        share_id: string;
         username: string;
         content: string;
         url: string;
@@ -431,10 +446,21 @@ export function getDocumentByTitle(title: string): DocumentRecord | null {
       },
       [string]
     >(
-      "SELECT title, username, content, url, media_name, media_type, media_hash, media_thumbnail_type, media_thumbnail_hash, created_at FROM documents WHERE title = ? AND is_directory = 0",
+      "SELECT title, share_id, username, content, url, media_name, media_type, media_hash, media_thumbnail_type, media_thumbnail_hash, created_at FROM documents WHERE title = ? AND is_directory = 0",
     )
     .get(normalizedTitle);
 
+  return row ? toDocumentRecord(row) : null;
+}
+
+// Resolve a permanent share link even when the archive page was cached.
+export function getDocumentByShareId(shareId: string): DocumentRecord | null {
+  if (!/^[a-f0-9]{32}$/i.test(shareId)) return null;
+  const row = database
+    .query<DocumentRow, [string]>(
+      "SELECT title, share_id, username, content, url, media_name, media_type, media_hash, media_thumbnail_type, media_thumbnail_hash, created_at FROM documents WHERE share_id = ? AND is_directory = 0",
+    )
+    .get(shareId.toLowerCase());
   return row ? toDocumentRecord(row) : null;
 }
 
@@ -663,11 +689,11 @@ export async function saveDocument(
     const result = database
       .query(
         `INSERT INTO documents (
-           title, is_directory, username, content, url,
+           title, is_directory, share_id, username, content, url,
            media, media_name, media_type, media_hash, media_size, media_storage,
            media_thumbnail, media_thumbnail_type, media_thumbnail_hash, media_thumbnail_size
          )
-         VALUES (?, 0, ?, ?, ?, ?, ?, ?, ?, ?, 'identity', ?, ?, ?, ?)
+         VALUES (?, 0, lower(hex(randomblob(16))), ?, ?, ?, ?, ?, ?, ?, ?, 'identity', ?, ?, ?, ?)
          ON CONFLICT(title) DO NOTHING`,
       )
       .run(

@@ -690,3 +690,26 @@ body .app-dialog-close {
 body .app-dialog-window {
     font-family: "Courier New", Courier, monospace;
 }
+
+/* Manual-copy fallback stays inside the existing menu, never in a popup. */
+.card-menu .share-link-fallback {
+    display: block;
+    width: min(280px, 100%);
+    min-height: 54px;
+    margin: 4px 0 0;
+    padding: 6px;
+    resize: vertical;
+    border: 0;
+    border-radius: 0;
+    color: var(--ctp-text);
+    background: var(--ctp-mantle);
+    font: 12px/1.3 "Courier New", Courier, monospace;
+    overflow-wrap: anywhere;
+    -webkit-user-select: text;
+    user-select: text;
+    box-shadow:
+        inset -1px -1px 0 var(--win98-border-lightest),
+        inset 1px 1px 0 var(--win98-border-darkest),
+        inset -2px -2px 0 var(--win98-border-light),
+        inset 2px 2px 0 var(--win98-border-dark);
+}

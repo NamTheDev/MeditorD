@@ -160,6 +160,7 @@ function chooseArchiveFolder(folder, { historyMode = "push" } = {}) {
 }
 window.addEventListener("popstate", () => {
   chooseArchiveFolder(archiveFolderFromUrl(), { historyMode: "replace" });
+  void syncSharedPostFromUrl();
 });
 let archiveFolderRows = [];
 function renderArchiveFolders() {
@@ -548,22 +549,78 @@ function openPostModal(post) {
     body.prepend(media);
   }
   const modal = document.getElementById("postModal");
+  modal.dataset.shareId = post.shareId || "";
+  modal.dataset.sharedLink = String(
+    window.meditordPostSharing.getShareId() === post.shareId,
+  );
   modal.classList.add("active");
   modal.setAttribute("aria-hidden", "false");
 }
 
-function closeModal() {
+function closeModal({ keepShareUrl = false } = {}) {
   const modal = document.getElementById("postModal");
   stopModalMedia(document.getElementById("modalBody"));
   document.getElementById("modalBody").replaceChildren();
   modal.classList.remove("active");
   modal.setAttribute("aria-hidden", "true");
+  delete modal.dataset.shareId;
+  delete modal.dataset.sharedLink;
+
+  // Closing a deep-linked inspector returns to the archive without losing
+  // its folder or sorting state, and without adding a history entry.
+  if (!keepShareUrl) window.meditordPostSharing.clearShareId();
 
   if (archiveRefreshPending) {
     archiveRefreshPending = false;
     void refreshArchiveFromCacheUpdate();
   }
 }
+
+async function syncSharedPostFromUrl() {
+  const sharing = window.meditordPostSharing;
+  const id = sharing.getShareId();
+  const modal = document.getElementById("postModal");
+  if (!id) {
+    if (modal.dataset.sharedLink === "true" && modal.classList.contains("active")) {
+      closeModal({ keepShareUrl: true });
+    }
+    return;
+  }
+
+  let post = null;
+  if (sharing.validId(id)) {
+    // Always verify the current record: cached archive pages can retain deleted
+    // posts or old paths after a folder move. Fall back to cache only offline.
+    try {
+      const response = await fetch("/api/shared/" + encodeURIComponent(id), {
+        cache: "no-store",
+      });
+      if (response.ok) post = await response.json();
+    } catch (error) {
+      console.warn("Shared post lookup is offline:", error);
+      post = postsData.find((item) => item.shareId === id.toLowerCase());
+    }
+  }
+
+  // Avoid showing an obsolete post if the URL changed during the request.
+  if (sharing.getShareId() !== id) return;
+  if (!post) {
+    sharing.clearShareId();
+    if (modal.classList.contains("active")) closeModal({ keepShareUrl: true });
+    await window.showAppAlert("This shared post is unavailable or has been deleted.", {
+      title: "Post unavailable",
+    });
+    return;
+  }
+  if (modal.classList.contains("active") && modal.dataset.shareId === post.shareId) {
+    return;
+  }
+  openPostModal(post);
+}
+
+window.addEventListener("pageshow", (event) => {
+  if (event.persisted) void syncSharedPostFromUrl();
+});
 
 function stopModalMedia(container) {
   container.querySelectorAll("audio, video").forEach((media) => {
@@ -1150,6 +1207,11 @@ postsContainer.addEventListener("contextmenu", (event) => {
 });
 
 postsContainer.addEventListener("click", async (event) => {
+  if (event.target.closest(".share-link-fallback")) {
+    // Keep the inline fallback editable/selectable when clipboard access fails.
+    event.stopPropagation();
+    return;
+  }
   const actionButton = event.target.closest("[data-action]");
   if (actionButton) {
     event.preventDefault();
@@ -1178,6 +1240,59 @@ postsContainer.addEventListener("click", async (event) => {
 
     if (action === "add-to-folder") {
       showArchiveFolderPicker(post);
+      return;
+    }
+
+    if (action === "copy-post-link") {
+      closeFolderContextMenu();
+      let shareId = post.shareId;
+      if (!shareId) {
+        // Handle a service-worker-cached archive from before the migration.
+        try {
+          const response = await fetch(
+            "/api/documents/" + encodeURIComponent(post.title),
+            { cache: "no-store" },
+          );
+          if (response.ok) {
+            shareId = (await response.json()).shareId;
+            post.shareId = shareId;
+          }
+        } catch (error) {
+          console.warn("Unable to refresh post share ID:", error);
+        }
+      }
+
+      const originalLabel = "Copy post link";
+      const resetLabel = () => {
+        if (actionButton.isConnected) actionButton.textContent = originalLabel;
+      };
+      if (!window.meditordPostSharing.validId(shareId)) {
+        actionButton.textContent = "Link unavailable";
+        window.setTimeout(resetLabel, 1800);
+        return;
+      }
+
+      const result = await window.meditordPostSharing.copyLink(shareId);
+      if (result.copied) {
+        actionButton.textContent = "Link copied!";
+        window.setTimeout(resetLabel, 1600);
+      } else {
+        // No popup: keep the URL selectable inside the existing action menu.
+        const menu = actionButton.closest(".card-menu");
+        let field = menu.querySelector(".share-link-fallback");
+        if (!field) {
+          field = document.createElement("textarea");
+          field.className = "share-link-fallback";
+          field.setAttribute("aria-label", "Select and copy post link");
+          field.readOnly = true;
+          field.rows = 2;
+          menu.append(field);
+        }
+        field.value = result.url;
+        field.focus();
+        field.select();
+        actionButton.textContent = "Select link below";
+      }
       return;
     }
     if (action === "remove-from-folder") {
@@ -1226,7 +1341,11 @@ postsContainer.addEventListener("click", async (event) => {
 });
 
 document.addEventListener("keydown", (event) => {
-  if (event.key === "Escape") closeAllMenus();
+  if (event.key !== "Escape") return;
+  closeAllMenus();
+  if (document.getElementById("postModal").classList.contains("active")) {
+    closeModal();
+  }
 });
 
 document.addEventListener("click", (event) => {
@@ -1235,6 +1354,7 @@ document.addEventListener("click", (event) => {
 
 initializeMasonry();
 initializeThumbnailBackfill();
+void syncSharedPostFromUrl();
 
 let archiveRefreshPending = false;
 let archiveRefreshInFlight = false;

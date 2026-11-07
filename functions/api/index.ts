@@ -102,6 +102,19 @@ export async function handleApi(
       return Response.json(items);
     }
 
+    // Shared links resolve by stable ID, not a folder-qualified title.
+    if (endpoint.startsWith("/shared/") && method === "GET") {
+      const shareId = endpoint.slice("/shared/".length);
+      const doc = db.getDocumentByShareId(shareId);
+      if (!doc) return Response.json({ error: "Post not found" }, {
+        status: 404,
+        headers: { "Cache-Control": "no-store" },
+      });
+      return Response.json(doc, {
+        headers: { "Cache-Control": "no-store" },
+      });
+    }
+
     if (endpoint.startsWith("/documents/") && method === "GET") {
       const title = decodeURIComponent(endpoint.slice("/documents/".length));
       const doc = await db.getDocumentByTitle(title);
