@@ -165,38 +165,54 @@ window.addEventListener("popstate", () => {
 let archiveFolderRows = [];
 function renderArchiveFolders() {
   if (!archiveTree) return;
+  // Rerendering a branch should not discard keyboard focus.
+  const focused = document.activeElement?.closest?.(".archive-folder-row");
+  const focusedPath = focused?.dataset.folder;
+  const focusedToggle = document.activeElement?.classList.contains("archive-folder-toggle");
+
   archiveTree.replaceChildren();
   const folders = archiveFolders(archiveFolderRows);
-  const appendRow = (label, path, depth, children) => {
+  const appendRow = (label, path, hasChildren, ancestors = [], isLast = false) => {
     const row = document.createElement("div");
     row.className = "archive-folder-row";
     row.dataset.folder = path;
-    row.style.paddingLeft = depth * 16 + 4 + "px";
     row.classList.toggle("selected", activeArchiveFolder === path);
-    if (children) {
-      const toggle = document.createElement("button");
-      toggle.type = "button";
-      toggle.className = "archive-folder-toggle";
-      // CSS draws a fixed-size triangle from aria-expanded.
-      toggle.setAttribute(
-        "aria-expanded",
-        String(openArchiveFolders.has(path)),
-      );
-      toggle.setAttribute(
-        "aria-label",
-        (openArchiveFolders.has(path) ? "Collapse " : "Expand ") + label,
-      );
-      toggle.addEventListener("click", () => {
-        if (openArchiveFolders.has(path)) openArchiveFolders.delete(path);
-        else openArchiveFolders.add(path);
-        renderArchiveFolders();
-      });
-      row.append(toggle);
-    } else {
-      const spacer = document.createElement("span");
-      spacer.className = "archive-folder-spacer";
-      row.append(spacer);
+
+    if (path) {
+      // A continuing ancestor draws a dotted vertical guide through this row.
+      for (const continues of ancestors) {
+        const guide = document.createElement("span");
+        guide.className = "archive-tree-guide" + (continues ? " continuing" : "");
+        guide.setAttribute("aria-hidden", "true");
+        row.append(guide);
+      }
+
+      const branch = document.createElement("span");
+      branch.className = "archive-tree-branch" + (isLast ? " last" : "");
+      branch.setAttribute("aria-hidden", "true");
+      row.append(branch);
+
+      if (hasChildren) {
+        const toggle = document.createElement("button");
+        toggle.type = "button";
+        toggle.className = "archive-folder-toggle";
+        const expanded = openArchiveFolders.has(path);
+        toggle.setAttribute("aria-expanded", String(expanded));
+        toggle.setAttribute("aria-label", (expanded ? "Collapse " : "Expand ") + label);
+        toggle.addEventListener("click", () => {
+          if (openArchiveFolders.has(path)) openArchiveFolders.delete(path);
+          else openArchiveFolders.add(path);
+          renderArchiveFolders();
+        });
+        row.append(toggle);
+      } else {
+        const spacer = document.createElement("span");
+        spacer.className = "archive-folder-spacer";
+        spacer.setAttribute("aria-hidden", "true");
+        row.append(spacer);
+      }
     }
+
     const button = document.createElement("button");
     button.type = "button";
     button.className =
@@ -216,20 +232,29 @@ function renderArchiveFolders() {
     row.append(button);
     archiveTree.append(row);
   };
-  appendRow("All posts", "", 0, false);
-  function appendChildren(parent, depth) {
-    for (const folder of folders.filter(
-      (path) => archiveParent(path) === parent,
-    )) {
-      const hasChildren = folders.some(
-        (path) => archiveParent(path) === folder,
-      );
-      appendRow(folder.split("/").pop(), folder, depth, hasChildren);
-      if (hasChildren && openArchiveFolders.has(folder))
-        appendChildren(folder, depth + 1);
-    }
+
+  appendRow("All posts", "", false);
+  function appendChildren(parent, ancestors = []) {
+    const siblings = folders.filter((path) => archiveParent(path) === parent);
+    siblings.forEach((folder, index) => {
+      const isLast = index === siblings.length - 1;
+      const hasChildren = folders.some((path) => archiveParent(path) === folder);
+      appendRow(folder.split("/").pop(), folder, hasChildren, ancestors, isLast);
+      if (hasChildren && openArchiveFolders.has(folder)) {
+        appendChildren(folder, [...ancestors, !isLast]);
+      }
+    });
   }
-  appendChildren("", 1);
+  appendChildren("");
+
+  if (focusedPath !== undefined) {
+    const matchingRow = [...archiveTree.querySelectorAll(".archive-folder-row")]
+      .find((row) => row.dataset.folder === focusedPath);
+    const control = matchingRow?.querySelector(
+      focusedToggle ? ".archive-folder-toggle" : ".archive-folder-button",
+    );
+    control?.focus({ preventScroll: true });
+  }
 }
 async function loadArchiveFolders() {
   try {

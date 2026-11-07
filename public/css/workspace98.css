@@ -618,67 +618,222 @@ body.workspace98-archive {
     box-shadow: var(--w98-sunken);
 }
 
-.workspace98-archive #archiveFolderTree {
+/* Classic Windows 98 Explorer tree: one recessed well, no raised folder rows.
+   All folder icons use the same yellow/peach Catppuccin colors. */
+body.workspace98-archive #archiveFolderTree {
     flex: 1 1 auto;
     min-height: 0;
     overflow: auto;
-    padding: 5px 3px;
+    padding: 4px 3px;
     background: var(--w98-well);
     box-shadow: var(--w98-sunken);
 }
 
-.workspace98-archive .archive-folder-row {
-    min-height: 26px;
+body.workspace98-archive #archiveFolderTree .archive-folder-row {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    min-width: max-content;
+    height: 23px;
+    min-height: 23px;
     margin: 0;
-    color: var(--w98-text);
-}
-
-.workspace98-archive .archive-folder-row:hover {
-    background: var(--ctp-surface0);
-}
-
-.workspace98-archive .archive-folder-row.selected {
-    background: var(--ctp-surface1);
-}
-
-.workspace98-archive :is(.archive-folder-button, .archive-folder-toggle) {
+    padding: 0 3px;
+    gap: 0;
     color: var(--w98-text);
     background: transparent;
     border: 0;
     box-shadow: none;
-    font: 400 12px "Courier New", Courier, monospace;
+    font: 400 12px/1.2 "Courier New", Courier, monospace;
 }
 
-.workspace98-archive .archive-folder-toggle {
+body.workspace98-archive #archiveFolderTree .archive-folder-row:hover,
+body.workspace98-archive #archiveFolderTree .archive-folder-row.selected {
+    background: transparent;
+}
+
+body.workspace98-archive #archiveFolderTree .archive-folder-row.context-target {
+    background: var(--ctp-surface0);
+    outline: 1px dotted var(--w98-highlight);
+    outline-offset: -2px;
+}
+
+/* Each tree level gets exactly one 17px column, like the Win98 tree. */
+body.workspace98-archive #archiveFolderTree :is(.archive-tree-guide, .archive-tree-branch) {
+    position: relative;
+    display: block;
+    flex: 0 0 17px;
+    width: 17px;
+    height: 100%;
+    pointer-events: none;
+}
+
+body.workspace98-archive #archiveFolderTree .archive-tree-guide.continuing::before,
+body.workspace98-archive #archiveFolderTree .archive-tree-branch::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 8px;
+    width: 1px;
+    background: repeating-linear-gradient(
+        to bottom,
+        var(--ctp-overlay0) 0 1px,
+        transparent 1px 3px
+    );
+}
+
+body.workspace98-archive #archiveFolderTree .archive-tree-branch.last::before {
+    bottom: 50%;
+}
+
+body.workspace98-archive #archiveFolderTree .archive-tree-branch::after {
+    content: "";
+    position: absolute;
+    left: 8px;
+    top: 11px;
+    width: 9px;
+    border-top: 1px dotted var(--ctp-overlay0);
+}
+
+/* Expanders are simple Win98 square +/- controls, not raised buttons. */
+body.workspace98-archive #archiveFolderTree .archive-folder-toggle,
+body.workspace98-archive #archiveFolderTree .archive-folder-spacer {
+    display: grid;
+    place-items: center;
+    flex: 0 0 13px;
+    width: 13px;
+    min-width: 13px;
+    height: 13px;
+    min-height: 13px;
+    margin: 0 4px 0 0;
     padding: 0;
-    color: var(--ctp-subtext0);
-}
-
-.workspace98-archive .archive-folder-toggle:active {
-    box-shadow: none;
-    padding: 0;
-}
-
-.workspace98-archive .archive-folder-button:active {
-    box-shadow: none;
-    padding: 2px 4px 2px 0;
-}
-
-.workspace98-archive .archive-folder-button {
-    padding: 2px 4px 2px 0;
-    gap: 7px;
-    min-height: 26px;
-    font: 400 12px "Courier New", Courier, monospace;
-}
-
-.workspace98-archive .archive-folder-button.active {
-    color: var(--w98-highlight);
+    color: var(--ctp-subtext1);
     background: transparent;
     box-shadow: none;
 }
 
-.workspace98-archive .archive-folder-glyph {
-    color: var(--ctp-lavender);
+body.workspace98-archive #archiveFolderTree .archive-folder-toggle {
+    border: 1px solid var(--ctp-overlay0);
+    background: var(--w98-well);
+    cursor: pointer;
+}
+
+body.workspace98-archive #archiveFolderTree .archive-folder-toggle::before {
+    content: "+";
+    display: block;
+    width: auto;
+    height: auto;
+    color: var(--w98-text);
+    background: transparent;
+    clip-path: none;
+    font: 400 12px/11px "Courier New", Courier, monospace;
+}
+
+body.workspace98-archive #archiveFolderTree .archive-folder-toggle[aria-expanded="true"]::before {
+    content: "−";
+}
+
+body.workspace98-archive #archiveFolderTree .archive-folder-toggle:is(:hover, :focus-visible) {
+    border-color: var(--w98-highlight);
+}
+
+body.workspace98-archive #archiveFolderTree .archive-folder-toggle:active {
+    padding: 0;
+    box-shadow: none;
+}
+
+body.workspace98-archive #archiveFolderTree .archive-folder-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-start;
+    flex: 0 0 auto;
+    width: auto;
+    min-width: 0;
+    height: 22px;
+    min-height: 22px;
+    margin: 0;
+    padding: 0 3px 0 0;
+    gap: 5px;
+    color: var(--w98-text);
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    font: 400 12px/1.2 "Courier New", Courier, monospace;
+    text-align: left;
+}
+
+body.workspace98-archive #archiveFolderTree .archive-folder-button:active {
+    padding: 0 3px 0 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+body.workspace98-archive #archiveFolderTree .archive-folder-label {
+    display: inline-block;
+    overflow: visible;
+    max-width: none;
+    padding: 2px 3px;
+    text-overflow: clip;
+    white-space: nowrap;
+}
+
+/* Win98 highlights the selected label, not an entire raised row. */
+body.workspace98-archive #archiveFolderTree .archive-folder-button.active {
+    color: var(--ctp-crust);
+    background: transparent;
+    box-shadow: none;
+}
+
+body.workspace98-archive #archiveFolderTree .archive-folder-button.active .archive-folder-label {
+    color: var(--ctp-crust);
+    background: var(--ctp-lavender);
+    outline: 1px dotted var(--ctp-crust);
+    outline-offset: -2px;
+}
+
+body.workspace98-archive #archiveFolderTree .archive-folder-button:not(.active):hover .archive-folder-label {
+    color: var(--w98-highlight);
+}
+
+body.workspace98-archive #archiveFolderTree :is(.archive-folder-button, .archive-folder-toggle):focus-visible {
+    outline: 1px dotted var(--w98-highlight);
+    outline-offset: 1px;
+}
+
+/* One pixel-folder design, reused identically at every nesting depth. */
+body.workspace98-archive #archiveFolderTree .archive-folder-glyph {
+    position: relative;
+    display: inline-block;
+    flex: 0 0 16px;
+    width: 16px;
+    height: 14px;
+    color: var(--ctp-yellow);
+    background: transparent;
+    box-shadow: none;
+}
+
+body.workspace98-archive #archiveFolderTree .archive-folder-glyph::before {
+    content: "";
+    position: absolute;
+    top: 1px;
+    left: 1px;
+    width: 7px;
+    height: 4px;
+    background: var(--ctp-yellow);
+    box-shadow: inset 1px 1px 0 var(--ctp-rosewater);
+}
+
+body.workspace98-archive #archiveFolderTree .archive-folder-glyph::after {
+    content: "";
+    position: absolute;
+    top: 4px;
+    left: 0;
+    width: 16px;
+    height: 10px;
+    background: var(--ctp-yellow);
+    box-shadow:
+        inset 1px 1px 0 var(--ctp-rosewater),
+        inset -1px -1px 0 var(--ctp-peach);
 }
 
 .workspace98-archive .archive-explorer-main {
@@ -1257,61 +1412,39 @@ body.workspace98-database {
     }
 }
 
-/* Finish the reference's pixel-icon language without SVG chrome.
-   Archive uses square +/- tree expanders; Editor keeps the same back link. */
-.workspace98-archive .archive-folder-toggle {
-    display: grid;
-    place-items: center;
-    width: 17px;
-    height: 17px;
-    min-height: 17px;
-    padding: 0;
-    color: var(--w98-text);
-    background: var(--w98-face);
-    box-shadow: var(--w98-raised);
-}
-.workspace98-archive .archive-folder-toggle::before {
-    content: "+";
-    display: block;
-    width: auto;
-    height: auto;
-    background: transparent;
-    clip-path: none;
-    font: 400 13px/1 "Courier New", Courier, monospace;
-}
-.workspace98-archive .archive-folder-toggle[aria-expanded="true"]::before {
-    content: "−";
-    clip-path: none;
-}
-.workspace98-archive .archive-folder-toggle:active {
-    padding: 0;
-    box-shadow: var(--w98-sunken);
-}
-.workspace98-archive .archive-folder-add-icon {
+/* New-folder button uses the same small yellow folder as every tree node. */
+body.workspace98-archive .archive-folder-add-icon {
     position: relative;
     display: block;
     width: 18px;
     height: 17px;
 }
-.workspace98-archive .archive-folder-add-shape::before {
+
+body.workspace98-archive .archive-folder-add-shape::before {
     content: "";
     position: absolute;
-    top: 2px;
+    top: 1px;
     left: 1px;
     width: 7px;
     height: 4px;
-    background: var(--ctp-subtext1);
+    background: var(--ctp-yellow);
+    box-shadow: inset 1px 1px 0 var(--ctp-rosewater);
 }
-.workspace98-archive .archive-folder-add-shape::after {
+
+body.workspace98-archive .archive-folder-add-shape::after {
     content: "";
     position: absolute;
-    top: 5px;
-    left: 1px;
-    width: 15px;
+    top: 4px;
+    left: 0;
+    width: 16px;
     height: 10px;
-    background: var(--ctp-subtext1);
+    background: var(--ctp-yellow);
+    box-shadow:
+        inset 1px 1px 0 var(--ctp-rosewater),
+        inset -1px -1px 0 var(--ctp-peach);
 }
-.workspace98-archive .archive-folder-add-plus {
+
+body.workspace98-archive .archive-folder-add-plus {
     position: absolute;
     z-index: 1;
     right: -2px;
@@ -1324,6 +1457,7 @@ body.workspace98-database {
     background: var(--w98-face);
     font: 400 13px/1 "Courier New", Courier, monospace;
 }
+
 .workspace98-editor .editor-back-symbol {
     display: grid;
     place-items: center;
@@ -1351,7 +1485,13 @@ body.workspace98-database {
     .workspace98-archive .menu-bar {
         grid-template-rows: 29px 46px;
     }
-    .workspace98-archive .archive-folder-toggle {
+    body.workspace98-archive #archiveFolderTree .archive-folder-row {
+        min-height: 36px;
+        height: 36px;
+    }
+    body.workspace98-archive #archiveFolderTree .archive-folder-toggle,
+    body.workspace98-archive #archiveFolderTree .archive-folder-spacer {
+        flex-basis: 24px;
         min-width: 24px;
         width: 24px;
         height: 24px;
