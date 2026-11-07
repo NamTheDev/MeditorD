@@ -616,3 +616,18 @@ body.workspace98 .classic-task-current { box-shadow: var(--classic-sunken); }
     .classic-title-close { width: 27px; height: 27px; top: 5px; right: 5px; }
     .workspace98-editor .title-compartment { padding-right: 36px; }
 }
+
+/* Dialogs outrank the taskbar; Start never obscures a confirmation. */
+:is(.app-dialog-overlay, .win98-modal-backdrop, .modal-overlay, .edit-modal, .archive-folder-picker) {
+    z-index: 2147483500;
+}
+body.workspace98 .classic-start-menu a { color: #000; background: transparent; box-shadow: none; }
+body.workspace98 .classic-start-menu a:is(:hover, :focus-visible) { color: #fff; background: #000080; }
+body.workspace98 .classic-start-button[aria-expanded="true"] { box-shadow: var(--classic-sunken); }
+/* Retain WebKit arrow buttons; Firefox uses native-width themed scrollbars. */
+@supports selector(::-webkit-scrollbar) {
+    * { scrollbar-color: auto; }
+}
+@supports not selector(::-webkit-scrollbar) {
+    * { scrollbar-color: #c0c0c0 #dfdfdf; }
+}
