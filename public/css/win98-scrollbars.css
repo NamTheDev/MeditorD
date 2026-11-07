@@ -1,0 +1,123 @@
+/* Windows 95/98 scrollbar chrome in MeditorD's Catppuccin palette.
+   Keep native scroll physics, wheel input, dragging, and keyboard behavior. */
+:root {
+    --scroll98-size: 17px;
+    --scroll98-face: var(--win98-surface);
+    --scroll98-track: var(--ctp-mantle);
+}
+
+/* Chromium/Vivaldi: four-tone raised controls inside a recessed track. */
+::-webkit-scrollbar {
+    width: var(--scroll98-size);
+    height: var(--scroll98-size);
+    background: var(--scroll98-track);
+}
+
+::-webkit-scrollbar-track {
+    background:
+        repeating-linear-gradient(45deg,
+            var(--ctp-mantle) 0 2px,
+            var(--ctp-surface0) 2px 3px,
+            var(--ctp-mantle) 3px 5px);
+    box-shadow:
+        inset 1px 1px 0 var(--win98-border-darkest),
+        inset -1px -1px 0 var(--win98-border-lightest);
+}
+
+::-webkit-scrollbar-thumb,
+::-webkit-scrollbar-button:single-button {
+    background-color: var(--scroll98-face);
+    border: 0;
+    border-radius: 0;
+    box-shadow:
+        inset -1px -1px 0 var(--win98-border-darkest),
+        inset 1px 1px 0 var(--win98-border-lightest),
+        inset -2px -2px 0 var(--win98-border-dark),
+        inset 2px 2px 0 var(--win98-border-light);
+}
+
+::-webkit-scrollbar-thumb:active,
+::-webkit-scrollbar-button:single-button:active {
+    box-shadow:
+        inset -1px -1px 0 var(--win98-border-lightest),
+        inset 1px 1px 0 var(--win98-border-darkest),
+        inset -2px -2px 0 var(--win98-border-light),
+        inset 2px 2px 0 var(--win98-border-dark);
+}
+
+::-webkit-scrollbar-button:single-button {
+    display: block;
+    width: var(--scroll98-size);
+    height: var(--scroll98-size);
+}
+
+/* Small blocky arrows: pure CSS, no raster or SVG files. */
+::-webkit-scrollbar-button:vertical:decrement {
+    background-image:
+        linear-gradient(135deg, transparent 50%, var(--ctp-text) 51%),
+        linear-gradient(225deg, transparent 50%, var(--ctp-text) 51%);
+    background-position: left 5px top 6px, left 9px top 6px;
+    background-size: 4px 5px;
+    background-repeat: no-repeat;
+}
+
+::-webkit-scrollbar-button:vertical:increment {
+    background-image:
+        linear-gradient(45deg, transparent 50%, var(--ctp-text) 51%),
+        linear-gradient(315deg, transparent 50%, var(--ctp-text) 51%);
+    background-position: left 5px top 6px, left 9px top 6px;
+    background-size: 4px 5px;
+    background-repeat: no-repeat;
+}
+
+::-webkit-scrollbar-button:horizontal:decrement,
+::-webkit-scrollbar-button:horizontal:increment {
+    background-color: var(--scroll98-face);
+}
+
+::-webkit-scrollbar-corner {
+    background: var(--scroll98-face);
+    box-shadow: inset 1px 1px var(--win98-border-lightest);
+}
+
+/* Firefox cannot expose the same scrollbar-button pseudo-elements. */
+@supports not selector(::-webkit-scrollbar) {
+    * {
+        scrollbar-width: auto;
+        scrollbar-color: var(--ctp-surface2) var(--ctp-mantle);
+    }
+}
+
+/* Existing editor mobile scrollbar: only its visuals change.
+   The drag/track/keyboard logic remains in edit.js. */
+@container editor-shell (max-width: 839px) {
+    .mobile-editor-scrollbar {
+        width: 22px;
+        grid-template-rows: 28px minmax(0, 1fr) 28px;
+        background: var(--scroll98-face);
+    }
+
+    .mobile-scrollbar-arrow {
+        min-height: 28px;
+        height: 28px;
+        font-size: 10px;
+        background: var(--scroll98-face);
+        color: var(--ctp-text);
+    }
+
+    .mobile-scrollbar-track {
+        margin: 1px;
+        background:
+            repeating-linear-gradient(45deg,
+                var(--ctp-mantle) 0 2px,
+                var(--ctp-surface0) 2px 3px,
+                var(--ctp-mantle) 3px 5px);
+    }
+
+    .mobile-scrollbar-thumb {
+        left: 1px;
+        right: 1px;
+        min-height: 44px;
+        background: var(--scroll98-face);
+    }
+}

@@ -443,6 +443,9 @@ async function renderPage(
           ...(isArchive
             ? ['<link rel="stylesheet" href="/css/archive-explorer.css" />']
             : []),
+          ...(file === "archive" || file === "edit"
+            ? ['<link rel="stylesheet" href="/css/win98-scrollbars.css" />']
+            : []),
         ].join("\n        "),
       )
       .replace("{{body}}", () => content);
