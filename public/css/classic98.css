@@ -36,8 +36,8 @@
     --bevel-light: var(--ctp-surface2);
     --bevel-dark: var(--ctp-mantle);
     --bevel-darkest: var(--ctp-crust);
-    --font-ui: Tahoma, "MS Sans Serif", Arial, sans-serif;
-    --font-title: Tahoma, "MS Sans Serif", Arial, sans-serif;
+    --font-ui: "Montserrat", sans-serif;
+    --font-title: "Montserrat", sans-serif;
     --radius-sm: 0px;
     --radius-md: 0px;
     --radius-lg: 0px;
