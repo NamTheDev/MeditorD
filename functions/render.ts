@@ -467,7 +467,7 @@ async function renderPage(
     html = html.replace("<body>", `<body class="${bodyClasses}">`);
     if (file === "home" || file === "exit") {
       // These are full-screen legacy pages, not desktop application windows.
-      html = html.replace(/<footer class="classic-taskbar"[\\s\\S]*?<\\/footer>/, "");
+      html = html.replace(/<footer class="classic-taskbar"[\s\S]*?<\/footer>/, "");
     }
     if (pagePreloadHtml) {
       html = html.replace("</head>", `${pagePreloadHtml}\n    </head>`);
