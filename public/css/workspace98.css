@@ -8,12 +8,16 @@
  * Sunken: inverse. All dimensions deliberate and square-edged.
  */
 body.workspace98 {
+    /* Shared visual hierarchy across Editor, Archive, and Database:
+       Shell (Mantle) < work pane (Base) < toolbar/control (Surface 0)
+       < title/selected item (Surface 1). Lavender conveys emphasis. */
+    --w98-shell: var(--ctp-mantle);
+    --w98-pane: var(--ctp-base);
+    --w98-toolbar: var(--ctp-surface0);
     --w98-face: var(--ctp-surface0);
     --w98-face-hover: var(--ctp-surface1);
-    --w98-well: var(--ctp-base);
-    /* Solid Mocha Surface 1 for all workspace title and navigation bars. */
+    --w98-well: var(--ctp-mantle);
     --w98-titlebar: var(--ctp-surface1);
-    --w98-navbar: var(--ctp-surface1);
     --w98-active-bg: var(--ctp-surface1);
     --w98-active-text: var(--ctp-lavender);
     --w98-text: var(--ctp-text);
@@ -31,7 +35,7 @@ body.workspace98 {
         inset -2px -2px 0 var(--ctp-surface2);
     --w98-divider: var(--ctp-surface2);
     color: var(--w98-text);
-    background: var(--ctp-base);
+    background: var(--w98-shell);
     font: 400 12px/1.4 "Courier New", Courier, monospace;
     -webkit-font-smoothing: none;
     -moz-osx-font-smoothing: grayscale;
@@ -208,7 +212,7 @@ body.workspace98-editor {
     height: 100dvh;
     min-height: 100dvh;
     overflow: hidden;
-    background: var(--w98-face);
+    background: var(--w98-shell);
     --pane-padding: 11px;
     --input-height: 32px;
     --preview-padding: 12px;
@@ -218,7 +222,7 @@ body.workspace98-editor {
     flex: 0 0 auto;
     padding: max(4px, var(--safe-top)) max(4px, var(--safe-right))
         3px max(4px, var(--safe-left));
-    background: var(--w98-face);
+    background: var(--w98-pane);
 }
 
 /* Real Win98 title strip above a compact command toolbar, for every width. */
@@ -232,7 +236,7 @@ body.workspace98-editor {
     min-height: 0;
     padding: 3px;
     border: 0;
-    background: var(--w98-navbar);
+    background: var(--w98-toolbar);
     box-shadow: var(--w98-raised);
 }
 
@@ -324,7 +328,7 @@ body.workspace98-editor {
 .workspace98-editor .editor-container {
     min-height: 0;
     margin: 0 4px 4px;
-    background: var(--w98-face);
+    background: var(--w98-pane);
     border: 0;
     box-shadow: var(--w98-raised);
 }
@@ -333,7 +337,7 @@ body.workspace98-editor {
     gap: 4px;
     padding: 4px;
     grid-template-columns: minmax(280px, 0.9fr) minmax(360px, 1.1fr);
-    background: var(--w98-face);
+    background: var(--w98-pane);
 }
 
 .workspace98-editor :is(.editor-left-pane, .editor-right-pane) {
@@ -341,7 +345,7 @@ body.workspace98-editor {
     min-width: 0;
     border: 0;
     box-shadow: var(--w98-raised);
-    background: var(--w98-face);
+    background: var(--w98-pane);
 }
 
 .workspace98-editor .editor-left-pane {
@@ -424,7 +428,7 @@ body.workspace98-editor {
 
 .workspace98-editor .textarea-wrapper {
     min-height: 0;
-    background: var(--w98-face);
+    background: var(--w98-pane);
     box-shadow: none;
 }
 
@@ -433,7 +437,7 @@ body.workspace98-editor {
     padding: 3px 6px;
     gap: 8px;
     color: var(--w98-text);
-    background: var(--w98-face);
+    background: var(--w98-toolbar);
     border-bottom: 0;
 }
 
@@ -521,7 +525,7 @@ body.workspace98-archive {
     padding: max(4px, var(--safe-top)) max(4px, var(--safe-right))
         max(4px, var(--safe-bottom)) max(4px, var(--safe-left));
     color: var(--w98-text);
-    background: var(--w98-face);
+    background: var(--w98-shell);
 }
 
 .workspace98-archive .menu-bar {
@@ -534,7 +538,7 @@ body.workspace98-archive {
     height: auto;
     min-height: 0;
     padding: 3px;
-    background: var(--w98-navbar);
+    background: var(--w98-toolbar);
     border: 0;
     box-shadow: var(--w98-raised);
 }
@@ -589,7 +593,7 @@ body.workspace98-archive {
     overflow: hidden;
     min-height: 0;
     padding: 3px;
-    background: var(--w98-face);
+    background: var(--w98-pane);
     border: 0;
     box-shadow: var(--w98-raised);
 }
@@ -855,7 +859,7 @@ body.workspace98-archive #archiveFolderTree .archive-folder-glyph::after {
     margin: 0;
     padding: 3px 7px;
     color: var(--ctp-subtext1);
-    background: var(--w98-navbar);
+    background: var(--w98-toolbar);
     box-shadow: var(--w98-raised);
     font: 400 12px "Courier New", Courier, monospace;
 }
@@ -882,7 +886,7 @@ body.workspace98-archive #archiveFolderTree .archive-folder-glyph::after {
     gap: 7px;
     padding: 7px;
     margin: 0;
-    background: var(--w98-navbar);
+    background: var(--w98-toolbar);
     box-shadow: var(--w98-raised);
 }
 
@@ -1100,7 +1104,7 @@ body.workspace98-archive .card-description .read-more-toggle:active {
 /* ───────────────── DATABASE ───────────────── */
 body.workspace98-database {
     overflow: hidden;
-    background: var(--w98-face);
+    background: var(--w98-shell);
 }
 
 .workspace98-database #databaseApp {
@@ -1111,13 +1115,13 @@ body.workspace98-database {
     padding: max(4px, var(--safe-top)) max(4px, var(--safe-right))
         max(4px, var(--safe-bottom)) max(4px, var(--safe-left));
     gap: 4px;
-    background: var(--w98-face);
+    background: var(--w98-shell);
 }
 
 .workspace98-database .database-header {
     flex: 0 0 auto;
     padding: 3px;
-    background: var(--w98-face);
+    background: var(--w98-pane);
     box-shadow: var(--w98-raised);
 }
 
@@ -1147,7 +1151,7 @@ body.workspace98-database {
     flex-wrap: wrap;
     gap: 4px 12px;
     padding: 5px 2px 1px;
-    background: var(--w98-navbar);
+    background: var(--w98-toolbar);
 }
 
 .workspace98-database :is(.database-actions-left, .database-actions-right) {
@@ -1180,7 +1184,7 @@ body.workspace98-database {
     flex: 0 0 auto;
     gap: 5px;
     padding: 7px;
-    background: var(--w98-face);
+    background: var(--w98-toolbar);
     box-shadow: var(--w98-raised);
 }
 
@@ -1242,7 +1246,7 @@ body.workspace98-database {
     height: 31px;
     padding: 6px 8px;
     color: var(--w98-text);
-    background: var(--w98-face);
+    background: var(--w98-toolbar);
     border-right: 1px solid var(--ctp-mantle);
     border-bottom: 1px solid var(--ctp-crust);
     font: 400 11px "Courier New", Courier, monospace;
