@@ -1103,7 +1103,7 @@ body.workspace98-database {
 }
 
 .workspace98-database .table-wrap td a {
-    color: var(--ctp-blue);
+    color: var(--w98-highlight);
 }
 
 .workspace98-database .database-folder-row .database-title-cell {
@@ -1254,5 +1254,149 @@ body.workspace98-database {
     }
     .workspace98-database :is(.database-actions button, .row-actions button) {
         min-height: 44px;
+    }
+}
+
+/* Finish the reference's pixel-icon language without SVG chrome.
+   Archive uses square +/- tree expanders; Editor keeps the same back link. */
+.workspace98-archive .archive-folder-toggle {
+    display: grid;
+    place-items: center;
+    width: 17px;
+    height: 17px;
+    min-height: 17px;
+    padding: 0;
+    color: var(--w98-text);
+    background: var(--w98-face);
+    box-shadow: var(--w98-raised);
+}
+.workspace98-archive .archive-folder-toggle::before {
+    content: "+";
+    display: block;
+    width: auto;
+    height: auto;
+    background: transparent;
+    clip-path: none;
+    font: 400 13px/1 "Courier New", Courier, monospace;
+}
+.workspace98-archive .archive-folder-toggle[aria-expanded="true"]::before {
+    content: "−";
+    clip-path: none;
+}
+.workspace98-archive .archive-folder-toggle:active {
+    padding: 0;
+    box-shadow: var(--w98-sunken);
+}
+.workspace98-archive .archive-folder-add-icon {
+    position: relative;
+    display: block;
+    width: 18px;
+    height: 17px;
+}
+.workspace98-archive .archive-folder-add-shape::before {
+    content: "";
+    position: absolute;
+    top: 2px;
+    left: 1px;
+    width: 7px;
+    height: 4px;
+    background: var(--ctp-subtext1);
+}
+.workspace98-archive .archive-folder-add-shape::after {
+    content: "";
+    position: absolute;
+    top: 5px;
+    left: 1px;
+    width: 15px;
+    height: 10px;
+    background: var(--ctp-subtext1);
+}
+.workspace98-archive .archive-folder-add-plus {
+    position: absolute;
+    z-index: 1;
+    right: -2px;
+    bottom: -2px;
+    display: grid;
+    place-items: center;
+    width: 10px;
+    height: 11px;
+    color: var(--ctp-lavender);
+    background: var(--w98-face);
+    font: 400 13px/1 "Courier New", Courier, monospace;
+}
+.workspace98-editor .editor-back-symbol {
+    display: grid;
+    place-items: center;
+    width: 16px;
+    height: 16px;
+    font: 400 17px/1 "Courier New", Courier, monospace;
+    color: var(--w98-text);
+}
+.workspace98-editor .arrow-compartment:hover .editor-back-symbol {
+    color: var(--w98-highlight);
+}
+
+/* Prevent tall touch controls from spilling out of fixed grid tracks. */
+@media (max-width: 700px) {
+    .workspace98-archive .archive-explorer-layout {
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-rows: clamp(90px, 22dvh, 165px) minmax(0, 1fr);
+    }
+    .workspace98-archive .archive-explorer-sidebar {
+        max-height: none;
+        height: 100%;
+    }
+}
+@media (pointer: coarse) and (max-width: 700px) {
+    .workspace98-archive .menu-bar {
+        grid-template-rows: 29px 46px;
+    }
+    .workspace98-archive .archive-folder-toggle {
+        min-width: 24px;
+        width: 24px;
+        height: 24px;
+        min-height: 24px;
+    }
+}
+
+/* Retain the original Editor's dynamic textarea height and Markdown toolbar.
+   Higher-specificity workspace rules must not clip the narrow content area. */
+@container editor-shell (max-width: 839px) {
+    .workspace98-editor .editor-right-pane {
+        height: auto;
+        min-height: 0;
+        overflow: visible;
+        padding-bottom: calc(72px + var(--safe-bottom));
+    }
+    .workspace98-editor .textarea-wrapper {
+        height: auto;
+        min-height: 420px;
+        overflow: visible;
+    }
+    .workspace98-editor .description-toolbar {
+        position: sticky;
+        top: 0;
+        z-index: 5;
+    }
+    .workspace98-editor .editor-textarea {
+        flex: none;
+        min-height: 320px;
+        height: auto;
+        overflow-y: hidden;
+        padding: 14px 14px calc(68px + var(--safe-bottom));
+        font-size: 16px;
+    }
+    .workspace98-editor .markdown-preview {
+        flex: none;
+        min-height: 320px;
+        overflow: visible;
+        padding: 14px;
+        font-size: 16px;
+    }
+}
+
+@media (max-width: 450px) {
+    .workspace98-archive .menu-bar {
+        grid-template-rows: 29px 38px;
     }
 }
