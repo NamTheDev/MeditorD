@@ -11,18 +11,9 @@ body.workspace98 {
     --w98-face: var(--ctp-surface0);
     --w98-face-hover: var(--ctp-surface1);
     --w98-well: var(--ctp-base);
-    /* Native Mocha gradients, restricted to the workspaces. */
-    --w98-titlebar: linear-gradient(
-        90deg,
-        var(--ctp-crust) 0%,
-        var(--ctp-mantle) 40%,
-        var(--ctp-surface1) 100%
-    );
-    --w98-navbar: linear-gradient(
-        180deg,
-        var(--ctp-surface1) 0%,
-        var(--ctp-surface0) 100%
-    );
+    /* Solid Mocha Surface 1 for all workspace title and navigation bars. */
+    --w98-titlebar: var(--ctp-surface1);
+    --w98-navbar: var(--ctp-surface1);
     --w98-active-bg: var(--ctp-surface1);
     --w98-active-text: var(--ctp-lavender);
     --w98-text: var(--ctp-text);
