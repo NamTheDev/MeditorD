@@ -1,8 +1,8 @@
 /*
- * MeditorD Classic '98
- * Reference: Windows 95/98 Design Reference by Chris Lemke.
- * This layer is loaded after existing page styles so the data, layout and
- * interaction code remain unchanged. New visuals use a single token set.
+ * MeditorD classic Windows chrome, with Catppuccin Mocha colors.
+ * Retains the Win95/98 bevels, layout and taskbar while sourcing every color
+ * from the canonical palette in global.css. Home and Exit retain their
+ * original page-specific visual design.
  */
 :root {
     /* Every color derives from the canonical Catppuccin Mocha tokens in global.css. */
@@ -190,13 +190,13 @@ body.workspace98 {
     --w98-toolbar: var(--ctp-base);
     --w98-face: var(--ctp-base);
     --w98-face-hover: var(--ctp-surface1);
-    --w98-well: var(--ctp-text);
+    --w98-well: var(--ctp-mantle);
     --w98-titlebar: var(--classic-title);
     --w98-active-bg: var(--ctp-base);
-    --w98-active-text: var(--ctp-text);
-    --w98-text: var(--ctp-crust);
+    --w98-active-text: var(--ctp-lavender);
+    --w98-text: var(--ctp-text);
     --w98-muted: var(--ctp-subtext0);
-    --w98-highlight: var(--ctp-text);
+    --w98-highlight: var(--ctp-lavender);
     --w98-raised: var(--classic-raised);
     --w98-sunken: var(--classic-sunken);
     --w98-divider: var(--ctp-surface2);
