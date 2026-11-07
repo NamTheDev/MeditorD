@@ -24,9 +24,7 @@
     margin-bottom: 4px;
     color: var(--ctp-subtext0);
     background: transparent;
-    font:
-        0.85rem "IBM Plex Sans",
-        sans-serif;
+    font: 400 0.85rem "Courier New", Courier, monospace;
     letter-spacing: 0.09em;
 }
 .archive-new-folder-button {
@@ -135,7 +133,7 @@
 }
 .archive-folder-button.active {
     color: var(--ctp-text);
-    font-weight: 600;
+    font-weight: 400;
     box-shadow: none;
 }
 .archive-folder-toggle:active {
@@ -226,24 +224,21 @@
     background: var(--ctp-surface0);
     color: var(--ctp-text);
     border: 2px solid var(--bevel-darkest);
+    border-top-color: var(--bevel-lightest);
+    border-left-color: var(--bevel-lightest);
+    box-shadow: inset 1px 1px 0 var(--bevel-light), inset -1px -1px 0 var(--bevel-dark);
 }
 .archive-folder-picker-title {
     margin: 0 0 12px;
-    font:
-        1.1rem "Pixelify Sans",
-        "IBM Plex Sans",
-        sans-serif;
+    font: 400 1.1rem "Courier New", Courier, monospace;
     color: var(--ctp-lavender);
 }
-.archive-folder-picker select {
-    display: block;
+.archive-folder-picker .win98-select {
     width: 100%;
-    min-height: 37px;
     margin-bottom: 16px;
-    color: var(--ctp-text);
-    background: var(--ctp-mantle);
-    border: 2px inset var(--ctp-surface2);
-    font: inherit;
+}
+.archive-folder-picker .win98-select > select {
+    min-height: 37px;
 }
 .archive-folder-picker-actions {
     display: flex;
@@ -291,17 +286,21 @@
     color: var(--ctp-subtext1);
     font-size: 0.9rem;
 }
-.archive-search-input input,
-.archive-search-select select {
+.archive-search-input input {
     min-width: 0;
     width: 100%;
     min-height: 34px;
     padding: 4px 8px;
-    border: 2px inset var(--ctp-surface2);
+    border: 0;
     border-radius: 0;
     color: var(--ctp-text);
     background: var(--ctp-mantle);
     font: inherit;
+    box-shadow:
+        inset -1px -1px 0 var(--win98-border-lightest),
+        inset 1px 1px 0 var(--win98-border-darkest),
+        inset -2px -2px 0 var(--win98-border-light),
+        inset 2px 2px 0 var(--win98-border-dark);
 }
 .archive-search-select {
     display: flex;
@@ -310,14 +309,13 @@
     color: var(--ctp-subtext1);
     font-size: 0.9rem;
 }
-.archive-search-select select {
-    width: auto;
-    max-width: 205px;
+.archive-search-select .win98-select {
+    width: 205px;
+    max-width: 100%;
 }
-.archive-search-input input:focus-visible,
-.archive-search-select select:focus-visible {
+.archive-search-input input:focus-visible {
     outline: 1px dotted var(--ctp-lavender);
-    outline-offset: 1px;
+    outline-offset: -2px;
 }
 @media (max-width: 700px) {
     .archive-search-toolbar {
@@ -329,7 +327,9 @@
     .archive-search-select {
         flex: 1 1 160px;
     }
-    .archive-search-select select {
+    .archive-search-select .win98-select {
+        width: 100%;
         max-width: none;
+        flex: 1;
     }
 }

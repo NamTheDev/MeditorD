@@ -6,7 +6,7 @@ body {
     overflow: hidden;
     background: var(--win98-surface);
     color: var(--win98-text);
-    font-family: "IBM Plex Sans", "Tahoma", "MS Sans Serif", sans-serif;
+    font-family: "Courier New", Courier, monospace;
     font-size: var(--font-base);
     line-height: 1.4;
     -webkit-font-smoothing: none;
@@ -167,9 +167,9 @@ nav {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-family: "Pixelify Sans", "IBM Plex Sans", sans-serif;
+    font-family: "Courier New", Courier, monospace;
     font-size: var(--font-title);
-    font-weight: 700;
+    font-weight: 400;
     text-transform: uppercase;
     letter-spacing: 0.35em;
     color: var(--win98-accent);
@@ -330,7 +330,7 @@ input.form-control-unit:focus {
     align-items: center;
     justify-content: center;
     font-size: calc(var(--font-base) * 0.9);
-    font-family: "IBM Plex Mono", monospace;
+    font-family: "Courier New", Courier, monospace;
     color: var(--win98-text-disabled);
     text-transform: uppercase;
     letter-spacing: 1px;
@@ -389,7 +389,7 @@ input.form-control-unit:focus {
     border: none;
     outline: none;
     resize: none;
-    font-family: "IBM Plex Mono", "Courier New", monospace;
+    font-family: "Courier New", Courier, monospace;
     font-size: calc(var(--font-base) * 1.05);
     line-height: 1.5;
     background: transparent;
@@ -448,7 +448,7 @@ input.form-control-unit:focus {
         inset 1px 1px 0 var(--ctp-surface2),
         inset -1px -1px 0 var(--ctp-mantle);
     color: var(--ctp-text);
-    font-family: "IBM Plex Sans", Tahoma, sans-serif;
+    font-family: "Courier New", Courier, monospace;
 }
 
 .win98-modal-titlebar {
@@ -467,7 +467,7 @@ input.form-control-unit:focus {
     overflow: hidden;
     margin: 0;
     font-size: 13px;
-    font-weight: 700;
+    font-weight: 400;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
@@ -483,8 +483,8 @@ input.form-control-unit:focus {
     border-radius: 0;
     background: var(--ctp-surface1);
     color: var(--ctp-text);
-    font-family: "IBM Plex Sans", Tahoma, sans-serif;
-    font-weight: 700;
+    font-family: "Courier New", Courier, monospace;
+    font-weight: 400;
     cursor: pointer;
 }
 
@@ -535,9 +535,9 @@ input.form-control-unit:focus {
     border: 2px solid var(--ctp-lavender);
     outline: 2px solid var(--ctp-crust);
     color: var(--ctp-crust);
-    font-family: Georgia, serif;
+    font-family: "Courier New", Courier, monospace;
     font-size: 23px;
-    font-weight: 700;
+    font-weight: 400;
     line-height: 1;
 }
 
@@ -791,9 +791,9 @@ input.form-control-unit:focus {
         border: 0;
         background: var(--win98-surface);
         color: var(--win98-text);
-        font-family: "Pixelify Sans", "IBM Plex Sans", sans-serif;
+        font-family: "Courier New", Courier, monospace;
         font-size: 14px;
-        font-weight: 600;
+        font-weight: 400;
         letter-spacing: 0.08em;
         line-height: 1;
         text-transform: uppercase;
@@ -882,7 +882,7 @@ input.form-control-unit:focus {
         min-width: 44px;
         min-height: 44px;
         padding: 6px 10px;
-        font-family: "IBM Plex Mono", monospace;
+        font-family: "Courier New", Courier, monospace;
     }
 
     .mobile-editor-scrollbar {
@@ -1004,31 +1004,31 @@ input.form-control-unit:focus {
     }
 }
 
-/* Optional post folder selection matches the existing editor input styling. */
-select.form-control-unit {
+/* Match the Windows 98 select field to the other editor inputs. */
+.win98-select.form-control-unit {
+    flex: 1;
     min-width: 0;
+}
+
+.win98-select > select {
     height: var(--input-height);
-    padding: 0 clamp(6px, 0.8vw, 12px);
-    border: none;
-    border-radius: 0;
-    outline: none;
-    background: var(--win98-window-bg);
-    color: var(--win98-text);
-    font: inherit;
-    box-shadow:
-        inset -1px -1px 0 var(--win98-border-lightest),
-        inset 1px 1px 0 var(--win98-border-darkest),
-        inset -2px -2px 0 var(--win98-border-light),
-        inset 2px 2px 0 var(--win98-border-dark);
 }
-select.form-control-unit:focus-visible {
-    outline: 1px solid var(--win98-accent);
-    outline-offset: -1px;
-}
+
 @media (max-width: 700px) {
-    select.form-control-unit {
+    .win98-select.form-control-unit,
+    .win98-select > select {
         width: 100%;
         min-height: 44px;
         font-size: 16px;
     }
+}
+
+/* Apply Courier New to shared dialogs only when the editor is open. */
+body .app-dialog-window {
+    font-family: "Courier New", Courier, monospace;
+}
+
+body .app-dialog-titlebar h2,
+body .app-dialog-close {
+    font-weight: 400;
 }

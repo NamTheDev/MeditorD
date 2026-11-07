@@ -342,6 +342,7 @@ function renderCard(
     }
   }
 
+  const displayTitle = post.title.slice(post.title.lastIndexOf("/") + 1);
   const formattedDate = formatPostDate(post.created_at);
   const username = post.username ? `@${escapeHtml(post.username)}` : "";
   const downloadActions = renderDownloadActions(post);
@@ -359,7 +360,7 @@ function renderCard(
     </div>
     ${mediaHtml}
     <div class="card-info">
-      <div class="card-title">${escapeHtml(post.title)}</div>
+      <div class="card-title">${escapeHtml(displayTitle)}</div>
       <div class="card-description" data-title="${escapeHtml(post.title)}">${getCollapsedDescriptionHtml(post.content || "")}</div>
       <div class="card-meta">
         <span>${username}</span>

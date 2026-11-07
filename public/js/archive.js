@@ -20,6 +20,10 @@ function openNewPostInFolder(folder = "") {
   window.location.href = url.pathname + url.search;
 }
 
+function archiveDisplayTitle(path) {
+  return path.slice(path.lastIndexOf("/") + 1);
+}
+
 function archivePostDate(post) {
   const value = post?.created_at || "";
   const date = new Date(value.includes(" ") ? value.replace(" ", "T") + "Z" : value);
@@ -29,7 +33,9 @@ function archivePostDate(post) {
 function compareArchiveCards(a, b) {
   const aTitle = a.dataset.title || "";
   const bTitle = b.dataset.title || "";
-  const titleOrder = aTitle.localeCompare(bTitle, undefined, { sensitivity: "base" });
+  const titleOrder =
+    archiveDisplayTitle(aTitle).localeCompare(archiveDisplayTitle(bTitle), undefined, { sensitivity: "base" }) ||
+    aTitle.localeCompare(bTitle, undefined, { sensitivity: "base" });
   if (archiveSortOrder.value === "az") return titleOrder;
   if (archiveSortOrder.value === "za") return -titleOrder;
   const aPost = postsData.find((post) => post.title === aTitle);
@@ -41,7 +47,7 @@ function compareArchiveCards(a, b) {
 function archiveMatchesSearch(title) {
   const keyword = archiveSearchInput.value.trim().toLocaleLowerCase();
   if (!keyword) return true;
-  const name = title.slice(title.lastIndexOf("/") + 1).toLocaleLowerCase();
+  const name = archiveDisplayTitle(title).toLocaleLowerCase();
   if (archiveSearchMode.value === "starts") return name.startsWith(keyword);
   if (archiveSearchMode.value === "ends") return name.endsWith(keyword);
   return name.includes(keyword);
@@ -493,7 +499,7 @@ function historyBack() {
 }
 
 function openPostModal(post) {
-  document.getElementById("modalTitle").textContent = post.title;
+  document.getElementById("modalTitle").textContent = archiveDisplayTitle(post.title);
   const body = document.getElementById("modalBody");
   stopModalMedia(body);
   body.replaceChildren();
@@ -893,7 +899,7 @@ function updateArchiveMovedPost(post, previousTitle, destination) {
   if (card) {
     card.dataset.title = destination;
     const title = card.querySelector(".card-title");
-    if (title) title.textContent = destination;
+    if (title) title.textContent = archiveDisplayTitle(destination);
     const description = card.querySelector(".card-description");
     if (description) description.dataset.title = destination;
     card
@@ -1067,7 +1073,10 @@ function showArchiveFolderPicker(post) {
   });
   document.addEventListener("keydown", onKey);
   actions.append(cancel, move);
-  panel.append(heading, select, actions);
+  const selectWrapper = document.createElement("span");
+  selectWrapper.className = "win98-select";
+  selectWrapper.append(select);
+  panel.append(heading, selectWrapper, actions);
   overlay.append(panel);
   document.body.append(overlay);
   select.focus();

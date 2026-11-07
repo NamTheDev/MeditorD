@@ -5,7 +5,7 @@ body {
     overflow: hidden;
     background-color: var(--ctp-base);
     color: var(--ctp-text);
-    font-family: "IBM Plex Sans", "Tahoma", sans-serif;
+    font-family: "Courier New", Courier, monospace;
     line-height: 1.35;
     -webkit-font-smoothing: none;
     -moz-osx-font-smoothing: grayscale;
@@ -54,9 +54,9 @@ body {
     align-items: center;
     justify-content: center;
     color: var(--ctp-lavender);
-    font-family: "Pixelify Sans", "IBM Plex Sans", sans-serif;
+    font-family: "Courier New", Courier, monospace;
     font-size: var(--font-title);
-    font-weight: 700;
+    font-weight: 400;
     letter-spacing: 0.35em;
     white-space: nowrap;
     user-select: none;
@@ -281,6 +281,8 @@ html.meditord-js .reddit-gallery:not(.masonry-ready) .gallery-card {
 }
 
 .card-info {
+    /* Preserve the original post typography, independent of archive UI. */
+    font-family: "IBM Plex Sans", "Tahoma", sans-serif;
     min-height: 0;
     padding: 8px 4px 4px;
     display: flex;
@@ -459,6 +461,7 @@ html.meditord-js .reddit-gallery:not(.masonry-ready) .gallery-card {
 }
 
 .modal-post-description {
+    font-family: "IBM Plex Sans", "Tahoma", sans-serif;
     color: var(--ctp-text);
     font-size: var(--font-base);
     line-height: 1.7;
@@ -674,4 +677,16 @@ select:focus {
     .gallery-card:hover {
         outline: none;
     }
+}
+
+/* Interface chrome is regular-weight Courier; post content keeps its own style. */
+.modal-window .title-bar,
+.modal-close-button,
+body .app-dialog-titlebar h2,
+body .app-dialog-close {
+    font-weight: 400;
+}
+
+body .app-dialog-window {
+    font-family: "Courier New", Courier, monospace;
 }
