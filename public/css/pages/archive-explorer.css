@@ -147,13 +147,11 @@
 .archive-folder-toggle:focus-visible,
 .archive-folder-button:focus-visible,
 .archive-new-folder-button:focus-visible {
-    outline: 1px dotted var(--ctp-lavender);
+    outline: 1px solid var(--ctp-lavender);
     outline-offset: -1px;
 }
 .archive-folder-row.archive-context-target {
     background: var(--ctp-surface2);
-    outline: 1px dashed var(--ctp-lavender);
-    outline-offset: -1px;
 }
 .archive-explorer-main {
     min-width: 0;
@@ -310,7 +308,7 @@
     max-width: 100%;
 }
 .archive-search-input input:focus-visible {
-    outline: 1px dotted var(--ctp-lavender);
+    outline: 1px solid var(--ctp-lavender);
     outline-offset: -2px;
 }
 @media (max-width: 700px) {

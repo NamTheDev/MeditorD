@@ -167,7 +167,7 @@ body.archive-page {
 }
 
 .archive-page .archive-new-folder-button:focus-visible {
-    outline: 1px dotted var(--ctp-lavender);
+    outline: 1px solid var(--ctp-lavender);
     outline-offset: -1px;
 }
 
@@ -214,8 +214,6 @@ body.archive-page #archiveFolderTree .archive-folder-row.selected {
 
 body.archive-page #archiveFolderTree .archive-folder-row.archive-context-target {
     background: var(--ctp-surface0);
-    outline: 1px dotted var(--global-chrome-highlight);
-    outline-offset: -2px;
 }
 
 /* Each tree level gets exactly one 17px column, like the classic tree. */
@@ -351,7 +349,7 @@ body.archive-page #archiveFolderTree .archive-folder-button.active .archive-fold
 }
 
 body.archive-page #archiveFolderTree :is(.archive-folder-button, .archive-folder-toggle):focus-visible {
-    outline: 1px dotted var(--global-chrome-highlight);
+    outline: 1px solid var(--global-chrome-highlight);
     outline-offset: 1px;
 }
 

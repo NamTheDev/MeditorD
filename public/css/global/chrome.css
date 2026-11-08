@@ -57,7 +57,7 @@ body.global-workspace :is(button, .global-button, .editor-upload-button) {
 }
 
 body.global-workspace :is(button, .global-button, .editor-upload-button):focus-visible {
-    outline: 1px dotted var(--global-chrome-highlight);
+    outline: 1px solid var(--global-chrome-highlight);
     outline-offset: -4px;
 }
 
@@ -81,7 +81,7 @@ body.global-workspace :is(input:not([type="checkbox"]):not([type="file"]), texta
 }
 
 body.global-workspace :is(input, select, textarea):focus-visible {
-    outline: 1px dotted var(--global-chrome-highlight);
+    outline: 1px solid var(--global-chrome-highlight);
     outline-offset: -3px;
 }
 
@@ -261,14 +261,9 @@ body.global-workspace :is(.global-dialog-close, .editor-dialog-close, .global-mo
     pointer-events: none;
 }
 
-/* Preserve the original red focus outline; only remove the hover trigger. */
+/* Keep keyboard focus visible, without a dotted outline or click border. */
 body.global-workspace :is(.global-dialog-close, .editor-dialog-close, .global-modal-close-button, .database-modal-close):focus-visible {
-    outline: 1px dotted var(--ctp-red);
-    outline-offset: -2px;
-}
-
-body.global-workspace :is(.global-dialog-close, .editor-dialog-close, .global-modal-close-button, .database-modal-close):active:not(:disabled) {
-    outline: 1px dotted var(--ctp-red);
+    outline: 1px solid var(--ctp-red);
     outline-offset: -2px;
 }
 

@@ -120,8 +120,8 @@ nav {
         clamp(2px, 0.4vw, 7px) clamp(11px, 1.5vw, 25px);
 }
 
-.global-action-button:focus {
-    outline: 1px dotted var(--global-accent);
+.global-action-button:focus-visible {
+    outline: 1px solid var(--global-accent);
     outline-offset: -4px;
 }
 
@@ -795,7 +795,7 @@ input.editor-form-control:focus {
     }
 
     .editor-mobile-view-tab:focus-visible {
-        outline: 1px dotted var(--global-accent);
+        outline: 1px solid var(--global-accent);
         outline-offset: -5px;
     }
 

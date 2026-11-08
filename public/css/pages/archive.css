@@ -396,7 +396,7 @@ html.meditord-js .archive-gallery-grid:not(.archive-masonry-ready) .archive-gall
 }
 
 .archive-card-description .archive-read-more-toggle:focus-visible {
-    outline: 1px dotted var(--ctp-lavender);
+    outline: 1px solid var(--ctp-lavender);
     outline-offset: 2px;
 }
 
@@ -517,9 +517,9 @@ select {
     outline: none;
 }
 
-input[type="text"]:focus,
-select:focus {
-    outline: 1px dotted var(--ctp-lavender);
+input[type="text"]:focus-visible,
+select:focus-visible {
+    outline: 1px solid var(--ctp-lavender);
 }
 
 .archive-skeleton-card {

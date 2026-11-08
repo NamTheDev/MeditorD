@@ -106,7 +106,7 @@ body {
 .database-row-actions button:focus-visible,
 .database-edit-dialog-actions button:focus-visible,
 .database-modal-close:focus-visible {
-    outline: 1px dotted var(--ctp-lavender);
+    outline: 1px solid var(--ctp-lavender);
     outline-offset: -4px;
 }
 
@@ -179,7 +179,7 @@ body {
 
 .database-search-line input:focus-visible,
 .database-filter-control select:focus-visible {
-    outline: 1px dotted var(--ctp-lavender);
+    outline: 1px solid var(--ctp-lavender);
     outline-offset: -3px;
 }
 
@@ -495,7 +495,7 @@ body {
 .database-edit-dialog-box input:focus-visible,
 .database-edit-dialog-box select:focus-visible,
 .database-edit-dialog-box textarea:focus-visible {
-    outline: 1px dotted var(--ctp-lavender);
+    outline: 1px solid var(--ctp-lavender);
     outline-offset: -3px;
 }
 
