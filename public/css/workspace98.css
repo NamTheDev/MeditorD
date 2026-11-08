@@ -448,7 +448,7 @@ body.workspace98-editor {
 
 .workspace98-editor .editor-container {
     min-height: 0;
-    margin: 0 4px 4px;
+    margin: 0;
     background: var(--w98-pane);
     border: 0;
     box-shadow: var(--w98-raised);
@@ -1639,7 +1639,7 @@ body.workspace98-archive .archive-folder-add-plus {
         gap: 4px;
     }
     .workspace98-editor .editor-container {
-        margin: 0 6px 6px;
+        margin: 0;
     }
 
     .workspace98-archive .menu-bar {
