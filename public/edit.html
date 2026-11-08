@@ -87,11 +87,43 @@
             <div class="textarea-wrapper">
                 <div class="description-toolbar">
                     <span class="description-label">Description:</span>
+                    <div
+                        class="mobile-view-switch"
+                        role="tablist"
+                        aria-label="Description view"
+                    >
+                        <button
+                            type="button"
+                            class="mobile-view-tab active"
+                            id="write-view-button"
+                            role="tab"
+                            aria-selected="true"
+                        >
+                            Write
+                        </button>
+                        <button
+                            type="button"
+                            class="mobile-view-tab"
+                            id="preview-view-button"
+                            role="tab"
+                            aria-selected="false"
+                        >
+                            Preview
+                        </button>
+                    </div>
+                    <button
+                        type="button"
+                        class="action-btn"
+                        id="preview-button"
+                    >
+                        Preview
+                    </button>
                 </div>
                 <textarea
                     class="editor-textarea"
                     placeholder="Start typing..."
                 ></textarea>
+                <div class="markdown-preview hidden" aria-live="polite"></div>
                 <div
                     class="mobile-markdown-toolbar"
                     role="toolbar"
@@ -184,4 +216,5 @@
 <script src="/js/media-thumbnail.js" defer></script>
 <script src="/js/document-api.js" defer></script>
 <script src="/js/url-validation.js" defer></script>
+<script src="/vendor/markdown-it.js?v=15.0.2" defer></script>
 <script src="/js/edit.js" defer></script>
