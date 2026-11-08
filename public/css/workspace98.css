@@ -667,7 +667,7 @@ body.workspace98-archive {
 .workspace98-archive .menu-bar {
     flex: 0 0 auto;
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     grid-template-rows: 29px 30px;
     align-items: stretch;
     gap: 3px;
@@ -696,16 +696,21 @@ body.workspace98-archive {
 }
 
 .workspace98-archive .menu-bar > #backButton {
+    grid-column: 1;
+    grid-row: 2;
+}
+
+.workspace98-archive .menu-bar > #databaseButton {
     grid-column: 2;
     grid-row: 2;
 }
 
 .workspace98-archive .menu-bar > #newPostButton {
-    grid-column: 1;
+    grid-column: 3;
     grid-row: 2;
 }
 
-.workspace98-archive .menu-bar > :is(#backButton, #newPostButton) {
+.workspace98-archive .menu-bar > :is(#backButton, #databaseButton, #newPostButton) {
     width: 100%;
     min-width: 0;
     min-height: 30px;
@@ -714,6 +719,14 @@ body.workspace98-archive {
     padding: 4px 10px;
     box-shadow: var(--w98-raised);
     font: 400 12px "Courier New", Courier, monospace;
+}
+
+.workspace98-archive .menu-bar > #databaseButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--w98-text);
+    text-decoration: none;
 }
 
 .workspace98-archive .archive-explorer-layout {
@@ -1529,7 +1542,7 @@ body.workspace98-database {
 }
 @media (max-width: 450px) {
     .workspace98-editor .editor-nav-actions :is(.action-btn, .compartment),
-    .workspace98-archive .menu-bar > :is(#backButton, #newPostButton) {
+    .workspace98-archive .menu-bar > :is(#backButton, #databaseButton, #newPostButton) {
         min-height: 36px;
         height: 36px;
     }
