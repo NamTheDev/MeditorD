@@ -1293,6 +1293,14 @@ body.workspace98-archive .card-description .read-more-toggle:active {
 
 /* ───────────────── DATABASE ───────────────── */
 body.workspace98-database {
+    /* Database-only palette; Editor and Archive remain unchanged. */
+    --w98-shell: #1e1e2e;
+    --w98-pane: #45475a;
+    --w98-toolbar: #45475a;
+    --w98-titlebar: #45475a;
+    --w98-face: #585b70;
+    --w98-face-hover: #585b70;
+    --w98-well: #313244;
     overflow: hidden;
     background: var(--w98-shell);
 }
@@ -1412,31 +1420,6 @@ body.workspace98-database {
     font: 400 12px "Courier New", Courier, monospace;
 }
 
-/* Match Archive's Mocha depth: raised panels, recessed controls and content. */
-.workspace98-database :is(.database-header, .database-searchbar) {
-    background: var(--w98-toolbar);
-}
-
-.workspace98-database .database-main {
-    background: var(--w98-pane);
-}
-
-.workspace98-database :is(.database-search-line input, .database-filter-control select) {
-    background: var(--w98-well);
-    color: var(--w98-text);
-    border-color: var(--w98-divider);
-    box-shadow: var(--w98-sunken);
-}
-
-.workspace98-database .database-actions button:hover {
-    background: var(--w98-face-hover);
-}
-
-.workspace98-database .database-actions button:active {
-    background: var(--w98-face);
-    box-shadow: var(--w98-sunken);
-}
-
 .workspace98-database .database-search-line input {
     height: 31px;
     min-height: 31px;
@@ -1461,19 +1444,31 @@ body.workspace98-database {
     font: 400 11px "Courier New", Courier, monospace;
 }
 
+/* The table and dialog are containers, not input wells. */
+.workspace98-database .database-main,
+.workspace98-database .edit-modal-box {
+    background: var(--w98-pane);
+}
+
+.workspace98-database .database-filter-control select {
+    background: var(--w98-well);
+    color: var(--w98-text);
+    box-shadow: var(--w98-sunken);
+}
+
 .workspace98-database .table-wrap {
     flex: 1 1 auto;
     min-height: 0;
     overflow: auto;
     padding: 2px;
-    background: var(--w98-well);
+    background: var(--w98-pane);
     box-shadow: var(--w98-sunken);
 }
 
 .workspace98-database .table-wrap table {
     table-layout: fixed;
     width: 100%;
-    background: var(--w98-well);
+    background: var(--w98-pane);
     color: var(--w98-text);
     font-family: "Courier New", Courier, monospace;
 }
