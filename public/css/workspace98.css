@@ -1478,7 +1478,7 @@ body.workspace98-database {
         width: 36px;
         height: 36px;
     }
-    
+
     .workspace98-database :is(.database-actions-left, .database-actions-right) {
         display: flex;
         gap: 4px;
@@ -1648,11 +1648,8 @@ body.workspace98-archive .archive-folder-add-plus {
         margin: 0 6px 6px;
     }
 
-    .workspace98-archive #fullscreenApp {
-        gap: 6px;
-        padding: max(6px, var(--safe-top)) max(6px, var(--safe-right))
-            max(6px, var(--safe-bottom)) max(6px, var(--safe-left));
-    }
+    .workspace98-archive #fullscreenApp,
+
     .workspace98-archive .menu-bar {
         gap: 4px;
         padding: 4px;
@@ -1726,7 +1723,7 @@ body.workspace98-archive .archive-folder-add-plus {
         min-height: 420px;
         overflow: visible;
     }
-    
+
     .workspace98-editor .editor-textarea {
         flex: none;
         min-height: 320px;

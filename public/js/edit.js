@@ -554,8 +554,6 @@ window.addEventListener("keydown", (event) => {
 
 syncEditorLayoutMode();
 updateMarkdownPreview();
-resizeMobileTextarea();
 setDescriptionView("write");
-queueMobileScrollbarSync();
 
 void loadEditorFolders();
