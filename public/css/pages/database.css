@@ -102,14 +102,6 @@ body {
     text-transform: uppercase;
 }
 
-.database-actions button:hover,
-.database-row-actions button:hover,
-.database-edit-dialog-actions button:hover,
-.database-modal-close:hover {
-    color: var(--ctp-lavender);
-    background: var(--ctp-surface1);
-}
-
 .database-actions button:focus-visible,
 .database-row-actions button:focus-visible,
 .database-edit-dialog-actions button:focus-visible,
@@ -298,10 +290,6 @@ body {
 .database-table-wrap th:nth-child(5) { width: 10%; }
 .database-table-wrap th:nth-child(6) { width: 144px; }
 
-.database-table-wrap tbody tr:hover {
-    background: var(--ctp-surface0);
-}
-
 .database-title-cell {
     color: var(--ctp-text);
 }
@@ -391,10 +379,6 @@ body {
 
 .database-row-actions button:active {
     padding: 3px 8px;
-}
-
-.database-row-actions .database-delete-action:hover {
-    color: var(--ctp-red);
 }
 
 .database-empty-state,

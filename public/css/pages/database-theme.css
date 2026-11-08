@@ -205,10 +205,6 @@ body.database-page {
     font: 400 12px "Courier New", Courier, monospace;
 }
 
-.database-page .database-table-wrap tbody tr:hover {
-    background: var(--ctp-surface0);
-}
-
 .database-page .database-table-wrap td a {
     color: var(--global-chrome-highlight);
 }
@@ -239,10 +235,6 @@ body.database-page {
 
 .database-page .database-row-actions button:active {
     padding: 3px 8px;
-}
-
-.database-page .database-row-actions .database-delete-action:hover {
-    color: var(--ctp-red);
 }
 
 .database-page .database-edit-dialog-box {

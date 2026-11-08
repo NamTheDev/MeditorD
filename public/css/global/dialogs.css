@@ -50,10 +50,6 @@
         inset 2px 2px 0 var(--ctp-lavender);
 }
 
-.global-modal-close-button:hover {
-    filter: brightness(1.05);
-}
-
 .global-modal-close-button:active {
     padding: 0;
     box-shadow:

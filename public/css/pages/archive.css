@@ -131,10 +131,6 @@ html.meditord-js .archive-gallery-grid:not(.archive-masonry-ready) .archive-gall
     z-index: 100;
 }
 
-.archive-gallery-card:hover {
-    outline: 1px dotted var(--ctp-lavender);
-}
-
 /* Keyboard-operable opener without adding visible chrome to post cards. */
 .archive-card-open-button {
     position: absolute;
@@ -397,10 +393,6 @@ html.meditord-js .archive-gallery-grid:not(.archive-masonry-ready) .archive-gall
     cursor: pointer;
     text-decoration: underline;
     text-underline-offset: 2px;
-}
-
-.archive-card-description .archive-read-more-toggle:hover {
-    color: var(--ctp-text);
 }
 
 .archive-card-description .archive-read-more-toggle:focus-visible {
@@ -682,12 +674,6 @@ select:focus {
         height: 44px;
         min-width: 44px;
         min-height: 44px;
-    }
-}
-
-@media (hover: none) {
-    .archive-gallery-card:hover {
-        outline: none;
     }
 }
 

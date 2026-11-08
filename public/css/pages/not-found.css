@@ -54,12 +54,6 @@ body.not-found-page .not-found-return-button {
     text-decoration: none;
     font: 400 13px/1.2 "Courier New", Courier, monospace;
 }
-body.not-found-page .not-found-return-button:hover {
-    color: var(--ctp-lavender);
-    background: var(--ctp-surface1);
-    transform: none;
-    filter: none;
-}
 body.not-found-page .not-found-return-button:active {
     box-shadow: var(--global-chrome-pressed);
     transform: translate(1px, 1px);

@@ -162,7 +162,7 @@ body.archive-page {
     box-shadow: none;
 }
 
-.archive-page .archive-new-folder-button:is(:hover, :focus-visible) {
+.archive-page .archive-new-folder-button:focus-visible {
     background: transparent;
 }
 
@@ -208,7 +208,6 @@ body.archive-page #archiveFolderTree .archive-folder-row {
     font: 400 12px/1.2 "Courier New", Courier, monospace;
 }
 
-body.archive-page #archiveFolderTree .archive-folder-row:hover,
 body.archive-page #archiveFolderTree .archive-folder-row.selected {
     background: transparent;
 }
@@ -295,7 +294,7 @@ body.archive-page #archiveFolderTree .archive-folder-toggle[aria-expanded="true"
     content: "−";
 }
 
-body.archive-page #archiveFolderTree .archive-folder-toggle:is(:hover, :focus-visible) {
+body.archive-page #archiveFolderTree .archive-folder-toggle:focus-visible {
     border-color: var(--global-chrome-highlight);
 }
 
@@ -349,10 +348,6 @@ body.archive-page #archiveFolderTree .archive-folder-button.active {
 body.archive-page #archiveFolderTree .archive-folder-button.active .archive-folder-label {
     color: var(--global-chrome-active-text);
     background: var(--global-chrome-active-bg);
-}
-
-body.archive-page #archiveFolderTree .archive-folder-button:not(.active):hover .archive-folder-label {
-    color: var(--global-chrome-highlight);
 }
 
 body.archive-page #archiveFolderTree :is(.archive-folder-button, .archive-folder-toggle):focus-visible {
@@ -428,9 +423,6 @@ body.archive-page #archiveFolderTree .archive-folder-glyph::after {
     font: inherit;
 }
 
-.archive-page .archive-breadcrumbs button:hover {
-    color: var(--global-chrome-highlight);
-}
 
 .archive-page .archive-search-toolbar {
     flex: 0 0 auto;
@@ -505,11 +497,6 @@ body.archive-page #archiveFolderTree .archive-folder-glyph::after {
     background: var(--global-chrome-face);
     border: 0;
     box-shadow: var(--global-chrome-raised);
-}
-
-.archive-page .archive-gallery-card:hover {
-    outline: 1px dotted var(--global-chrome-highlight);
-    outline-offset: -3px;
 }
 
 .archive-page .archive-gallery-media {
@@ -619,11 +606,6 @@ body.archive-page .archive-card-description .archive-read-more-toggle:active {
     text-align: left;
     justify-content: flex-start;
     font: 400 12px "Courier New", Courier, monospace;
-}
-
-.archive-page :is(.archive-card-menu, .archive-card-submenu, .archive-folder-context-menu) button:hover:not(:disabled) {
-    background: var(--global-chrome-active-bg);
-    color: var(--global-chrome-active-text);
 }
 
 .archive-page :is(.archive-card-menu, .archive-card-submenu, .archive-folder-context-menu) button:active {

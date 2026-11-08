@@ -340,9 +340,6 @@ body.editor-page {
     font: 400 17px/1 "Courier New", Courier, monospace;
     color: var(--global-chrome-text);
 }
-.editor-page .editor-arrow-compartment:hover .editor-back-symbol {
-    color: var(--global-chrome-highlight);
-}
 @media (pointer: coarse) and (max-width: 700px) {
 .editor-page .editor-nav-actions .editor-compartment,
 .editor-page .editor-nav-actions .global-action-button {

@@ -87,12 +87,6 @@ nav {
     height: var(--icon-size);
 }
 
-.editor-arrow-compartment:hover,
-.global-action-button:hover,
-.editor-upload-button:hover {
-    color: var(--global-accent);
-}
-
 .editor-arrow-compartment:active {
     transform: translate(1px, 1px);
 }
@@ -885,14 +879,6 @@ input.editor-form-control:focus {
     .global-button {
         min-width: 44px;
         min-height: 44px;
-    }
-}
-
-@media (hover: none) {
-    .editor-arrow-compartment:hover,
-    .global-action-button:hover,
-    .editor-upload-button:hover {
-        color: inherit;
     }
 }
 

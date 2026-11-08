@@ -47,11 +47,6 @@
     filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4));
 }
 
-.exit-return-button:hover {
-    transform: translateX(8px);
-    filter: brightness(1.1);
-}
-
 .exit-return-image {
     background-image: var(--media-green-arrow);
     background-size: cover;
@@ -81,9 +76,3 @@
     }
 }
 
-@media (hover: none) {
-    .exit-return-button:hover {
-        transform: none;
-        filter: none;
-    }
-}

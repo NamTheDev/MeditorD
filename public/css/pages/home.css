@@ -46,18 +46,6 @@
     cursor: pointer;
 }
 
-.home-arrow-button:hover {
-    filter: brightness(1.15);
-}
-
-.home-arrow-button.home-left:hover {
-    transform: translateX(-8px);
-}
-
-.home-arrow-button.home-right:hover {
-    transform: translateX(8px);
-}
-
 .home-arrow-svg {
     width: 100%;
     height: auto;
@@ -133,13 +121,3 @@
     }
 }
 
-@media (hover: none) {
-    .home-arrow-button:hover {
-        filter: none;
-    }
-
-    .home-arrow-button.home-left:hover,
-    .home-arrow-button.home-right:hover {
-        transform: none;
-    }
-}

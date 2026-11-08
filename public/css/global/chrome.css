@@ -56,10 +56,6 @@ body.global-workspace :is(button, .global-button, .editor-upload-button) {
     cursor: pointer;
 }
 
-body.global-workspace :is(button, .global-button, .editor-upload-button):hover:not(:disabled) {
-    color: var(--global-chrome-highlight);
-}
-
 body.global-workspace :is(button, .global-button, .editor-upload-button):focus-visible {
     outline: 1px dotted var(--global-chrome-highlight);
     outline-offset: -4px;
