@@ -2015,27 +2015,64 @@ body.workspace98-editor .win98-select.form-control-unit::after {
     box-shadow: none;
 }
 
-/* Scrollbar thumb is an interactive control; track is unused control space. */
-body.workspace98-editor,
-body.workspace98-archive,
-body.workspace98-database {
-    scrollbar-color: #585b70 #313244;
+/* Windows 95/98 scrollbar chrome, adapted to the Mocha palette.
+   Use a raised four-edge thumb and square beveled arrow buttons. */
+body.workspace98 :is(*, *::before, *::after) {
+    scrollbar-color: auto;
 }
 
-body.workspace98-editor *,
-body.workspace98-archive *,
-body.workspace98-database * {
-    scrollbar-color: #585b70 #313244;
+body.workspace98 ::-webkit-scrollbar {
+    width: 17px;
+    height: 17px;
 }
 
-body.workspace98-editor ::-webkit-scrollbar-track,
-body.workspace98-archive ::-webkit-scrollbar-track,
-body.workspace98-database ::-webkit-scrollbar-track {
+body.workspace98 ::-webkit-scrollbar-track {
     background: #313244;
+    border-radius: 0;
 }
 
-body.workspace98-editor ::-webkit-scrollbar-thumb,
-body.workspace98-archive ::-webkit-scrollbar-thumb,
-body.workspace98-database ::-webkit-scrollbar-thumb {
-    background: #585b70;
+body.workspace98 ::-webkit-scrollbar-thumb,
+body.workspace98 ::-webkit-scrollbar-button {
+    background-color: #585b70;
+    border-radius: 0;
+    border: 0;
+    box-shadow:
+        inset 1px 1px 0 var(--ctp-overlay1),
+        inset 2px 2px 0 var(--ctp-surface2),
+        inset -1px -1px 0 var(--ctp-crust),
+        inset -2px -2px 0 var(--ctp-mantle);
+}
+
+body.workspace98 ::-webkit-scrollbar-thumb:active,
+body.workspace98 ::-webkit-scrollbar-button:active {
+    box-shadow: var(--w98-sunken);
+}
+
+body.workspace98 ::-webkit-scrollbar-button:single-button {
+    display: block;
+    width: 17px;
+    height: 17px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 9px 9px;
+}
+
+body.workspace98 ::-webkit-scrollbar-button:single-button:vertical:decrement {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='9' viewBox='0 0 9 9'%3E%3Cpath fill='%231e1e2e' d='M4 1h1v1h1v1h1v1h1v1H1V4h1V3h1V2h1z'/%3E%3C/svg%3E");
+}
+
+body.workspace98 ::-webkit-scrollbar-button:single-button:vertical:increment {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='9' viewBox='0 0 9 9'%3E%3Cpath fill='%231e1e2e' d='M1 3h7v1H7v1H6v1H5v1H4V6H3V5H2V4H1z'/%3E%3C/svg%3E");
+}
+
+body.workspace98 ::-webkit-scrollbar-button:single-button:horizontal:decrement {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='9' viewBox='0 0 9 9'%3E%3Cpath fill='%231e1e2e' d='M1 4h1V3h1V2h1V1h1v7H4V7H3V6H2V5H1z'/%3E%3C/svg%3E");
+}
+
+body.workspace98 ::-webkit-scrollbar-button:single-button:horizontal:increment {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='9' viewBox='0 0 9 9'%3E%3Cpath fill='%231e1e2e' d='M4 1h1v1h1v1h1v1h1v1H7v1H6v1H5v1H4z'/%3E%3C/svg%3E");
+}
+
+body.workspace98 ::-webkit-scrollbar-corner {
+    background: #313244;
 }
