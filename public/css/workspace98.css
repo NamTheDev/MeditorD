@@ -1736,7 +1736,7 @@ body.workspace98-archive .archive-folder-add-plus {
     .workspace98-editor .editor-layout {
         display: block;
         height: 100%;
-        padding: 6px 6px 9px 6px;
+        padding: 6px 30px 9px 6px;
         overflow-y: auto;
     }
     .workspace98-editor :is(.editor-left-pane, .editor-right-pane) {
