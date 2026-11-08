@@ -378,29 +378,6 @@ input.form-control-unit:focus {
     -webkit-font-smoothing: none;
 }
 
-.markdown-preview {
-    flex: 1;
-    min-height: 0;
-    overflow-y: auto;
-    overscroll-behavior-y: contain;
-    -webkit-overflow-scrolling: touch;
-    padding: clamp(10px, 1.5vw, 20px);
-    color: var(--win98-text);
-    line-height: 1.5;
-}
-
-.markdown-preview a {
-    color: var(--win98-accent);
-}
-
-.markdown-preview :first-child {
-    margin-top: 0;
-}
-
-.markdown-preview :last-child {
-    margin-bottom: 0;
-}
-
 .win98-modal-backdrop {
     position: fixed;
     inset: 0;
@@ -554,7 +531,6 @@ input.form-control-unit:focus {
     padding: 0 5px;
 }
 
-.mobile-view-switch,
 .mobile-markdown-toolbar,
 .mobile-editor-scrollbar {
     display: none;
@@ -625,52 +601,21 @@ input.form-control-unit:focus {
         grid-template-columns: minmax(300px, 0.75fr) minmax(760px, 2fr);
     }
 
+    /* One writing surface instead of a two-column preview grid. */
     .textarea-wrapper {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-        grid-template-rows: auto minmax(0, 1fr);
-        column-gap: clamp(16px, 2vw, 28px);
-        /* Surface-colored gutter replaces the line between Write and Preview. */
+        display: flex;
+        flex-direction: column;
         background: var(--win98-surface);
         box-shadow: none;
     }
-
-    .description-toolbar {
-        grid-column: 1 / -1;
-        grid-row: 1;
-    }
-
-    .description-toolbar > #preview-button {
-        display: none;
-    }
-
-    .editor-textarea,
-    .markdown-preview,
-    .editor-textarea.hidden,
-    .markdown-preview.hidden {
-        display: block;
-        grid-row: 2;
-        min-width: 0;
+    .editor-textarea {
         min-height: 0;
-    }
-
-    /* Each side gets its own recessed field, not a shared divider. */
-    .editor-textarea,
-    .markdown-preview {
         background: var(--win98-window-bg);
         box-shadow:
             inset -1px -1px 0 var(--win98-border-lightest),
             inset 1px 1px 0 var(--win98-border-darkest),
             inset -2px -2px 0 var(--win98-border-light),
             inset 2px 2px 0 var(--win98-border-dark);
-    }
-
-    .editor-textarea {
-        grid-column: 1;
-    }
-
-    .markdown-preview {
-        grid-column: 2;
     }
 }
 
@@ -756,63 +701,6 @@ input.form-control-unit:focus {
         padding: 4px 6px;
     }
 
-    .description-toolbar > #preview-button {
-        display: none;
-    }
-
-    .mobile-view-switch {
-        display: flex;
-        align-items: stretch;
-        margin-left: auto;
-        gap: 2px;
-        padding: 2px;
-        border: 0;
-        background: var(--win98-surface);
-        box-shadow:
-            inset 1px 1px 0 var(--win98-border-darkest),
-            inset -1px -1px 0 var(--win98-border-lightest),
-            inset 2px 2px 0 var(--win98-border-dark),
-            inset -2px -2px 0 var(--win98-border-light);
-    }
-
-    .mobile-view-tab {
-        min-width: 84px;
-        min-height: 44px;
-        padding: 5px 12px;
-        border: 0;
-        background: var(--win98-surface);
-        color: var(--win98-text);
-        font-family: "Courier New", Courier, monospace;
-        font-size: 14px;
-        font-weight: 400;
-        letter-spacing: 0.08em;
-        line-height: 1;
-        text-transform: uppercase;
-        box-shadow:
-            inset -1px -1px 0 var(--win98-border-darkest),
-            inset 1px 1px 0 var(--win98-border-lightest),
-            inset -2px -2px 0 var(--win98-border-dark),
-            inset 2px 2px 0 var(--win98-border-light);
-    }
-
-    .mobile-view-tab.active,
-    .mobile-view-tab[aria-selected="true"],
-    .mobile-view-tab:active {
-        /* Keep the text aligned with the inactive tab; border indicates press. */
-        padding: 5px 12px;
-        background: var(--ctp-surface1);
-        color: var(--win98-accent);
-        box-shadow:
-            inset -1px -1px 0 var(--win98-border-lightest),
-            inset 1px 1px 0 var(--win98-border-darkest),
-            inset -2px -2px 0 var(--win98-border-light),
-            inset 2px 2px 0 var(--win98-border-dark);
-    }
-
-    .mobile-view-tab:focus-visible {
-        outline: 1px dotted var(--win98-accent);
-        outline-offset: -5px;
-    }
 
     .editor-textarea {
         flex: none;
@@ -823,15 +711,6 @@ input.form-control-unit:focus {
         font-size: 16px;
         padding: 14px;
         padding-bottom: calc(68px + var(--safe-bottom));
-    }
-
-    .markdown-preview {
-        flex: none;
-        min-height: 320px;
-        overflow: visible;
-        touch-action: pan-y;
-        padding: 14px;
-        font-size: 16px;
     }
 
     .editor-layout button,
@@ -845,10 +724,6 @@ input.form-control-unit:focus {
 
     .editor-right-pane:focus-within .mobile-markdown-toolbar {
         display: flex;
-    }
-
-    .textarea-wrapper[data-view="preview"] .mobile-markdown-toolbar {
-        display: none;
     }
 
     .mobile-markdown-toolbar {
