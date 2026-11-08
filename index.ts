@@ -67,6 +67,19 @@ const server = Bun.serve({
         ),
       );
 
+      if (!(await vendorAsset.exists())) {
+        console.error(
+          "Missing markdown-it browser bundle. Run bun install --frozen-lockfile --production and rebuild the container.",
+        );
+        return new Response("Markdown renderer unavailable", {
+          status: 503,
+          headers: {
+            "Content-Type": "text/plain; charset=utf-8",
+            "Cache-Control": "no-store",
+          },
+        });
+      }
+
       if (await vendorAsset.exists()) {
         const cacheControl =
           url.searchParams.get("v") === vendorVersion
