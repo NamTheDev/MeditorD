@@ -1,50 +1,50 @@
-/* Windows 95/98 scrollbar chrome in MeditorD's Catppuccin palette.
+/* classic scrollbar chrome in MeditorD's Catppuccin palette.
    Keep native scroll physics, wheel input, dragging, and keyboard behavior. */
 :root {
-    --scroll98-size: 17px;
-    --scroll98-face: var(--ctp-base);  /* #1e1e2e: handle and arrow buttons */
-    --scroll98-track: var(--ctp-mantle); /* #181825: track */
+    --scrollbar-size: 17px;
+    --scrollbar-face: var(--ctp-base);  /* #1e1e2e: handle and arrow buttons */
+    --scrollbar-track: var(--ctp-mantle); /* #181825: track */
 }
 
 /* Chromium/Vivaldi: four-tone raised controls inside a recessed track. */
 ::-webkit-scrollbar {
-    width: var(--scroll98-size);
-    height: var(--scroll98-size);
-    background: var(--scroll98-track);
+    width: var(--scrollbar-size);
+    height: var(--scrollbar-size);
+    background: var(--scrollbar-track);
 }
 
 ::-webkit-scrollbar-track {
-    background: var(--scroll98-track);
+    background: var(--scrollbar-track);
     box-shadow:
-        inset 1px 1px 0 var(--win98-border-darkest),
-        inset -1px -1px 0 var(--win98-border-lightest);
+        inset 1px 1px 0 var(--global-border-darkest),
+        inset -1px -1px 0 var(--global-border-lightest);
 }
 
 ::-webkit-scrollbar-thumb,
 ::-webkit-scrollbar-button:single-button {
-    background-color: var(--scroll98-face);
+    background-color: var(--scrollbar-face);
     border: 0;
     border-radius: 0;
     box-shadow:
-        inset -1px -1px 0 var(--win98-border-darkest),
-        inset 1px 1px 0 var(--win98-border-lightest),
-        inset -2px -2px 0 var(--win98-border-dark),
-        inset 2px 2px 0 var(--win98-border-light);
+        inset -1px -1px 0 var(--global-border-darkest),
+        inset 1px 1px 0 var(--global-border-lightest),
+        inset -2px -2px 0 var(--global-border-dark),
+        inset 2px 2px 0 var(--global-border-light);
 }
 
 ::-webkit-scrollbar-thumb:active,
 ::-webkit-scrollbar-button:single-button:active {
     box-shadow:
-        inset -1px -1px 0 var(--win98-border-lightest),
-        inset 1px 1px 0 var(--win98-border-darkest),
-        inset -2px -2px 0 var(--win98-border-light),
-        inset 2px 2px 0 var(--win98-border-dark);
+        inset -1px -1px 0 var(--global-border-lightest),
+        inset 1px 1px 0 var(--global-border-darkest),
+        inset -2px -2px 0 var(--global-border-light),
+        inset 2px 2px 0 var(--global-border-dark);
 }
 
 ::-webkit-scrollbar-button:single-button {
     display: block;
-    width: var(--scroll98-size);
-    height: var(--scroll98-size);
+    width: var(--scrollbar-size);
+    height: var(--scrollbar-size);
 }
 
 /* Small blocky arrows: pure CSS, no raster or SVG files. */
@@ -68,50 +68,50 @@
 
 ::-webkit-scrollbar-button:horizontal:decrement,
 ::-webkit-scrollbar-button:horizontal:increment {
-    background-color: var(--scroll98-face);
+    background-color: var(--scrollbar-face);
 }
 
 ::-webkit-scrollbar-corner {
-    background: var(--scroll98-face);
-    box-shadow: inset 1px 1px var(--win98-border-lightest);
+    background: var(--scrollbar-face);
+    box-shadow: inset 1px 1px var(--global-border-lightest);
 }
 
 /* Firefox: native color properties preserve the same thumb and track.
-   Chromium/Vivaldi retain the detailed Win98 pseudo-element chrome above. */
+   Chromium/Vivaldi retain the detailed classic pseudo-element chrome above. */
 @supports (-moz-appearance: none) {
     * {
         scrollbar-width: auto;
-        scrollbar-color: var(--scroll98-face) var(--scroll98-track);
+        scrollbar-color: var(--scrollbar-face) var(--scrollbar-track);
     }
 }
 
 /* Existing editor mobile scrollbar: only its visuals change.
    The drag/track/keyboard logic remains in edit.js. */
 @container editor-shell (max-width: 839px) {
-    .mobile-editor-scrollbar {
+    .editor-mobile-scrollbar {
         width: 22px;
         grid-template-rows: 28px minmax(0, 1fr) 28px;
-        background: var(--scroll98-face);
+        background: var(--scrollbar-face);
     }
 
-    .mobile-scrollbar-arrow {
+    .editor-scrollbar-arrow {
         min-height: 28px;
         height: 28px;
         font-size: 10px;
-        background: var(--scroll98-face);
+        background: var(--scrollbar-face);
         color: var(--ctp-text);
     }
 
-    .mobile-scrollbar-track {
+    .editor-scrollbar-track {
         margin: 1px;
-        background: var(--scroll98-track);
+        background: var(--scrollbar-track);
     }
 
-    .mobile-scrollbar-thumb,
-    .mobile-scrollbar-thumb.dragging {
+    .editor-scrollbar-thumb,
+    .editor-scrollbar-thumb.dragging {
         left: 1px;
         right: 1px;
         min-height: 44px;
-        background: var(--scroll98-face);
+        background: var(--scrollbar-face);
     }
 }

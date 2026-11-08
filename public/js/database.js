@@ -46,10 +46,10 @@ function toDateTimeInput(value) {
   return new Date(date.getTime() - offset).toISOString().slice(0, 16);
 }
 
-function renderMessage(message, className = "empty-state") {
+function renderMessage(message, className = "database-empty-state") {
   tableBody.replaceChildren();
   const count = document.getElementById("databaseResultCount");
-  if (count) count.textContent = className === "error-state" ? "Unavailable" : message;
+  if (count) count.textContent = className === "database-error-state" ? "Unavailable" : message;
   const row = document.createElement("tr");
   const cell = document.createElement("td");
   cell.colSpan = 6;
@@ -254,7 +254,7 @@ function renderTable() {
     const actions = document.createElement("td");
     actions.className = "database-actions-cell";
     const buttons = document.createElement("div");
-    buttons.className = "row-actions";
+    buttons.className = "database-row-actions";
     const edit = document.createElement("button");
     edit.type = "button";
     edit.textContent = item.isDirectory ? "Rename" : "Edit";
@@ -262,7 +262,7 @@ function renderTable() {
     edit.addEventListener("click", () => editItem(item));
     const remove = document.createElement("button");
     remove.type = "button";
-    remove.className = "delete-action";
+    remove.className = "database-delete-action";
     remove.textContent = "Delete";
     remove.setAttribute("aria-label", `Delete ${item.title}`);
     remove.addEventListener("click", () => deleteItem(item));
@@ -294,7 +294,7 @@ async function loadItems() {
     }
   } catch (error) {
     state.items = [];
-    renderMessage(error.message, "error-state");
+    renderMessage(error.message, "database-error-state");
   }
 }
 
@@ -345,7 +345,7 @@ async function editItem(item) {
   document.getElementById("editMedia").value = "";
   document.getElementById("removeMedia").checked = false;
   document.getElementById("editError").textContent = "";
-  document.getElementById("editModal").classList.remove("hidden");
+  document.getElementById("editModal").classList.remove("global-hidden");
   document.getElementById("editTitle").focus();
 }
 
@@ -365,12 +365,12 @@ function createPost() {
   document.getElementById("removeMedia").checked = false;
   document.getElementById("removeMedia").closest("label").hidden = true;
   document.getElementById("editError").textContent = "";
-  document.getElementById("editModal").classList.remove("hidden");
+  document.getElementById("editModal").classList.remove("global-hidden");
   document.getElementById("editTitle").focus();
 }
 
 function closeEditModal() {
-  document.getElementById("editModal").classList.add("hidden");
+  document.getElementById("editModal").classList.add("global-hidden");
   document.getElementById("removeMedia").closest("label").hidden = false;
 }
 

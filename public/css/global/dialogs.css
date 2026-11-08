@@ -1,0 +1,226 @@
+.global-title-bar {
+    position: relative;
+    min-height: 36px;
+    background: linear-gradient(
+        90deg,
+        var(--ctp-lavender) 0%,
+        var(--ctp-base) 100%
+    );
+    color: var(--ctp-base);
+    font-weight: bold;
+    font-size: var(--font-base);
+    padding: 10px 42px 10px 10px;
+    display: flex;
+    align-items: center;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid var(--ctp-surface1);
+}
+
+#modalTitle {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    line-height: 1;
+}
+
+.global-modal-close-button {
+    position: absolute;
+    top: 50%;
+    right: 5px;
+    width: 22px;
+    height: 22px;
+    min-width: 22px;
+    min-height: 22px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--ctp-lavender);
+    color: var(--ctp-base);
+    font-size: var(--font-base);
+    font-weight: 700;
+    line-height: 1;
+    border: none;
+    cursor: pointer;
+    transform: translateY(-50%);
+    box-shadow:
+        inset -1px -1px 0 var(--bevel-darkest),
+        inset 1px 1px 0 #ffffff,
+        inset -2px -2px 0 var(--bevel-dark),
+        inset 2px 2px 0 var(--ctp-lavender);
+}
+
+.global-modal-close-button:hover {
+    filter: brightness(1.05);
+}
+
+.global-modal-close-button:active {
+    padding: 0;
+    box-shadow:
+        inset -1px -1px 0 #ffffff,
+        inset 1px 1px 0 var(--bevel-darkest),
+        inset -2px -2px 0 var(--ctp-lavender),
+        inset 2px 2px 0 var(--bevel-dark);
+    transform: translate(1px, calc(-50% + 1px));
+}
+
+.global-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(17, 17, 27, 0.75);
+    z-index: 5000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+.global-modal-overlay.active {
+    display: flex;
+}
+
+.global-modal-window {
+    width: 90%;
+    max-width: 760px;
+    max-height: 88vh;
+    background: var(--surface0);
+    display: flex;
+    flex-direction: column;
+    padding: 3px;
+}
+
+.global-modal-content-area {
+    background: var(--bg);
+    flex: 1;
+    overflow-y: auto;
+    padding: 14px;
+    margin: 2px 0 0;
+}
+
+.global-modal-actions {
+    display: none;
+}
+
+.global-dialog-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    display: grid;
+    place-items: center;
+    padding: max(20px, var(--safe-top)) max(20px, var(--safe-right))
+        max(20px, calc(var(--safe-bottom) + var(--keyboard-offset)))
+        max(20px, var(--safe-left));
+    background: rgba(17, 17, 27, 0.78);
+}
+
+.global-dialog-overlay[hidden],
+.global-dialog-input-wrap[hidden] {
+    display: none;
+}
+
+.global-dialog-visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.global-dialog-window {
+    width: min(420px, 100%);
+    max-height: min(88dvh, var(--visual-viewport-height));
+    overflow: auto;
+    padding: 3px;
+    background: var(--ctp-surface0);
+    color: var(--ctp-text);
+    font-family: "IBM Plex Sans", Tahoma, sans-serif;
+}
+
+.global-dialog-titlebar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 6px 8px;
+    background: var(--ctp-lavender);
+    color: var(--ctp-base);
+}
+
+.global-dialog-titlebar h2 {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 700;
+}
+
+.global-dialog-close {
+    padding: 0 5px;
+    border: 1px solid var(--bevel-darkest);
+    border-top-color: var(--bevel-lightest);
+    border-left-color: var(--bevel-lightest);
+    background: var(--ctp-surface0);
+    color: var(--ctp-text);
+    font: inherit;
+    font-weight: 700;
+    line-height: 1.2;
+    cursor: pointer;
+}
+
+.global-dialog-content {
+    padding: 14px;
+    background: var(--ctp-base);
+    border: 2px solid var(--bevel-darkest);
+    border-top-color: var(--bevel-lightest);
+    border-left-color: var(--bevel-lightest);
+}
+
+.global-dialog-content p {
+    margin: 0 0 12px;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.global-dialog-input-wrap {
+    display: block;
+    margin-bottom: 12px;
+}
+
+.global-dialog-input-wrap input {
+    width: 100%;
+    padding: 6px 8px;
+    border: 1px solid var(--ctp-overlay0);
+    background: var(--ctp-crust);
+    color: var(--ctp-text);
+    font: inherit;
+}
+
+.global-dialog-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.global-dialog-actions button {
+    min-width: 76px;
+    padding: 5px 12px;
+    border: 2px solid var(--bevel-darkest);
+    border-top-color: var(--bevel-lightest);
+    border-left-color: var(--bevel-lightest);
+    background: var(--ctp-surface0);
+    color: var(--ctp-text);
+    font: inherit;
+    cursor: pointer;
+}
+
+.global-dialog-actions button[hidden] {
+    display: none;
+}
+
+.global-dialog-actions button:focus-visible,
+.global-dialog-close:focus-visible,
+.global-dialog-input-wrap input:focus-visible {
+    outline: 2px solid var(--ctp-lavender);
+    outline-offset: 2px;
+}

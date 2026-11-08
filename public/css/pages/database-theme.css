@@ -1,0 +1,359 @@
+/* ───────────────── DATABASE ───────────────── */
+body.database-page {
+    /* Database-only palette; Editor and Archive remain unchanged. */
+    --global-chrome-shell: #1e1e2e;
+    --global-chrome-pane: #45475a;
+    --global-chrome-toolbar: #45475a;
+    --global-chrome-titlebar: #45475a;
+    --global-chrome-face: #585b70;
+    --global-chrome-face-hover: #585b70;
+    --global-chrome-well: #313244;
+    overflow: hidden;
+    background: var(--global-chrome-shell);
+}
+
+.database-page #databaseApp {
+    width: 100%;
+    max-width: none;
+    height: 100dvh;
+    min-height: 0;
+    padding: max(4px, var(--safe-top)) max(4px, var(--safe-right))
+        max(4px, var(--safe-bottom)) max(4px, var(--safe-left));
+    gap: 4px;
+    background: var(--global-chrome-shell);
+}
+
+.database-page .database-header {
+    flex: 0 0 auto;
+    padding: 0;
+    background: var(--global-chrome-toolbar);
+    box-shadow: none;
+}
+
+.database-page .database-titlebar {
+    position: relative;
+    justify-content: center;
+    min-height: 29px;
+    height: 29px;
+    padding: 3px 9px;
+    background: var(--global-chrome-titlebar);
+    color: var(--global-chrome-highlight);
+}
+
+.database-page .database-titlebar h1 {
+    color: var(--global-chrome-highlight);
+    font: 400 15px "Courier New", Courier, monospace;
+    letter-spacing: 0.18em;
+}
+
+.database-page .database-title-caption {
+    position: absolute;
+    right: 9px;
+    color: var(--ctp-subtext1);
+    font: 400 10px "Courier New", Courier, monospace;
+}
+
+.database-page .database-actions {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+    align-items: stretch;
+    gap: 3px;
+    padding: 3px 0 0;
+    background: var(--global-chrome-toolbar);
+}
+
+.database-page :is(.database-actions-left, .database-actions-right) {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: stretch;
+    gap: 3px;
+    min-width: 0;
+}
+
+.database-page .database-actions-right {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.database-page .database-actions button {
+    width: 100%;
+    min-width: 0;
+    min-height: 30px;
+    height: 30px;
+    margin: 0;
+    padding: 4px 8px;
+    color: var(--global-chrome-text);
+    background: var(--global-chrome-face);
+    border: 0;
+    box-shadow: var(--global-chrome-raised);
+    font: 400 12px "Courier New", Courier, monospace;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.database-page .database-actions button:active {
+    padding: 4px 12px;
+}
+
+/* Keep Database's five navigation actions readable on narrow screens. */
+@media (max-width: 700px) {
+    .database-page .database-actions {
+        grid-template-columns: minmax(0, 1fr);
+    }
+    .database-page .database-title-caption {
+        display: none;
+    }
+}
+
+.database-page .database-main {
+    flex: 1 1 auto;
+    min-height: 0;
+    min-width: 0;
+    gap: 4px;
+}
+
+.database-page .database-searchbar {
+    flex: 0 0 auto;
+    gap: 5px;
+    padding: 7px;
+    background: var(--global-chrome-toolbar);
+    box-shadow: var(--global-chrome-raised);
+}
+
+.database-page :is(.database-search-line, .database-filter-line) {
+    gap: 6px;
+}
+
+.database-page .database-search-line > label,
+.database-page .database-filter-control {
+    color: var(--global-chrome-text);
+    font: 400 12px "Courier New", Courier, monospace;
+}
+
+.database-page .database-search-line input {
+    height: 31px;
+    min-height: 31px;
+    background: var(--global-chrome-well);
+    box-shadow: var(--global-chrome-sunken);
+    font: 400 12px "Courier New", Courier, monospace;
+}
+
+.database-page .database-filter-control {
+    flex: 1 1 200px;
+    max-width: none;
+}
+
+.database-page .database-filter-control select {
+    height: 31px;
+    min-height: 31px;
+    font: 400 12px "Courier New", Courier, monospace;
+}
+
+.database-page .database-results-count {
+    color: var(--ctp-subtext1);
+    font: 400 11px "Courier New", Courier, monospace;
+}
+
+/* The table and dialog are containers, not input wells. */
+.database-page .database-main,
+.database-page .database-edit-dialog-box {
+    background: var(--global-chrome-pane);
+}
+
+.database-page .database-filter-control select {
+    background: var(--global-chrome-well);
+    color: var(--global-chrome-text);
+    box-shadow: var(--global-chrome-sunken);
+}
+
+.database-page .database-table-wrap {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: auto;
+    padding: 2px;
+    background: var(--global-chrome-pane);
+    box-shadow: var(--global-chrome-raised);
+}
+
+.database-page .database-table-wrap table {
+    table-layout: fixed;
+    width: 100%;
+    background: var(--global-chrome-pane);
+    color: var(--global-chrome-text);
+    font-family: "Courier New", Courier, monospace;
+}
+
+.database-page .database-table-wrap th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    height: 31px;
+    padding: 6px 8px;
+    color: var(--global-chrome-text);
+    background: var(--global-chrome-toolbar);
+    border-right: 1px solid var(--ctp-mantle);
+    border-bottom: 1px solid var(--ctp-crust);
+    font: 400 11px "Courier New", Courier, monospace;
+    box-shadow: inset 0 1px 0 var(--ctp-overlay0);
+}
+
+.database-page .database-table-wrap td {
+    height: 34px;
+    padding: 5px 8px;
+    color: var(--global-chrome-text);
+    background: transparent;
+    border-bottom: 1px solid var(--ctp-surface0);
+    font: 400 12px "Courier New", Courier, monospace;
+}
+
+.database-page .database-table-wrap tbody tr:hover {
+    background: var(--ctp-surface0);
+}
+
+.database-page .database-table-wrap td a {
+    color: var(--global-chrome-highlight);
+}
+
+.database-page .database-folder-row .database-title-cell {
+    color: var(--global-chrome-highlight);
+}
+
+.database-page .database-folder-glyph {
+    color: var(--global-chrome-highlight);
+}
+
+.database-page .database-row-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 4px;
+}
+
+.database-page .database-row-actions button {
+    min-width: 0;
+    min-height: 25px;
+    padding: 3px 8px;
+    background: var(--global-chrome-face);
+    box-shadow: var(--global-chrome-raised);
+    font: 400 11px "Courier New", Courier, monospace;
+}
+
+.database-page .database-row-actions button:active {
+    padding: 3px 8px;
+}
+
+.database-page .database-row-actions .database-delete-action:hover {
+    color: var(--ctp-red);
+}
+
+.database-page .database-edit-dialog-box {
+    padding: 4px;
+}
+
+.database-page .database-edit-dialog-header {
+    background: var(--global-chrome-titlebar);
+    padding: 4px 7px;
+}
+
+.database-page .database-edit-dialog-box label {
+    color: var(--global-chrome-text);
+    font: 400 12px "Courier New", Courier, monospace;
+}
+
+.database-page .database-edit-dialog-box input:not([type="checkbox"]),
+.database-page .database-edit-dialog-box select,
+.database-page .database-edit-dialog-box textarea {
+    font: 400 12px "Courier New", Courier, monospace;
+    background: var(--global-chrome-well);
+    color: var(--global-chrome-text);
+    box-shadow: var(--global-chrome-sunken);
+}
+
+
+@media (max-width: 700px) {
+.database-page :is(.database-actions-left, .database-actions-right) {
+        display: flex;
+        gap: 4px;
+    }
+.database-page .database-actions button {
+        min-width: 0;
+        min-height: 30px;
+        padding: 4px 7px;
+        font-size: 11px;
+    }
+.database-page .database-search-line input,
+.database-page .database-filter-control select {
+        min-height: 34px;
+        font-size: 13px;
+    }
+}
+@media (max-width: 450px) {
+.database-page .database-title-caption {
+        display: none;
+    }
+.database-page .database-filter-control {
+        flex-basis: 100%;
+    }
+}
+@media (pointer: coarse) and (max-width: 700px) {
+.database-page :is(.database-actions button, .database-row-actions button) {
+        min-height: 44px;
+    }
+}
+@media (max-width: 700px) {
+.database-page #databaseApp {
+        gap: 6px;
+        padding: max(6px, var(--safe-top)) max(6px, var(--safe-right))
+            max(6px, var(--safe-bottom)) max(6px, var(--safe-left));
+    }
+.database-page .database-header {
+        padding: 4px;
+    }
+.database-page .database-actions {
+        display: flex;
+        gap: 6px;
+        padding: 6px 4px 4px;
+    }
+.database-page .database-searchbar {
+        gap: 8px;
+        padding: 8px;
+    }
+.database-page .database-filter-line {
+        gap: 6px;
+    }
+}
+.database-page #databaseApp {
+    box-sizing: border-box;
+    width: calc(100% - 40px);
+    height: calc(100dvh - 40px);
+    margin: 20px;
+    padding: 0;
+}
+.database-page #databaseApp {
+    background: var(--global-chrome-pane);
+    box-shadow: var(--global-chrome-raised);
+    gap: 4px;
+    padding: 4px;
+}
+.database-page :is(
+    .database-header,
+    .database-titlebar,
+    .database-actions,
+    .database-main,
+    .database-searchbar,
+    .database-table-wrap,
+    .database-table-wrap table,
+    .database-table-wrap th
+) {
+    background: transparent;
+    box-shadow: none;
+}
+.database-page :is(.database-search-line input, .database-filter-control select,
+    .database-edit-dialog-box input:not([type="checkbox"]), .database-edit-dialog-box select,
+    .database-edit-dialog-box textarea) {
+    background: var(--global-chrome-well);
+    box-shadow: var(--global-chrome-sunken);
+}
+.database-page :is(.database-actions button, .database-row-actions button,
+    .database-edit-dialog-actions button, .database-modal-close) {
+    background: var(--global-chrome-face);
+}

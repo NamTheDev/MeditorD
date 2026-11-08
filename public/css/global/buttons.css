@@ -1,0 +1,66 @@
+button,
+.global-button {
+    background: var(--surface0);
+    color: var(--fg);
+    font-family: inherit;
+    font-size: var(--font-base);
+    border: none;
+    box-shadow:
+        inset 1px 1px 0 var(--bevel-lightest),
+        inset -1px -1px 0 var(--bevel-darkest),
+        inset 2px 2px 0 var(--bevel-light),
+        inset -2px -2px 0 var(--bevel-dark);
+    min-height: calc(var(--input-height) * 0.9);
+    padding: clamp(3px, 0.5vw, 8px) clamp(10px, 1.4vw, 24px);
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    white-space: nowrap;
+}
+
+button:active,
+.global-button:active {
+    box-shadow:
+        inset 1px 1px 0 var(--bevel-darkest),
+        inset -1px -1px 0 var(--bevel-lightest),
+        inset 2px 2px 0 var(--bevel-dark),
+        inset -2px -2px 0 var(--bevel-light);
+    padding: 4px 9px 2px 11px;
+}
+
+.global-action-button {
+    background: var(--global-surface);
+    color: var(--global-text);
+    border: none;
+    font-family: inherit;
+    font-size: var(--font-base);
+    font-weight: 400;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    padding: clamp(3px, 0.5vw, 8px) clamp(10px, 1.4vw, 24px);
+    min-height: calc(var(--input-height) * 0.9);
+    box-shadow:
+        inset -1px -1px 0 var(--global-border-darkest),
+        inset 1px 1px 0 var(--global-border-lightest),
+        inset -2px -2px 0 var(--global-border-dark),
+        inset 2px 2px 0 var(--global-border-light);
+}
+
+.global-action-button:active {
+    box-shadow:
+        inset -1px -1px 0 var(--global-border-lightest),
+        inset 1px 1px 0 var(--global-border-darkest),
+        inset -2px -2px 0 var(--global-border-light),
+        inset 2px 2px 0 var(--global-border-dark);
+    padding: clamp(4px, 0.6vw, 9px) clamp(9px, 1.3vw, 23px)
+        clamp(2px, 0.4vw, 7px) clamp(11px, 1.5vw, 25px);
+}
+
+.global-action-button:focus {
+    outline: 1px dotted var(--global-accent);
+    outline-offset: -4px;
+}

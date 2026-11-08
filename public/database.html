@@ -31,7 +31,7 @@
             <div class="database-filter-line">
                 <label class="database-filter-control" for="databaseSearchMode">
                     <span>Match:</span>
-                    <span class="win98-select">
+                    <span class="global-select">
                         <select id="databaseSearchMode">
                             <option value="includes">Contains</option>
                             <option value="starts">Starts with</option>
@@ -41,7 +41,7 @@
                 </label>
                 <label class="database-filter-control" for="databaseSortOrder">
                     <span>Sort:</span>
-                    <span class="win98-select">
+                    <span class="global-select">
                         <select id="databaseSortOrder">
                             <option value="newest">Date: Newest first</option>
                             <option value="oldest">Date: Oldest first</option>
@@ -52,7 +52,7 @@
                 </label>
                 <label class="database-filter-control" for="databaseFolderFilter">
                     <span>Folder:</span>
-                    <span class="win98-select">
+                    <span class="global-select">
                         <select id="databaseFolderFilter">
                             <option value="">All folders</option>
                         </select>
@@ -60,7 +60,7 @@
                 </label>
             </div>
         </section>
-        <div class="table-wrap">
+        <div class="database-table-wrap">
             <table aria-label="Saved posts and folders">
                 <thead>
                     <tr>
@@ -83,17 +83,17 @@
 </div>
 
 <div
-    class="edit-modal hidden"
+    class="database-edit-dialog global-hidden"
     id="editModal"
     role="dialog"
     aria-modal="true"
     aria-labelledby="editModalTitle"
 >
-    <form class="edit-modal-box" id="editForm">
-        <div class="edit-modal-header">
+    <form class="database-edit-dialog-box" id="editForm">
+        <div class="database-edit-dialog-header">
             <h2 id="editModalTitle">Edit post</h2>
             <button
-                class="modal-close"
+                class="database-modal-close"
                 id="closeEditButton"
                 type="button"
                 aria-label="Close"
@@ -102,7 +102,7 @@
             </button>
         </div>
         <label>Title<input id="editTitle" name="title" required /></label>
-        <label>Folder<span class="win98-select"><select id="editFolder" name="folder"></select></span></label>
+        <label>Folder<span class="global-select"><select id="editFolder" name="folder"></select></span></label>
         <label>Username<input id="editUsername" name="username" /></label>
         <label>URL<input id="editUrl" name="url" type="url" /></label>
         <label
@@ -125,18 +125,18 @@
                 rows="7"
             ></textarea>
         </label>
-        <label class="remove-media"
+        <label class="database-remove-media"
             ><input id="removeMedia" name="removeMedia" type="checkbox" />
             Remove current media</label
         >
-        <p class="modal-error" id="editError" role="alert"></p>
-        <div class="edit-modal-actions">
+        <p class="database-modal-error" id="editError" role="alert"></p>
+        <div class="database-edit-dialog-actions">
             <button id="cancelEditButton" type="button">Cancel</button>
             <button type="submit">Save</button>
         </div>
     </form>
 </div>
 
-<link rel="stylesheet" href="/css/win98-scrollbars.css" />
+<link rel="stylesheet" href="/css/features/scrollbars.css" />
 <script src="/js/media-thumbnail.js" defer></script>
 <script src="/js/database.js" defer></script>

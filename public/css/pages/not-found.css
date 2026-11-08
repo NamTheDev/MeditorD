@@ -1,5 +1,5 @@
-/* The same 404 message and Return action, rebuilt as a classic Win98 window. */
-body.workspace98-404 .not-found-shell {
+/* The same 404 message and Return action, rebuilt as a classic classic window. */
+body.not-found-page .not-found-shell {
     min-height: 100dvh;
     display: grid;
     place-items: center;
@@ -7,46 +7,46 @@ body.workspace98-404 .not-found-shell {
         max(16px, var(--safe-bottom)) max(16px, var(--safe-left));
     background: var(--ctp-base);
 }
-body.workspace98-404 .not-found-window {
+body.not-found-page .not-found-window {
     width: min(460px, 100%);
     padding: 4px;
-    background: var(--w98-face);
-    box-shadow: var(--w98-raised), 3px 3px 0 var(--ctp-crust);
+    background: var(--global-chrome-face);
+    box-shadow: var(--global-chrome-raised), 3px 3px 0 var(--ctp-crust);
 }
-body.workspace98-404 .not-found-titlebar {
+body.not-found-page .not-found-titlebar {
     display: flex;
     align-items: center;
     min-height: 33px;
     padding: 5px 9px;
     background: var(--ctp-surface1);
 }
-body.workspace98-404 .heading-404 {
+body.not-found-page .not-found-heading {
     position: static;
     margin: 0;
     font: 400 15px/1.3 "Courier New", Courier, monospace;
     letter-spacing: 0.04em;
     color: var(--ctp-lavender);
 }
-body.workspace98-404 .not-found-content {
+body.not-found-page .not-found-content {
     min-height: 118px;
     margin-top: 4px;
     padding: 16px;
     display: flex;
     align-items: flex-end;
     justify-content: center;
-    background: var(--w98-well);
-    box-shadow: var(--w98-sunken);
+    background: var(--global-chrome-well);
+    box-shadow: var(--global-chrome-sunken);
 }
-body.workspace98-404 .return-btn-404 {
+body.not-found-page .not-found-return-button {
     position: static;
     width: auto;
     aspect-ratio: auto;
     min-width: 114px;
     min-height: 30px;
     padding: 6px 18px;
-    color: var(--w98-text);
-    background: var(--w98-face);
-    box-shadow: var(--w98-raised);
+    color: var(--global-chrome-text);
+    background: var(--global-chrome-face);
+    box-shadow: var(--global-chrome-raised);
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -54,18 +54,18 @@ body.workspace98-404 .return-btn-404 {
     text-decoration: none;
     font: 400 13px/1.2 "Courier New", Courier, monospace;
 }
-body.workspace98-404 .return-btn-404:hover {
+body.not-found-page .not-found-return-button:hover {
     color: var(--ctp-lavender);
     background: var(--ctp-surface1);
     transform: none;
     filter: none;
 }
-body.workspace98-404 .return-btn-404:active {
-    box-shadow: var(--w98-pressed);
+body.not-found-page .not-found-return-button:active {
+    box-shadow: var(--global-chrome-pressed);
     transform: translate(1px, 1px);
 }
 @media (pointer: coarse) {
-    body.workspace98-404 .return-btn-404 {
+    body.not-found-page .not-found-return-button {
         min-height: 44px;
     }
 }

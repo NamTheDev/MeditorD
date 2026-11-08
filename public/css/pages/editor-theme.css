@@ -1,0 +1,500 @@
+/* ───────────────── EDITOR ───────────────── */
+body.editor-page {
+    /* Shared Editor/Archive hierarchy: background > containers > controls > wells. */
+    --global-chrome-shell: var(--ctp-base);
+    --global-chrome-pane: var(--ctp-surface1);
+    --global-chrome-toolbar: var(--ctp-surface1);
+    --global-chrome-face: var(--ctp-surface2);
+    --global-chrome-well: var(--ctp-surface0);
+    --global-chrome-titlebar: var(--ctp-surface1);
+    --global-chrome-active-bg: var(--ctp-surface2);
+    height: 100dvh;
+    min-height: 100dvh;
+    overflow: hidden;
+    background: var(--global-chrome-shell);
+    --pane-padding: 11px;
+    --input-height: 32px;
+    --preview-padding: 12px;
+}
+
+/* Editor uses the same outer shell model as Archive:
+   one padding/gap owner for the menu and the content region. */
+.editor-page #fullscreenApp {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    gap: 4px;
+    width: 100%;
+    min-height: 0;
+    padding: max(4px, var(--safe-top)) max(4px, var(--safe-right))
+        max(4px, var(--safe-bottom)) max(4px, var(--safe-left));
+    background: var(--global-chrome-shell);
+}
+
+.editor-page #fullscreenApp > header {
+    flex: 0 0 auto;
+    padding: 0;
+    background: var(--global-chrome-pane);
+}
+
+/* Real classic title strip above a compact command toolbar, for every width. */
+.editor-page #fullscreenApp > header > nav {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 3px;
+    height: auto;
+    min-height: 0;
+    padding: 3px;
+    border: 0;
+    background: var(--global-chrome-toolbar);
+    box-shadow: var(--global-chrome-raised);
+}
+
+.editor-page .editor-title-compartment {
+    order: -1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    grid-area: auto;
+    flex: 0 0 29px;
+    width: 100%;
+    min-height: 29px;
+    height: 29px;
+    overflow: hidden;
+    padding: 0 35px;
+    color: var(--global-chrome-highlight);
+    background: var(--global-chrome-titlebar);
+    border: none;
+    box-shadow: none;
+    font: 400 15px/1 "Courier New", Courier, monospace;
+    letter-spacing: 0.22em;
+}
+
+.editor-page .editor-arrow-compartment {
+    position: absolute;
+    z-index: 2;
+    top: 6px;
+    left: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    grid-area: auto;
+    width: max-content;
+    height: 23px;
+    min-width: 0;
+    min-height: 23px;
+    padding: 2px 9px;
+    white-space: nowrap;
+    background: var(--global-chrome-face);
+    border: 0;
+    box-shadow: var(--global-chrome-raised);
+    font: 400 12px "Courier New", Courier, monospace;
+    text-decoration: none;
+}
+
+.editor-page .editor-arrow-icon {
+    width: 16px;
+    height: 16px;
+}
+
+.editor-page .editor-nav-actions {
+    order: 1;
+    display: grid;
+    grid-area: auto;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 3px;
+    width: 100%;
+    min-height: 0;
+    border: 0;
+}
+
+.editor-page .editor-nav-actions .editor-compartment {
+    grid-area: auto;
+    min-width: 0;
+    min-height: 0;
+    height: 32px;
+    padding: 0;
+    border: 0;
+    box-shadow: none;
+}
+
+.editor-page .editor-nav-actions .global-action-button {
+    display: block;
+    width: 100%;
+    height: 32px;
+    min-height: 32px;
+    max-width: none;
+    padding: 3px 7px;
+    background: var(--global-chrome-face);
+    color: var(--global-chrome-text);
+    box-shadow: var(--global-chrome-raised);
+    font: 400 12px "Courier New", Courier, monospace;
+    letter-spacing: 0.025em;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+.editor-page .editor-nav-actions .global-action-button:active {
+    padding: 3px 7px;
+    box-shadow: var(--global-chrome-sunken);
+}
+
+.editor-page .editor-container {
+    flex: 1 1 auto;
+    min-height: 0;
+    margin: 0;
+    background: var(--global-chrome-pane);
+    border: 0;
+    box-shadow: var(--global-chrome-raised);
+}
+
+.editor-page .editor-layout {
+    gap: 4px;
+    padding: 4px;
+    grid-template-columns: minmax(280px, 0.9fr) minmax(360px, 1.1fr);
+    background: var(--global-chrome-pane);
+}
+
+.editor-page :is(.editor-left-pane, .editor-right-pane) {
+    padding: 11px;
+    min-width: 0;
+    border: 0;
+    box-shadow: var(--global-chrome-raised);
+    background: var(--global-chrome-pane);
+}
+
+.editor-page .editor-left-pane {
+    overflow: auto;
+}
+
+.editor-page .editor-form {
+    gap: 10px;
+}
+
+.editor-page .editor-form-row {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+}
+
+.editor-page .editor-form-row label.editor-field-label {
+    width: auto;
+    flex: 0 0 auto;
+    padding: 0;
+    color: var(--global-chrome-text);
+    font: 400 12px/1.3 "Courier New", Courier, monospace;
+}
+
+.editor-page .editor-form-control {
+    min-width: 0;
+    width: 100%;
+    flex: 0 0 auto;
+}
+
+.editor-page input.editor-form-control {
+    height: 32px;
+    padding: 6px 8px;
+    color: var(--global-chrome-text);
+    background: var(--global-chrome-well);
+    box-shadow: var(--global-chrome-sunken);
+    font-size: 13px;
+}
+
+.editor-page .global-select.editor-form-control {
+    width: 100%;
+    flex: 0 0 auto;
+}
+
+.editor-page .global-select > select {
+    height: 32px;
+    font: 400 13px "Courier New", Courier, monospace;
+}
+
+.editor-page .editor-upload-button {
+    height: 32px;
+    min-height: 32px;
+    display: flex;
+    flex: 0 0 32px;
+    padding: 5px 8px;
+    box-shadow: var(--global-chrome-raised);
+    font: 400 12px "Courier New", Courier, monospace;
+}
+
+.editor-page .editor-form-row.editor-preview-row {
+    flex: 1 0 150px;
+    align-items: stretch;
+    min-height: 150px;
+}
+
+.editor-page .editor-preview-box {
+    flex: 1 1 auto;
+    min-height: 138px;
+    padding: 12px;
+    background: var(--global-chrome-well);
+    box-shadow: var(--global-chrome-sunken);
+    color: var(--ctp-overlay1);
+    font: 400 11px/1.4 "Courier New", Courier, monospace;
+}
+
+.editor-page .editor-right-pane {
+    overflow: hidden;
+}
+
+.editor-page .editor-textarea-wrapper {
+    min-height: 0;
+    background: var(--global-chrome-pane);
+    box-shadow: none;
+}
+
+.editor-page .editor-description-toolbar {
+    min-height: 32px;
+    padding: 3px 6px;
+    gap: 8px;
+    color: var(--global-chrome-text);
+    background: var(--global-chrome-toolbar);
+    border-bottom: 0;
+}
+
+.editor-page .editor-description-label {
+    color: var(--global-chrome-text);
+    font: 400 12px "Courier New", Courier, monospace;
+}
+
+.editor-page .editor-description-toolbar .global-action-button {
+    min-height: 24px;
+    padding: 3px 10px;
+    box-shadow: var(--global-chrome-raised);
+    font-size: 11px;
+}
+
+.editor-page :is(.editor-textarea, .editor-markdown-preview) {
+    min-width: 0;
+    min-height: 0;
+    padding: 12px;
+    color: var(--global-chrome-text);
+    background: var(--global-chrome-well);
+    box-shadow: var(--global-chrome-sunken);
+    font: 400 13px/1.55 "Courier New", Courier, monospace;
+}
+
+.editor-page .editor-textarea {
+    resize: none;
+}
+
+.editor-page .editor-markdown-preview {
+    overflow-y: auto;
+}
+
+.editor-page .editor-markdown-preview :is(a, strong) {
+    color: var(--global-chrome-highlight);
+}
+
+/* Keep the existing responsive Write/Preview and touch scrollbar behaviors. */
+@container editor-shell (min-width: 1180px) {
+    .editor-page .editor-layout {
+        grid-template-columns: minmax(300px, 0.78fr) minmax(760px, 2fr);
+    }
+    .editor-page .editor-textarea-wrapper {
+        column-gap: 12px;
+    }
+}
+
+/* Keep the Editor's selected Write/Preview tabs on the same Base surface
+   as active Explorer labels and menu items, with lavender for distinction. */
+.editor-page :is(.editor-mobile-view-tab.active, .editor-mobile-view-tab[aria-selected="true"], .editor-mobile-view-tab:active) {
+    background: var(--global-chrome-active-bg);
+    color: var(--global-chrome-active-text);
+}
+
+
+/* Editor and Archive already share a fullscreen wrapper around navigation and
+   content. Make that wrapper the single raised workspace frame, matching Database. */
+.editor-page #fullscreenApp,
+.archive-page #fullscreenApp {
+    padding: max(4px, var(--safe-top)) max(4px, var(--safe-right))
+        max(4px, var(--safe-bottom)) max(4px, var(--safe-left));
+    background: var(--global-chrome-pane);
+    box-shadow: var(--global-chrome-raised);
+}
+
+.editor-page #fullscreenApp > header > nav,
+.archive-page .archive-menu-bar {
+    box-shadow: none;
+}
+
+
+@media (max-width: 450px) {
+.editor-page .editor-nav-actions :is(.global-action-button, .editor-compartment) {
+        min-height: 36px;
+        height: 36px;
+    }
+}
+.editor-page .editor-back-symbol {
+    display: grid;
+    place-items: center;
+    width: 16px;
+    height: 16px;
+    font: 400 17px/1 "Courier New", Courier, monospace;
+    color: var(--global-chrome-text);
+}
+.editor-page .editor-arrow-compartment:hover .editor-back-symbol {
+    color: var(--global-chrome-highlight);
+}
+@media (pointer: coarse) and (max-width: 700px) {
+.editor-page .editor-nav-actions .editor-compartment,
+.editor-page .editor-nav-actions .global-action-button {
+        height: 44px;
+        min-height: 44px;
+    }
+}
+@media (max-width: 700px) {
+.editor-page #fullscreenApp {
+        gap: 6px;
+        padding: max(6px, var(--safe-top)) max(6px, var(--safe-right))
+            max(6px, var(--safe-bottom)) max(6px, var(--safe-left));
+    }
+.editor-page #fullscreenApp > header {
+        padding: 0;
+    }
+.editor-page #fullscreenApp > header > nav,
+.editor-page .editor-nav-actions {
+        gap: 4px;
+    }
+.editor-page .editor-container {
+        margin: 0;
+    }
+}
+@container editor-shell (max-width: 839px) {
+.editor-page .editor-form-row.editor-preview-row {
+        min-height: 160px;
+    }
+.editor-page .editor-mobile-view-switch,
+.editor-page .editor-mobile-markdown-toolbar {
+        font-family: "Courier New", Courier, monospace;
+    }
+.editor-page .editor-right-pane {
+        min-height: 0;
+        height: auto;
+        overflow: visible;
+        padding-bottom: calc(72px + var(--safe-bottom));
+    }
+.editor-page .editor-textarea-wrapper {
+        height: auto;
+        min-height: 420px;
+        overflow: visible;
+    }
+.editor-page .editor-textarea {
+        flex: none;
+        min-height: 320px;
+        height: auto;
+        overflow-y: hidden;
+        padding: 14px 14px calc(68px + var(--safe-bottom));
+        font-size: 16px;
+    }
+.editor-page .editor-markdown-preview {
+        flex: none;
+        min-height: 320px;
+        overflow: visible;
+        padding: 14px;
+        font-size: 16px;
+    }
+.editor-page .editor-layout {
+        display: block;
+        height: 100%;
+        padding: 6px 30px 9px 6px;
+        overflow-y: auto;
+    }
+.editor-page :is(.editor-left-pane, .editor-right-pane) {
+        height: auto;
+        padding: 10px;
+        margin-bottom: 6px;
+    }
+.editor-page .editor-form {
+        height: auto;
+        gap: 8px;
+    }
+.editor-page .editor-form-row {
+        gap: 5px;
+    }
+.editor-page .editor-description-toolbar {
+        position: sticky;
+        top: 0;
+        z-index: 5;
+        min-height: 42px;
+        padding: 6px 8px;
+    }
+.editor-page :is(.editor-textarea, .editor-markdown-preview) {
+        padding: 12px;
+    }
+}
+body.editor-page .global-select.editor-form-control {
+    --folder-field-height: 32px;
+    position: relative;
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+    height: var(--folder-field-height);
+    min-height: var(--folder-field-height);
+    max-height: var(--folder-field-height);
+    flex: 0 0 auto;
+    margin: 0;
+}
+body.editor-page .global-select.editor-form-control > select {
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+    height: var(--folder-field-height);
+    min-height: var(--folder-field-height);
+    max-height: var(--folder-field-height);
+    margin: 0;
+    padding: 0 40px 0 10px;
+    vertical-align: top;
+}
+body.editor-page .global-select.editor-form-control::before {
+    top: 50%;
+    right: 4px;
+    bottom: auto;
+    box-sizing: border-box;
+    width: 26px;
+    height: 26px;
+    min-height: 0;
+    transform: translateY(-50%);
+    pointer-events: none;
+}
+body.editor-page .global-select.editor-form-control::after {
+    top: 50%;
+    right: 13px;
+    transform: translateY(-50%);
+    pointer-events: none;
+}
+@media (max-width: 700px) {
+body.editor-page .global-select.editor-form-control {
+        --folder-field-height: 44px;
+    }
+body.editor-page input.editor-form-control {
+        height: 44px;
+        min-height: 44px;
+    }
+}
+.editor-page #fullscreenApp {
+    box-sizing: border-box;
+    width: calc(100% - 40px);
+    height: calc(100dvh - 40px);
+    margin: 20px;
+    padding: 0;
+}
+.editor-page #fullscreenApp {
+    background: #45475a;
+    box-shadow: var(--global-chrome-raised);
+}
+.editor-page :is(
+    #fullscreenApp > header, #fullscreenApp > header > nav,
+    .editor-title-compartment, .editor-container, .editor-layout,
+    .editor-left-pane, .editor-right-pane, .editor-description-toolbar
+) {
+    background: transparent;
+    box-shadow: none;
+}

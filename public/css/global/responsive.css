@@ -1,0 +1,30 @@
+@media (pointer: coarse) {
+    button,
+    .global-button,
+    .global-action-button {
+        min-height: 44px;
+    }
+
+    input,
+    textarea,
+    select {
+        font-size: 16px;
+    }
+
+    .global-dialog-close {
+        min-width: 44px;
+        min-height: 44px;
+    }
+
+    .global-dialog-actions button {
+        min-width: 88px;
+        min-height: 44px;
+    }
+}
+
+@media (hover: none) {
+    button,
+    a {
+        -webkit-tap-highlight-color: transparent;
+    }
+}

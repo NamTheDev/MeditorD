@@ -1,0 +1,853 @@
+/* ───────────────── ARCHIVE ───────────────── */
+body.archive-page {
+    /* Shared Editor/Archive hierarchy: background > containers > controls > wells. */
+    --global-chrome-shell: var(--ctp-base);
+    --global-chrome-pane: var(--ctp-surface1);
+    --global-chrome-toolbar: var(--ctp-surface1);
+    --global-chrome-face: var(--ctp-surface2);
+    --global-chrome-well: var(--ctp-surface0);
+    --global-chrome-titlebar: var(--ctp-surface1);
+    --global-chrome-active-bg: var(--ctp-surface2);
+    height: 100dvh;
+    overflow: hidden;
+    --pane-padding: 13px;
+}
+
+.archive-page #fullscreenApp {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: max(4px, var(--safe-top)) max(4px, var(--safe-right))
+        max(4px, var(--safe-bottom)) max(4px, var(--safe-left));
+    color: var(--global-chrome-text);
+    background: var(--global-chrome-shell);
+}
+
+.archive-page .archive-menu-bar {
+    flex: 0 0 auto;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-rows: 29px 30px;
+    align-items: stretch;
+    gap: 3px;
+    height: auto;
+    min-height: 0;
+    padding: 3px;
+    background: var(--global-chrome-toolbar);
+    border: 0;
+    box-shadow: var(--global-chrome-raised);
+}
+
+.archive-page .archive-gallery-title {
+    position: static;
+    grid-column: 1 / -1;
+    grid-row: 1;
+    transform: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 29px;
+    padding: 0;
+    color: var(--global-chrome-highlight);
+    background: var(--global-chrome-titlebar);
+    font: 400 15px "Courier New", Courier, monospace;
+    letter-spacing: 0.22em;
+}
+
+.archive-page .archive-menu-bar > #backButton {
+    grid-column: 1;
+    grid-row: 2;
+}
+
+.archive-page .archive-menu-bar > #databaseButton {
+    grid-column: 2;
+    grid-row: 2;
+}
+
+.archive-page .archive-menu-bar > #newPostButton {
+    grid-column: 3;
+    grid-row: 2;
+}
+
+.archive-page .archive-menu-bar > :is(#backButton, #databaseButton, #newPostButton) {
+    width: 100%;
+    min-width: 0;
+    min-height: 30px;
+    height: 30px;
+    margin: 0;
+    padding: 4px 10px;
+    background: var(--global-chrome-face);
+    color: var(--global-chrome-text);
+    border: 0;
+    box-shadow: var(--global-chrome-raised);
+    font: 400 12px "Courier New", Courier, monospace;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+
+.archive-page .archive-menu-bar > #databaseButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+}
+
+.archive-page .archive-menu-bar > #databaseButton:active {
+    padding: 4px 10px;
+    box-shadow:
+        inset -1px -1px 0 var(--global-border-lightest),
+        inset 1px 1px 0 var(--global-border-darkest),
+        inset -2px -2px 0 var(--global-border-light),
+        inset 2px 2px 0 var(--global-border-dark);
+}
+
+.archive-page .archive-explorer-layout {
+    flex: 1 1 0;
+    min-width: 0;
+    min-height: 0;
+    grid-template-columns: clamp(205px, 21vw, 274px) minmax(0, 1fr);
+    gap: 4px;
+    padding-top: 0;
+    overflow: hidden;
+}
+
+.archive-page .archive-explorer-sidebar {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    min-height: 0;
+    padding: 3px;
+    background: var(--global-chrome-pane);
+    border: 0;
+    box-shadow: var(--global-chrome-raised);
+}
+
+/* Explorer: keep caption left, New Folder command right, within one title bar.
+   Its visible 26px face stays compact within the separate mobile hit target. */
+.archive-page .archive-explorer-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    flex: 0 0 36px;
+    min-height: 36px;
+    margin: 0 0 3px;
+    padding: 3px 8px;
+    color: var(--global-chrome-highlight);
+    background: var(--global-chrome-titlebar);
+    font: 400 12px "Courier New", Courier, monospace;
+    letter-spacing: 0.05em;
+}
+
+.archive-page .archive-explorer-heading > span {
+    flex: 0 0 auto;
+    line-height: 1;
+}
+
+/* The button has a compact 26px visible face, independent of its hit area. */
+.archive-page .archive-new-folder-button {
+    display: grid;
+    place-items: center;
+    flex: 0 0 32px;
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    min-height: 32px;
+    margin: 0 0 0 auto;
+    padding: 3px;
+    background: transparent;
+    color: var(--global-chrome-text);
+    border: 0;
+    box-shadow: none;
+}
+
+.archive-page .archive-new-folder-button:is(:hover, :focus-visible) {
+    background: transparent;
+}
+
+.archive-page .archive-new-folder-button:focus-visible {
+    outline: 1px dotted var(--ctp-lavender);
+    outline-offset: -1px;
+}
+
+.archive-page .archive-new-folder-button:active {
+    padding: 3px;
+    box-shadow: none;
+}
+
+.archive-page .archive-new-folder-button:active .archive-folder-add-icon {
+    box-shadow: var(--global-chrome-sunken);
+}
+
+/* Classic Windows 98 Explorer tree: one recessed well, no raised folder rows.
+   All folder icons use the same yellow/peach Catppuccin colors. */
+body.archive-page #archiveFolderTree {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: auto;
+    padding: 4px 3px;
+    background: var(--global-chrome-well);
+    box-shadow: var(--global-chrome-sunken);
+}
+
+body.archive-page #archiveFolderTree .archive-folder-row {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    min-width: max-content;
+    height: 23px;
+    min-height: 23px;
+    margin: 0;
+    padding: 0 3px;
+    gap: 0;
+    color: var(--global-chrome-text);
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    font: 400 12px/1.2 "Courier New", Courier, monospace;
+}
+
+body.archive-page #archiveFolderTree .archive-folder-row:hover,
+body.archive-page #archiveFolderTree .archive-folder-row.selected {
+    background: transparent;
+}
+
+body.archive-page #archiveFolderTree .archive-folder-row.archive-context-target {
+    background: var(--ctp-surface0);
+    outline: 1px dotted var(--global-chrome-highlight);
+    outline-offset: -2px;
+}
+
+/* Each tree level gets exactly one 17px column, like the classic tree. */
+body.archive-page #archiveFolderTree :is(.archive-tree-guide, .archive-tree-branch) {
+    position: relative;
+    display: block;
+    flex: 0 0 17px;
+    width: 17px;
+    height: 100%;
+    pointer-events: none;
+}
+
+body.archive-page #archiveFolderTree .archive-tree-guide.archive-tree-continuing::before,
+body.archive-page #archiveFolderTree .archive-tree-branch::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 8px;
+    width: 1px;
+    background: repeating-linear-gradient(
+        to bottom,
+        var(--ctp-overlay0) 0 1px,
+        transparent 1px 3px
+    );
+}
+
+body.archive-page #archiveFolderTree .archive-tree-branch.archive-tree-last::before {
+    bottom: 50%;
+}
+
+body.archive-page #archiveFolderTree .archive-tree-branch::after {
+    content: "";
+    position: absolute;
+    left: 8px;
+    top: 11px;
+    width: 9px;
+    border-top: 1px dotted var(--ctp-overlay0);
+}
+
+/* Expanders are simple classic square +/- controls, not raised buttons. */
+body.archive-page #archiveFolderTree .archive-folder-toggle,
+body.archive-page #archiveFolderTree .archive-folder-spacer {
+    display: grid;
+    place-items: center;
+    flex: 0 0 13px;
+    width: 13px;
+    min-width: 13px;
+    height: 13px;
+    min-height: 13px;
+    margin: 0 4px 0 0;
+    padding: 0;
+    color: var(--ctp-subtext1);
+    background: transparent;
+    box-shadow: none;
+}
+
+body.archive-page #archiveFolderTree .archive-folder-toggle {
+    border: 1px solid var(--ctp-overlay0);
+    background: var(--global-chrome-well);
+    cursor: pointer;
+}
+
+body.archive-page #archiveFolderTree .archive-folder-toggle::before {
+    content: "+";
+    display: block;
+    width: auto;
+    height: auto;
+    color: var(--global-chrome-text);
+    background: transparent;
+    clip-path: none;
+    font: 400 12px/11px "Courier New", Courier, monospace;
+}
+
+body.archive-page #archiveFolderTree .archive-folder-toggle[aria-expanded="true"]::before {
+    content: "−";
+}
+
+body.archive-page #archiveFolderTree .archive-folder-toggle:is(:hover, :focus-visible) {
+    border-color: var(--global-chrome-highlight);
+}
+
+body.archive-page #archiveFolderTree .archive-folder-toggle:active {
+    padding: 0;
+    box-shadow: none;
+}
+
+body.archive-page #archiveFolderTree .archive-folder-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-start;
+    flex: 0 0 auto;
+    width: auto;
+    min-width: 0;
+    height: 22px;
+    min-height: 22px;
+    margin: 0;
+    padding: 0 3px 0 0;
+    gap: 5px;
+    color: var(--global-chrome-text);
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    font: 400 12px/1.2 "Courier New", Courier, monospace;
+    text-align: left;
+}
+
+body.archive-page #archiveFolderTree .archive-folder-button:active {
+    padding: 0 3px 0 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+body.archive-page #archiveFolderTree .archive-folder-label {
+    display: inline-block;
+    overflow: visible;
+    max-width: none;
+    padding: 2px 3px;
+    text-overflow: clip;
+    white-space: nowrap;
+}
+
+/* classic highlights the selected label, not an entire raised row. */
+body.archive-page #archiveFolderTree .archive-folder-button.active {
+    color: var(--global-chrome-active-text);
+    background: transparent;
+    box-shadow: none;
+}
+
+body.archive-page #archiveFolderTree .archive-folder-button.active .archive-folder-label {
+    color: var(--global-chrome-active-text);
+    background: var(--global-chrome-active-bg);
+}
+
+body.archive-page #archiveFolderTree .archive-folder-button:not(.active):hover .archive-folder-label {
+    color: var(--global-chrome-highlight);
+}
+
+body.archive-page #archiveFolderTree :is(.archive-folder-button, .archive-folder-toggle):focus-visible {
+    outline: 1px dotted var(--global-chrome-highlight);
+    outline-offset: 1px;
+}
+
+/* One pixel-folder design, reused identically at every nesting depth. */
+body.archive-page #archiveFolderTree .archive-folder-glyph {
+    position: relative;
+    display: inline-block;
+    flex: 0 0 16px;
+    width: 16px;
+    height: 14px;
+    color: var(--ctp-yellow);
+    background: transparent;
+    box-shadow: none;
+}
+
+body.archive-page #archiveFolderTree .archive-folder-glyph::before {
+    content: "";
+    position: absolute;
+    top: 1px;
+    left: 1px;
+    width: 7px;
+    height: 4px;
+    background: var(--ctp-yellow);
+    box-shadow: inset 1px 1px 0 var(--ctp-rosewater);
+}
+
+body.archive-page #archiveFolderTree .archive-folder-glyph::after {
+    content: "";
+    position: absolute;
+    top: 4px;
+    left: 0;
+    width: 16px;
+    height: 10px;
+    background: var(--ctp-yellow);
+    box-shadow:
+        inset 1px 1px 0 var(--ctp-rosewater),
+        inset -1px -1px 0 var(--ctp-peach);
+}
+
+.archive-page .archive-explorer-main {
+    min-width: 0;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 3px;
+    overflow: hidden;
+}
+
+.archive-page .archive-breadcrumbs {
+    flex: 0 0 auto;
+    min-height: 31px;
+    gap: 3px;
+    margin: 0;
+    padding: 3px 7px;
+    color: var(--ctp-subtext1);
+    background: var(--global-chrome-toolbar);
+    box-shadow: var(--global-chrome-raised);
+    font: 400 12px "Courier New", Courier, monospace;
+}
+
+.archive-page .archive-breadcrumbs button {
+    background: transparent;
+    box-shadow: none;
+    border: 0;
+    min-height: 22px;
+    padding: 2px 5px;
+    color: var(--global-chrome-text);
+    font: inherit;
+}
+
+.archive-page .archive-breadcrumbs button:hover {
+    color: var(--global-chrome-highlight);
+}
+
+.archive-page .archive-search-toolbar {
+    flex: 0 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 7px;
+    padding: 7px;
+    margin: 0;
+    background: var(--global-chrome-toolbar);
+    box-shadow: var(--global-chrome-raised);
+}
+
+.archive-page :is(.archive-search-input, .archive-search-select) {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+    color: var(--global-chrome-text);
+    font: 400 12px "Courier New", Courier, monospace;
+}
+
+.archive-page .archive-search-input {
+    flex: 1 1 210px;
+}
+
+.archive-page .archive-search-select {
+    flex: 0 1 220px;
+}
+
+.archive-page .archive-search-input > span {
+    color: var(--global-chrome-text);
+    font-size: 12px;
+}
+
+.archive-page .archive-search-input input {
+    min-height: 31px;
+    padding: 5px 8px;
+    background: var(--global-chrome-well);
+    box-shadow: var(--global-chrome-sunken);
+    font: 400 12px "Courier New", Courier, monospace;
+}
+
+.archive-page .archive-search-select .global-select {
+    width: auto;
+    min-width: 0;
+    flex: 1 1 auto;
+}
+
+.archive-page .archive-gallery-viewport {
+    box-sizing: border-box;
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 0;
+    margin: 0;
+    padding: 13px;
+    background: var(--global-chrome-well);
+    border: 1px solid var(--ctp-overlay1);
+    border-top-color: var(--ctp-crust);
+    border-left-color: var(--ctp-crust);
+    box-shadow: var(--global-chrome-sunken);
+    overflow: auto;
+}
+
+.archive-page .archive-gallery-grid {
+    gap: 14px;
+}
+
+.archive-page .archive-gallery-card {
+    padding: 6px;
+    margin: 0;
+    background: var(--global-chrome-face);
+    border: 0;
+    box-shadow: var(--global-chrome-raised);
+}
+
+.archive-page .archive-gallery-card:hover {
+    outline: 1px dotted var(--global-chrome-highlight);
+    outline-offset: -3px;
+}
+
+.archive-page .archive-gallery-media {
+    background: var(--ctp-crust);
+    box-shadow: var(--global-chrome-sunken);
+}
+
+.archive-page .archive-card-info {
+    padding: 8px 5px 4px;
+    gap: 6px;
+    color: var(--global-chrome-text);
+    font-family: "Courier New", Courier, monospace;
+}
+
+.archive-page .archive-card-title {
+    color: var(--global-chrome-text);
+    font: 400 14px/1.35 "Courier New", Courier, monospace;
+}
+
+.archive-page .archive-card-description {
+    color: var(--global-chrome-muted);
+    font: 400 12px/1.45 "Courier New", Courier, monospace;
+}
+
+.archive-page .archive-card-description :is(a, strong),
+.archive-page .archive-card-description .archive-read-more-toggle {
+    color: var(--global-chrome-highlight);
+}
+
+.archive-page .archive-card-description strong {
+    white-space: normal;
+}
+
+/* Inline Markdown controls must never become bevelled buttons. */
+body.archive-page .archive-card-description .archive-read-more-toggle,
+body.archive-page .archive-card-description .archive-read-more-toggle:active {
+    display: inline;
+    position: static;
+    width: auto;
+    height: auto;
+    min-width: 0;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    color: var(--global-chrome-highlight);
+    border: 0;
+    box-shadow: none;
+    font: inherit;
+    text-decoration: underline;
+}
+
+.archive-page .archive-card-meta {
+    border-top: 1px solid var(--ctp-surface2);
+    color: var(--global-chrome-highlight);
+    padding-top: 6px;
+    font: 400 11px "Courier New", Courier, monospace;
+}
+
+.archive-page .archive-card-date {
+    color: var(--ctp-subtext0);
+    font: inherit;
+}
+
+.archive-page .archive-card-actions {
+    top: 7px;
+    right: 7px;
+}
+
+.archive-page .archive-card-menu-button {
+    display: grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    min-width: 26px;
+    min-height: 26px;
+    padding: 0;
+    border: 0;
+    color: var(--global-chrome-text);
+    background: var(--global-chrome-face);
+    box-shadow: var(--global-chrome-raised);
+    font-size: 19px;
+    line-height: 1;
+}
+
+.archive-page .archive-card-menu-button:active {
+    padding: 0;
+    box-shadow: var(--global-chrome-sunken);
+}
+
+.archive-page :is(.archive-card-menu, .archive-card-submenu, .archive-folder-context-menu) {
+    background: var(--global-chrome-face);
+    color: var(--global-chrome-text);
+    border: 0;
+    box-shadow: var(--global-chrome-raised);
+    padding: 3px;
+}
+
+.archive-page :is(.archive-card-menu, .archive-card-submenu, .archive-folder-context-menu) button {
+    min-height: 27px;
+    width: 100%;
+    padding: 5px 8px;
+    background: transparent;
+    color: var(--global-chrome-text);
+    border: 0;
+    box-shadow: none;
+    text-align: left;
+    justify-content: flex-start;
+    font: 400 12px "Courier New", Courier, monospace;
+}
+
+.archive-page :is(.archive-card-menu, .archive-card-submenu, .archive-folder-context-menu) button:hover:not(:disabled) {
+    background: var(--global-chrome-active-bg);
+    color: var(--global-chrome-active-text);
+}
+
+.archive-page :is(.archive-card-menu, .archive-card-submenu, .archive-folder-context-menu) button:active {
+    padding: 5px 8px;
+    box-shadow: none;
+}
+
+.archive-page .archive-card-menu .archive-share-link-fallback {
+    font-family: "Courier New", Courier, monospace;
+    background: var(--global-chrome-well);
+    color: var(--global-chrome-text);
+    box-shadow: var(--global-chrome-sunken);
+}
+
+.archive-page .global-modal-content-area {
+    background: var(--global-chrome-well);
+    box-shadow: var(--global-chrome-sunken);
+}
+
+.archive-page .archive-modal-post-description {
+    font: 400 13px/1.6 "Courier New", Courier, monospace;
+}
+
+.archive-page .archive-folder-picker {
+    background: rgba(17, 17, 27, 0.8);
+}
+
+.archive-page .archive-folder-picker-title {
+    margin: 0 0 8px;
+    padding: 5px 8px;
+}
+
+.archive-page .archive-skeleton-box {
+    background: var(--ctp-surface1);
+}
+
+
+/* Editor and Archive already share a fullscreen wrapper around navigation and
+   content. Make that wrapper the single raised workspace frame, matching Database. */
+.editor-page #fullscreenApp,
+.archive-page #fullscreenApp {
+    padding: max(4px, var(--safe-top)) max(4px, var(--safe-right))
+        max(4px, var(--safe-bottom)) max(4px, var(--safe-left));
+    background: var(--global-chrome-pane);
+    box-shadow: var(--global-chrome-raised);
+}
+
+.editor-page #fullscreenApp > header > nav,
+.archive-page .archive-menu-bar {
+    box-shadow: none;
+}
+
+
+@media (max-width: 900px) {
+.archive-page .archive-explorer-layout {
+        grid-template-columns: 192px minmax(0, 1fr);
+    }
+.archive-page .archive-search-select {
+        flex: 1 1 180px;
+    }
+}
+@media (max-width: 700px) {
+.archive-page #archiveFolderTree {
+        min-height: 70px;
+    }
+.archive-page .archive-search-input {
+        flex-basis: 100%;
+    }
+.archive-page .archive-card-menu-button {
+        width: 36px;
+        height: 36px;
+    }
+}
+@media (max-width: 450px) {
+.archive-page .archive-menu-bar > :is(#backButton, #databaseButton, #newPostButton) {
+        min-height: 36px;
+        height: 36px;
+    }
+}
+body.archive-page .archive-folder-add-icon {
+    position: relative;
+    display: block;
+    width: 26px;
+    height: 26px;
+    background: var(--global-chrome-face);
+    box-shadow: var(--global-chrome-raised);
+}
+body.archive-page .archive-folder-add-shape::before {
+    content: "";
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    width: 7px;
+    height: 4px;
+    background: var(--ctp-yellow);
+    box-shadow: inset 1px 1px 0 var(--ctp-rosewater);
+}
+body.archive-page .archive-folder-add-shape::after {
+    content: "";
+    position: absolute;
+    top: 8px;
+    left: 4px;
+    width: 16px;
+    height: 10px;
+    background: var(--ctp-yellow);
+    box-shadow:
+        inset 1px 1px 0 var(--ctp-rosewater),
+        inset -1px -1px 0 var(--ctp-peach);
+}
+body.archive-page .archive-folder-add-plus {
+    position: absolute;
+    z-index: 1;
+    right: 1px;
+    bottom: 1px;
+    display: grid;
+    place-items: center;
+    width: 10px;
+    height: 11px;
+    color: var(--ctp-lavender);
+    background: var(--global-chrome-face);
+    font: 400 13px/1 "Courier New", Courier, monospace;
+}
+@media (pointer: coarse) and (max-width: 700px) {
+.archive-page .archive-menu-bar > :is(#backButton, #newPostButton),
+.archive-page .archive-new-folder-button,
+.archive-page .archive-card-menu-button {
+        height: 44px;
+        min-height: 44px;
+    }
+.archive-page .archive-new-folder-button,
+.archive-page .archive-card-menu-button {
+        width: 44px;
+        min-width: 44px;
+    }
+.archive-page .archive-explorer-heading {
+        flex-basis: 48px;
+        min-height: 48px;
+        padding: 2px 8px;
+    }
+.archive-page .archive-new-folder-button {
+        flex: 0 0 44px;
+        padding: 9px;
+    }
+.archive-page .archive-new-folder-button:active {
+        padding: 9px;
+    }
+.archive-page .archive-menu-bar {
+        grid-template-rows: 29px 46px;
+    }
+body.archive-page #archiveFolderTree .archive-folder-row {
+        min-height: 36px;
+        height: 36px;
+    }
+body.archive-page #archiveFolderTree .archive-folder-toggle,
+body.archive-page #archiveFolderTree .archive-folder-spacer {
+        flex-basis: 24px;
+        min-width: 24px;
+        width: 24px;
+        height: 24px;
+        min-height: 24px;
+    }
+}
+@media (max-width: 450px) {
+.archive-page .archive-menu-bar {
+        grid-template-rows: 29px 38px;
+    }
+}
+@media (max-width: 700px) {
+.archive-page .archive-menu-bar {
+        gap: 4px;
+        padding: 4px;
+    }
+.archive-page .archive-explorer-layout {
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-rows: clamp(96px, 19dvh, 148px) minmax(0, 1fr);
+        gap: 6px;
+    }
+.archive-page .archive-explorer-sidebar {
+        max-height: none;
+        height: 100%;
+        padding: 4px;
+    }
+.archive-page .archive-search-toolbar {
+        gap: 8px;
+        padding: 8px;
+    }
+.archive-page .archive-gallery-viewport {
+        padding: 10px;
+    }
+.archive-page .archive-gallery-grid {
+        display: block;
+        gap: 10px;
+    }
+.archive-page .archive-gallery-card {
+        margin-bottom: 10px;
+        padding: 6px;
+    }
+.archive-page #fullscreenApp {
+        gap: 6px;
+        padding: max(6px, var(--safe-top)) max(6px, var(--safe-right))
+            max(6px, var(--safe-bottom)) max(6px, var(--safe-left));
+    }
+}
+.archive-page #fullscreenApp {
+    box-sizing: border-box;
+    width: calc(100% - 40px);
+    height: calc(100dvh - 40px);
+    margin: 20px;
+    padding: 0;
+}
+.archive-page #fullscreenApp {
+    background: #45475a;
+    box-shadow: var(--global-chrome-raised);
+}
+.archive-page :is(
+    .archive-menu-bar, .archive-gallery-title, .archive-explorer-layout,
+    .archive-explorer-sidebar, .archive-explorer-main,
+    .archive-explorer-heading, .archive-breadcrumbs,
+    .archive-search-toolbar
+) {
+    background: transparent;
+    box-shadow: none;
+}
+.archive-page #fullscreenApp {
+    padding: 4px;
+    overflow: hidden;
+}

@@ -1,0 +1,328 @@
+/*
+ * Shared beveled application chrome in Catppuccin Mocha.
+ * render.ts enables it only on Editor, Archive, Database, and 404.
+ * Home and Exit retain their separate presentation.
+ *
+ * Raised: top/left highlights, bottom/right shadows.
+ * Sunken: inverse. All dimensions deliberate and square-edged.
+ */
+body.global-workspace {
+    /* Three-level Mocha depth:
+       Crust = outer background, Base = raised surfaces and title bars,
+       Mantle = recessed inputs/content wells. Keep selected states distinct. */
+    --global-chrome-shell: var(--ctp-crust);
+    --global-chrome-pane: var(--ctp-base);
+    --global-chrome-toolbar: var(--ctp-base);
+    --global-chrome-face: var(--ctp-base);
+    --global-chrome-face-hover: var(--ctp-surface1);
+    --global-chrome-well: var(--ctp-mantle);
+    --global-chrome-titlebar: var(--ctp-base);
+    --global-chrome-active-bg: var(--ctp-base);
+    --global-chrome-active-text: var(--ctp-lavender);
+    --global-chrome-text: var(--ctp-text);
+    --global-chrome-muted: var(--ctp-subtext1);
+    --global-chrome-highlight: var(--ctp-lavender);
+    --global-chrome-raised:
+        inset 1px 1px 0 var(--ctp-overlay1),
+        inset -1px -1px 0 var(--ctp-crust),
+        inset 2px 2px 0 var(--ctp-surface2),
+        inset -2px -2px 0 var(--ctp-mantle);
+    --global-chrome-sunken:
+        inset 1px 1px 0 var(--ctp-crust),
+        inset -1px -1px 0 var(--ctp-overlay0),
+        inset 2px 2px 0 var(--ctp-mantle),
+        inset -2px -2px 0 var(--ctp-surface2);
+    --global-chrome-divider: var(--ctp-surface2);
+    color: var(--global-chrome-text);
+    background: var(--global-chrome-shell);
+    font: 400 12px/1.4 "Courier New", Courier, monospace;
+    -webkit-font-smoothing: none;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body.global-workspace :is(button, input, select, textarea) {
+    font-family: "Courier New", Courier, monospace;
+    border-radius: 0;
+    letter-spacing: 0;
+}
+
+body.global-workspace :is(button, .global-button, .editor-upload-button) {
+    background: var(--global-chrome-face);
+    color: var(--global-chrome-text);
+    border: 0;
+    box-shadow: var(--global-chrome-raised);
+    font-weight: 400;
+    text-transform: none;
+    cursor: pointer;
+}
+
+body.global-workspace :is(button, .global-button, .editor-upload-button):hover:not(:disabled) {
+    color: var(--global-chrome-highlight);
+}
+
+body.global-workspace :is(button, .global-button, .editor-upload-button):focus-visible {
+    outline: 1px dotted var(--global-chrome-highlight);
+    outline-offset: -4px;
+}
+
+body.global-workspace :is(button, .global-button, .editor-upload-button):disabled {
+    color: var(--ctp-overlay1);
+    cursor: default;
+}
+
+body.global-workspace :is(button, .global-button, .editor-upload-button):active:not(:disabled) {
+    box-shadow: var(--global-chrome-sunken);
+}
+
+body.global-workspace :is(input:not([type="checkbox"]):not([type="file"]), textarea) {
+    color: var(--global-chrome-text);
+    background: var(--global-chrome-well);
+    border: 0;
+    box-shadow: var(--global-chrome-sunken);
+    outline: none;
+    -webkit-user-select: text;
+    user-select: text;
+}
+
+body.global-workspace :is(input, select, textarea):focus-visible {
+    outline: 1px dotted var(--global-chrome-highlight);
+    outline-offset: -3px;
+}
+
+body.global-workspace :is(input, textarea)::placeholder {
+    color: var(--ctp-overlay1);
+    opacity: 1;
+}
+
+body.global-workspace input[type="file"]::file-selector-button {
+    min-height: 27px;
+    margin-right: 10px;
+    padding: 4px 10px;
+    border: 0;
+    border-radius: 0;
+    color: var(--global-chrome-text);
+    background: var(--global-chrome-face);
+    box-shadow: var(--global-chrome-raised);
+    font: 400 12px "Courier New", Courier, monospace;
+    cursor: pointer;
+}
+
+body.global-workspace input[type="checkbox"] {
+    position: relative;
+    appearance: none;
+    flex: 0 0 14px;
+    width: 14px;
+    height: 14px;
+    min-width: 14px;
+    min-height: 14px;
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+    background: var(--global-chrome-well);
+    box-shadow: var(--global-chrome-sunken);
+    cursor: pointer;
+}
+
+body.global-workspace input[type="checkbox"]:checked::after {
+    content: "✓";
+    position: absolute;
+    inset: -3px 0 0 2px;
+    color: var(--global-chrome-highlight);
+    font: 400 14px "Courier New", Courier, monospace;
+}
+
+body.global-workspace .global-select > select {
+    background: var(--global-chrome-well);
+    color: var(--global-chrome-text);
+    box-shadow: var(--global-chrome-sunken);
+    border: 0;
+    min-height: 30px;
+    font: inherit;
+    padding: 4px 31px 4px 8px;
+}
+
+body.global-workspace .global-select::before {
+    background: var(--global-chrome-face);
+    border: 0;
+    box-shadow: var(--global-chrome-raised);
+}
+
+body.global-workspace .global-select::after {
+    color: var(--global-chrome-text);
+}
+
+body.global-workspace ::selection {
+    background: var(--global-chrome-active-bg);
+    color: var(--global-chrome-active-text);
+}
+
+/* Native scrollbars and dialogs use the same chrome as the workspaces. */
+body.global-workspace :is(.global-dialog-window, .editor-dialog, .global-modal-window, .database-edit-dialog-box, .archive-folder-picker-window) {
+    color: var(--global-chrome-text);
+    background: var(--global-chrome-face);
+    border: 0;
+    box-shadow: var(--global-chrome-raised);
+    border-radius: 0;
+    font-family: "Courier New", Courier, monospace;
+    font-weight: 400;
+}
+
+body.global-workspace :is(.global-dialog-titlebar, .editor-dialog-titlebar, .global-modal-window .global-title-bar, .database-edit-dialog-header, .archive-folder-picker-title) {
+    color: var(--global-chrome-highlight);
+    background: var(--global-chrome-titlebar);
+    border: 0;
+    box-shadow: none;
+    font: 400 13px/1.3 "Courier New", Courier, monospace;
+    letter-spacing: 0.05em;
+}
+
+body.global-workspace :is(.global-dialog-titlebar h2, .editor-dialog-titlebar h2, .database-edit-dialog-header h2) {
+    color: var(--global-chrome-highlight);
+    font: 400 13px/1.3 "Courier New", Courier, monospace;
+}
+
+body.global-workspace :is(.global-dialog-window input, .global-dialog-window textarea, .database-edit-dialog-box input, .database-edit-dialog-box select, .database-edit-dialog-box textarea, .archive-folder-picker select) {
+    background: var(--global-chrome-well);
+    color: var(--global-chrome-text);
+    box-shadow: var(--global-chrome-sunken);
+    font-family: "Courier New", Courier, monospace;
+}
+
+body.global-workspace :is(.global-dialog-actions, .editor-dialog-actions, .database-edit-dialog-actions, .archive-folder-picker-actions) button {
+    min-height: 27px;
+    font: 400 12px "Courier New", Courier, monospace;
+    box-shadow: var(--global-chrome-raised);
+}
+
+body.global-workspace :is(.global-dialog-actions, .editor-dialog-actions, .database-edit-dialog-actions, .archive-folder-picker-actions) button:active {
+    box-shadow: var(--global-chrome-sunken);
+}
+
+/* One close-button implementation shared by Editor, Archive, and Database.
+   Keep the original button and aria-label for existing handlers. A hidden
+   text glyph does NOT take up layout space: both visual layers are absolute
+   children of the same positioned button, not separate CSS grid cells. */
+body.global-workspace :is(.global-dialog-close, .editor-dialog-close, .global-modal-close-button, .database-modal-close) {
+    position: relative;
+    display: block;
+    box-sizing: border-box;
+    flex: 0 0 28px;
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+    min-height: 28px;
+    margin: 0;
+    padding: 0;
+    overflow: visible;
+    border: 0;
+    border-radius: 0;
+    color: transparent;
+    background: transparent;
+    box-shadow: none;
+    font-size: 0;
+    line-height: 0;
+    transform: none;
+    cursor: pointer;
+}
+
+/* Archive inspector close control is centered within its absolute titlebar. */
+body.global-workspace .global-modal-close-button {
+    position: absolute;
+    top: 50%;
+    right: 5px;
+    transform: translateY(-50%);
+}
+
+/* The raised classic face is 24px, independent of the touch hit box. */
+body.global-workspace :is(.global-dialog-close, .editor-dialog-close, .global-modal-close-button, .database-modal-close)::after {
+    content: "";
+    position: absolute;
+    z-index: 0;
+    left: 50%;
+    top: 50%;
+    width: 24px;
+    height: 24px;
+    transform: translate(-50%, -50%);
+    background: var(--global-chrome-face);
+    box-shadow: var(--global-chrome-raised);
+    pointer-events: none;
+}
+
+/* The red icon uses the exact same anchor as the raised face. */
+body.global-workspace :is(.global-dialog-close, .editor-dialog-close, .global-modal-close-button, .database-modal-close)::before {
+    content: "";
+    position: absolute;
+    display: block;
+    z-index: 1;
+    left: 50%;
+    top: 50%;
+    width: 13px;
+    height: 13px;
+    transform: translate(-50%, -50%);
+    background: var(--ctp-red);
+    -webkit-mask: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%3E%3Cpath%20d='M5%205L19%2019M19%205L5%2019'%20fill='none'%20stroke='black'%20stroke-width='2.7'%20stroke-linecap='square'/%3E%3C/svg%3E") center / contain no-repeat;
+    mask: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%3E%3Cpath%20d='M5%205L19%2019M19%205L5%2019'%20fill='none'%20stroke='black'%20stroke-width='2.7'%20stroke-linecap='square'/%3E%3C/svg%3E") center / contain no-repeat;
+    pointer-events: none;
+}
+
+body.global-workspace :is(.global-dialog-close, .editor-dialog-close, .global-modal-close-button, .database-modal-close):is(:hover, :focus-visible) {
+    outline: 1px dotted var(--ctp-red);
+    outline-offset: -2px;
+}
+
+body.global-workspace :is(.global-dialog-close, .editor-dialog-close, .global-modal-close-button, .database-modal-close):active:not(:disabled) {
+    padding: 0;
+    background: transparent;
+    box-shadow: none;
+    transform: none;
+}
+
+body.global-workspace .global-modal-close-button:active:not(:disabled) {
+    transform: translateY(-50%);
+}
+
+body.global-workspace :is(.global-dialog-close, .editor-dialog-close, .global-modal-close-button, .database-modal-close):active::after {
+    box-shadow: var(--global-chrome-sunken);
+}
+
+@media (pointer: coarse) {
+    body.global-workspace :is(.global-dialog-close, .editor-dialog-close, .global-modal-close-button, .database-modal-close) {
+        flex-basis: 44px;
+        width: 44px;
+        height: 44px;
+        min-width: 44px;
+        min-height: 44px;
+    }
+
+    body.global-workspace :is(.global-dialog-titlebar, .editor-dialog-titlebar, .global-modal-window .global-title-bar, .database-edit-dialog-header) {
+        min-height: 48px;
+    }
+
+    body.global-workspace .global-modal-close-button {
+        right: 3px;
+    }
+}
+
+/* New Folder / prompt dialog: give its heading and compact red close
+   control a shared line-height without touching focus or prompt handling. */
+@media (max-width: 700px) {
+    body.archive-page .global-dialog-titlebar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-height: 48px;
+        gap: 8px;
+        padding: 2px 6px 2px 12px;
+    }
+
+    body.archive-page .global-dialog-titlebar > h2 {
+        flex: 1 1 auto;
+        min-width: 0;
+        overflow-wrap: anywhere;
+    }
+
+    body.archive-page .global-dialog-close {
+        flex: 0 0 44px;
+        margin-left: auto;
+    }
+}
