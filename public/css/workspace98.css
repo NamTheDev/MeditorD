@@ -460,7 +460,7 @@ body.workspace98-editor {
 }
 
 .workspace98-editor :is(.editor-left-pane, .editor-right-pane) {
-    padding: 6px;
+    padding: 0;
     min-width: 0;
     border: 0;
     box-shadow: var(--w98-raised);
@@ -472,7 +472,7 @@ body.workspace98-editor {
 }
 
 .workspace98-editor .editor-form {
-    gap: 10px;
+    gap: 14px;
 }
 
 .workspace98-editor .form-row {
@@ -1711,8 +1711,8 @@ body.workspace98-archive .archive-folder-add-plus {
     }
     .workspace98-editor :is(.editor-left-pane, .editor-right-pane) {
         height: auto;
-        padding: 6px;
-        margin-bottom: 3px;
+        padding: 0;
+        margin-bottom: 6px;
     }
     /* Keep keyboard/formatting toolbar clearance below the writing pane. */
     .workspace98-editor .editor-right-pane {
@@ -1720,7 +1720,7 @@ body.workspace98-archive .archive-folder-add-plus {
     }
     .workspace98-editor .editor-form {
         height: auto;
-        gap: 8px;
+        gap: 12px;
     }
     .workspace98-editor .form-row {
         gap: 5px;
