@@ -265,9 +265,9 @@ body.global-workspace :is(.global-dialog-close, .editor-dialog-close, .global-mo
     pointer-events: none;
 }
 
-/* A keyboard focus cue stays visible, but the red outline is pressed-only. */
+/* Preserve the original red focus outline; only remove the hover trigger. */
 body.global-workspace :is(.global-dialog-close, .editor-dialog-close, .global-modal-close-button, .database-modal-close):focus-visible {
-    outline: 1px dotted var(--global-chrome-highlight);
+    outline: 1px dotted var(--ctp-red);
     outline-offset: -2px;
 }
 
