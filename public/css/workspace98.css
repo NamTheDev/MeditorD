@@ -633,7 +633,7 @@ body.workspace98-archive {
     --w98-active-bg: var(--ctp-surface2);
     height: 100dvh;
     overflow: hidden;
-    --pane-padding: 13px;
+    --pane-padding: 11px;
 }
 
 .workspace98-archive #fullscreenApp {
@@ -710,7 +710,7 @@ body.workspace98-archive {
     flex-direction: column;
     overflow: hidden;
     min-height: 0;
-    padding: 3px;
+    padding: 11px;
     background: var(--w98-pane);
     border: 0;
     box-shadow: var(--w98-raised);
@@ -1028,8 +1028,8 @@ body.workspace98-archive #archiveFolderTree .archive-folder-glyph::after {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 7px;
-    padding: 7px;
+    gap: 4px;
+    padding: 4px;
     margin: 0;
     background: var(--w98-toolbar);
     box-shadow: var(--w98-raised);
@@ -1075,7 +1075,7 @@ body.workspace98-archive #archiveFolderTree .archive-folder-glyph::after {
     flex: 1 1 auto;
     min-height: 0;
     margin: 0;
-    padding: 13px;
+    padding: 11px;
     background: var(--w98-well);
     box-shadow: var(--w98-sunken);
     overflow: auto;
@@ -1670,11 +1670,11 @@ body.workspace98-archive .archive-folder-add-plus {
     .workspace98-archive .archive-explorer-sidebar {
         max-height: none;
         height: 100%;
-        padding: 4px;
+        padding: 10px;
     }
     .workspace98-archive .archive-search-toolbar {
-        gap: 8px;
-        padding: 8px;
+        gap: 6px;
+        padding: 6px;
     }
     .workspace98-archive .gallery-viewport {
         padding: 10px;
