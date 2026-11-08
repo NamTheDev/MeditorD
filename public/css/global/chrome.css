@@ -265,7 +265,13 @@ body.global-workspace :is(.global-dialog-close, .editor-dialog-close, .global-mo
     pointer-events: none;
 }
 
-body.global-workspace :is(.global-dialog-close, .editor-dialog-close, .global-modal-close-button, .database-modal-close):is(:hover, :focus-visible) {
+/* A keyboard focus cue stays visible, but the red outline is pressed-only. */
+body.global-workspace :is(.global-dialog-close, .editor-dialog-close, .global-modal-close-button, .database-modal-close):focus-visible {
+    outline: 1px dotted var(--global-chrome-highlight);
+    outline-offset: -2px;
+}
+
+body.global-workspace :is(.global-dialog-close, .editor-dialog-close, .global-modal-close-button, .database-modal-close):active:not(:disabled) {
     outline: 1px dotted var(--ctp-red);
     outline-offset: -2px;
 }

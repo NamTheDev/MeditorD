@@ -43,7 +43,11 @@
     border: none;
     cursor: pointer;
     transform: translateY(-50%);
-    box-shadow: none;
+    box-shadow:
+        inset -1px -1px 0 var(--bevel-darkest),
+        inset 1px 1px 0 #ffffff,
+        inset -2px -2px 0 var(--bevel-dark),
+        inset 2px 2px 0 var(--ctp-lavender);
 }
 
 .global-modal-close-button:hover {
