@@ -1736,7 +1736,9 @@ body.workspace98-archive .archive-folder-add-plus {
     .workspace98-editor .editor-layout {
         display: block;
         height: 100%;
-        padding: 6px 30px 9px 6px;
+        /* Match the navigation's even inset; keep the custom scrollbar in its own gutter. */
+        width: calc(100% - 24px);
+        padding: 6px;
         overflow-y: auto;
     }
     .workspace98-editor :is(.editor-left-pane, .editor-right-pane) {
