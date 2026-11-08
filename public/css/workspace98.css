@@ -330,6 +330,13 @@ body.workspace98 :is(.app-dialog-close, .win98-modal-close, .modal-close-button,
 
 /* ───────────────── EDITOR ───────────────── */
 body.workspace98-editor {
+    /* Editor-only Surface2 treatment; other workspace pages retain their palette. */
+    --w98-shell: var(--ctp-surface2);
+    --w98-pane: var(--ctp-surface2);
+    --w98-toolbar: var(--ctp-surface2);
+    --w98-face: var(--ctp-surface2);
+    --w98-well: var(--ctp-surface2);
+    --w98-titlebar: var(--ctp-surface2);
     height: 100dvh;
     min-height: 100dvh;
     overflow: hidden;
