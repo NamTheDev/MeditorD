@@ -1462,7 +1462,7 @@ body.workspace98-database {
     overflow: auto;
     padding: 2px;
     background: var(--w98-pane);
-    box-shadow: var(--w98-sunken);
+    box-shadow: var(--w98-raised);
 }
 
 .workspace98-database .table-wrap table {
