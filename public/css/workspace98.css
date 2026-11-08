@@ -1991,3 +1991,26 @@ body.workspace98-editor .win98-select.form-control-unit::after {
     .edit-modal-actions button, .modal-close) {
     background: var(--w98-face);
 }
+
+/* Editor and Archive: a single raised workspace surface, with transparent
+   structural panels. Buttons/cards and recessed input fields retain their depth. */
+.workspace98-editor #fullscreenApp,
+.workspace98-archive #fullscreenApp {
+    background: #45475a;
+    box-shadow: var(--w98-raised);
+}
+
+.workspace98-editor :is(
+    #fullscreenApp > header, #fullscreenApp > header > nav,
+    .title-compartment, .editor-container, .editor-layout,
+    .editor-left-pane, .editor-right-pane, .description-toolbar
+),
+.workspace98-archive :is(
+    .menu-bar, .gallery-title, .archive-explorer-layout,
+    .archive-explorer-sidebar, .archive-explorer-main,
+    .archive-explorer-heading, .archive-breadcrumbs,
+    .archive-search-toolbar, .gallery-viewport
+) {
+    background: transparent;
+    box-shadow: none;
+}
