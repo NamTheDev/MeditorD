@@ -725,8 +725,23 @@ body.workspace98-archive {
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--w98-text);
+    background: var(--win98-surface);
+    color: var(--win98-text);
+    border: 0;
+    font-weight: 400;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
     text-decoration: none;
+    cursor: pointer;
+}
+
+.workspace98-archive .menu-bar > #databaseButton:active {
+    padding: 4px 10px;
+    box-shadow:
+        inset -1px -1px 0 var(--win98-border-lightest),
+        inset 1px 1px 0 var(--win98-border-darkest),
+        inset -2px -2px 0 var(--win98-border-light),
+        inset 2px 2px 0 var(--win98-border-dark);
 }
 
 .workspace98-archive .archive-explorer-layout {
