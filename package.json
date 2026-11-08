@@ -12,5 +12,8 @@
   },
   "dependencies": {
     "markdown-it": "^15.0.2"
+  },
+  "scripts": {
+    "test": "bun test"
   }
 }

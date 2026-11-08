@@ -20,15 +20,9 @@ function openNewPostInFolder(folder = "") {
   window.meditordNavigate(url.pathname + url.search);
 }
 
-function archiveDisplayTitle(path) {
-  return path.slice(path.lastIndexOf("/") + 1);
-}
+const { archiveDisplayTitle, archivePostDate } = window.MeditorDArchiveUtils;
 
-function archivePostDate(post) {
-  const value = post?.created_at || "";
-  const date = new Date(value.includes(" ") ? value.replace(" ", "T") + "Z" : value);
-  return Number.isNaN(date.getTime()) ? 0 : date.getTime();
-}
+let archivePostsByTitle = new Map();
 
 function compareArchiveCards(a, b) {
   const aTitle = a.dataset.title || "";
@@ -38,8 +32,8 @@ function compareArchiveCards(a, b) {
     aTitle.localeCompare(bTitle, undefined, { sensitivity: "base" });
   if (archiveSortOrder.value === "az") return titleOrder;
   if (archiveSortOrder.value === "za") return -titleOrder;
-  const aPost = postsData.find((post) => post.title === aTitle);
-  const bPost = postsData.find((post) => post.title === bTitle);
+  const aPost = archivePostsByTitle.get(aTitle);
+  const bPost = archivePostsByTitle.get(bTitle);
   const difference = archivePostDate(aPost) - archivePostDate(bPost);
   return (archiveSortOrder.value === "oldest" ? difference : -difference) || titleOrder;
 }
@@ -88,6 +82,7 @@ function archiveFolders(rows) {
   return [...paths].sort((a, b) => a.localeCompare(b));
 }
 function refreshArchiveFolderView() {
+  archivePostsByTitle = new Map(postsData.map((post) => [post.title, post]));
   const cards = [...postsContainer.querySelectorAll(".gallery-card")];
   cards.sort(compareArchiveCards);
   // Preserve the existing cards and delegated handlers while changing grid order.

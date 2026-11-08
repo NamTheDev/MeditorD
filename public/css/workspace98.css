@@ -1496,12 +1496,8 @@ body.workspace98-database {
     }
 }
 @media (max-width: 450px) {
-    .workspace98-editor .editor-nav-actions .action-btn,
+    .workspace98-editor .editor-nav-actions :is(.action-btn, .compartment),
     .workspace98-archive .menu-bar > :is(#backButton, #newPostButton) {
-        min-height: 36px;
-        height: 36px;
-    }
-    .workspace98-editor .editor-nav-actions .compartment {
         min-height: 36px;
         height: 36px;
     }
