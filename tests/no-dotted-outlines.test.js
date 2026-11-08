@@ -29,3 +29,15 @@ test("keyboard controls still expose non-dotted focus treatment", () => {
   expect(buttons).toContain(".global-action-button:focus-visible");
   expect(buttons).toMatch(/outline: 1px solid var\(--global-accent\)/);
 });
+
+test("selection dropdowns never draw focus or click outlines", () => {
+  const forms = readFileSync("public/css/global/forms.css", "utf8");
+  const chrome = readFileSync("public/css/global/chrome.css", "utf8");
+  const archive = readFileSync("public/css/pages/archive.css", "utf8");
+  const database = readFileSync("public/css/pages/database.css", "utf8");
+  expect(chrome).toContain("select:is(:focus, :focus-visible) {\n    outline: none;");
+  for (const css of [forms, archive, database]) {
+    expect(css).not.toMatch(/select:focus-visible\s*\{\s*outline:/);
+  }
+  expect(forms).toContain(".global-select > select {");
+});

@@ -517,8 +517,7 @@ select {
     outline: none;
 }
 
-input[type="text"]:focus-visible,
-select:focus-visible {
+input[type="text"]:focus-visible {
     outline: 1px solid var(--ctp-lavender);
 }
 

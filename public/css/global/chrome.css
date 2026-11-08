@@ -80,9 +80,14 @@ body.global-workspace :is(input:not([type="checkbox"]):not([type="file"]), texta
     user-select: text;
 }
 
-body.global-workspace :is(input, select, textarea):focus-visible {
+body.global-workspace :is(input, textarea):focus-visible {
     outline: 1px solid var(--global-chrome-highlight);
     outline-offset: -3px;
+}
+
+/* No click or focus border on native selection dropdowns. */
+body.global-workspace select:is(:focus, :focus-visible) {
+    outline: none;
 }
 
 body.global-workspace :is(input, textarea)::placeholder {
