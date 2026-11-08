@@ -567,7 +567,14 @@ body.workspace98-editor {
     font: 400 12px "Courier New", Courier, monospace;
 }
 
-.workspace98-editor .editor-textarea {
+.workspace98-editor .description-toolbar .action-btn {
+    min-height: 24px;
+    padding: 3px 10px;
+    box-shadow: var(--w98-raised);
+    font-size: 11px;
+}
+
+.workspace98-editor :is(.editor-textarea, .markdown-preview) {
     min-width: 0;
     min-height: 0;
     padding: 12px;
@@ -579,6 +586,14 @@ body.workspace98-editor {
 
 .workspace98-editor .editor-textarea {
     resize: none;
+}
+
+.workspace98-editor .markdown-preview {
+    overflow-y: auto;
+}
+
+.workspace98-editor .markdown-preview :is(a, strong) {
+    color: var(--w98-highlight);
 }
 
 /* Keep the existing responsive Write/Preview and touch scrollbar behaviors. */
@@ -1685,6 +1700,7 @@ body.workspace98-archive .archive-folder-add-plus {
     .workspace98-editor .form-row.preview-row {
         min-height: 160px;
     }
+    .workspace98-editor .mobile-view-switch,
     .workspace98-editor .mobile-markdown-toolbar {
         font-family: "Courier New", Courier, monospace;
     }
@@ -1707,6 +1723,13 @@ body.workspace98-archive .archive-folder-add-plus {
         height: auto;
         overflow-y: hidden;
         padding: 14px 14px calc(68px + var(--safe-bottom));
+        font-size: 16px;
+    }
+    .workspace98-editor .markdown-preview {
+        flex: none;
+        min-height: 320px;
+        overflow: visible;
+        padding: 14px;
         font-size: 16px;
     }
 
@@ -1735,8 +1758,8 @@ body.workspace98-archive .archive-folder-add-plus {
         min-height: 42px;
         padding: 6px 8px;
     }
-    .workspace98-editor .editor-textarea {
-        padding: 12px 12px calc(68px + var(--safe-bottom));
+    .workspace98-editor :is(.editor-textarea, .markdown-preview) {
+        padding: 12px;
     }
 }
 
