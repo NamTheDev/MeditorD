@@ -2014,3 +2014,28 @@ body.workspace98-editor .win98-select.form-control-unit::after {
     background: transparent;
     box-shadow: none;
 }
+
+/* Scrollbar thumb is an interactive control; track is unused control space. */
+body.workspace98-editor,
+body.workspace98-archive,
+body.workspace98-database {
+    scrollbar-color: #585b70 #313244;
+}
+
+body.workspace98-editor *,
+body.workspace98-archive *,
+body.workspace98-database * {
+    scrollbar-color: #585b70 #313244;
+}
+
+body.workspace98-editor ::-webkit-scrollbar-track,
+body.workspace98-archive ::-webkit-scrollbar-track,
+body.workspace98-database ::-webkit-scrollbar-track {
+    background: #313244;
+}
+
+body.workspace98-editor ::-webkit-scrollbar-thumb,
+body.workspace98-archive ::-webkit-scrollbar-thumb,
+body.workspace98-database ::-webkit-scrollbar-thumb {
+    background: #585b70;
+}
