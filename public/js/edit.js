@@ -87,6 +87,11 @@ folderSelect.addEventListener("change", async () => {
 });
 const urlInput = document.getElementById("doc-url");
 const contentInput = document.querySelector(".editor-textarea");
+const previewButton = document.getElementById("preview-button");
+const writeViewButton = document.getElementById("write-view-button");
+const previewViewButton = document.getElementById("preview-view-button");
+const markdownPreview = document.querySelector(".markdown-preview");
+const textareaWrapper = document.querySelector(".textarea-wrapper");
 const mobileMarkdownToolbar = document.querySelector(
   ".mobile-markdown-toolbar",
 );
@@ -119,6 +124,18 @@ let scrollbarFrame = 0;
 let scrollbarDragPointer = null;
 let scrollbarDragStartY = 0;
 let scrollbarDragStartScrollTop = 0;
+const markdown = window.markdownit({
+  html: false,
+  linkify: true,
+  typographer: true,
+});
+
+function updateMarkdownPreview() {
+  markdownPreview.innerHTML = markdown.render(
+    contentInput.value || "_Nothing to preview yet._",
+  );
+}
+
 function resizeMobileTextarea() {
   if (!narrowEditorLayout) {
     contentInput.style.height = "";
@@ -204,6 +221,24 @@ function stopScrollbarDrag(event) {
   mobileScrollbarThumb.classList.remove("dragging");
 }
 
+function setDescriptionView(view) {
+  const previewing = view === "preview";
+  if (previewing) updateMarkdownPreview();
+
+  contentInput.classList.toggle("hidden", previewing);
+  markdownPreview.classList.toggle("hidden", !previewing);
+  textareaWrapper.dataset.view = previewing ? "preview" : "write";
+  previewButton.textContent = previewing ? "Edit" : "Preview";
+
+  writeViewButton.classList.toggle("active", !previewing);
+  previewViewButton.classList.toggle("active", previewing);
+  writeViewButton.setAttribute("aria-selected", String(!previewing));
+  previewViewButton.setAttribute("aria-selected", String(previewing));
+
+  resizeMobileTextarea();
+  queueMobileScrollbarSync();
+}
+
 function applyMarkdownAction(action) {
   const start = contentInput.selectionStart;
   const end = contentInput.selectionEnd;
@@ -232,6 +267,7 @@ function applyMarkdownAction(action) {
     );
   }
 
+  updateMarkdownPreview();
   resizeMobileTextarea();
   queueMobileScrollbarSync();
 }
@@ -353,6 +389,8 @@ function resetEditor() {
 
   // renderMediaPreview also revokes any temporary object URL.
   renderMediaPreview(null);
+  updateMarkdownPreview();
+  setDescriptionView("write");
   editorLayout.scrollTop = 0;
   queueMobileScrollbarSync();
   titleInput.focus();
@@ -382,12 +420,21 @@ archiveButton.addEventListener("click", () => {
   window.meditordNavigate("/archive.html");
 });
 resetButton.addEventListener("click", resetEditor);
+previewButton.addEventListener("click", () => {
+  const isPreviewing = !markdownPreview.classList.contains("hidden");
+  setDescriptionView(isPreviewing ? "write" : "preview");
+});
+writeViewButton.addEventListener("click", () => setDescriptionView("write"));
+previewViewButton.addEventListener("click", () =>
+  setDescriptionView("preview"),
+);
 mobileMarkdownToolbar.addEventListener("click", (event) => {
   const button = event.target.closest("[data-markdown-action]");
   if (!button) return;
   applyMarkdownAction(button.dataset.markdownAction);
 });
 contentInput.addEventListener("input", () => {
+  updateMarkdownPreview();
   resizeMobileTextarea();
   queueMobileScrollbarSync();
 });
@@ -506,5 +553,7 @@ window.addEventListener("keydown", (event) => {
 });
 
 syncEditorLayoutMode();
+updateMarkdownPreview();
+setDescriptionView("write");
 
 void loadEditorFolders();
