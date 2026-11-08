@@ -28,6 +28,8 @@ test("all dialogs use keyboard focus management", () => {
     expect(read(file)).toContain("window.meditordDialogFocus.trap(event,");
   }
   expect(read("public/archive.html")).toContain('aria-labelledby="modalTitle"');
+  expect(read("public/js/app-dialog.js")).toContain("event.stopImmediatePropagation()");
+  expect(read("public/js/archive.js")).toContain('?.querySelector(".archive-card-open-button") || trigger');
   expect(read("public/database.html")).toContain('aria-labelledby="editModalTitle"');
 });
 

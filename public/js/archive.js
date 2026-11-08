@@ -1068,6 +1068,9 @@ async function moveArchivePost(title, folder, createFolder = "") {
   }
 }
 function showArchiveFolderPicker(post) {
+  const trigger = document.activeElement;
+  const returnFocus = trigger?.closest?.(".archive-gallery-card")
+    ?.querySelector(".archive-card-open-button") || trigger;
   closeAllMenus();
   const overlay = document.createElement("div");
   overlay.className = "archive-folder-picker";
@@ -1135,7 +1138,6 @@ function showArchiveFolderPicker(post) {
     pendingFolder = folder;
     select.value = folder;
   });
-  const returnFocus = document.activeElement;
   const actions = document.createElement("div");
   actions.className = "archive-folder-picker-actions";
   const cancel = document.createElement("button");

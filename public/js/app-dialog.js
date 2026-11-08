@@ -76,6 +76,8 @@
       window.meditordDialogFocus.trap(event, dialogWindow);
     } else if (event.key === "Escape") {
       event.preventDefault();
+      // Keep Escape from closing a second, underlying dialog in this event.
+      event.stopImmediatePropagation();
       cancelDialog();
     } else if (event.key === "Enter" && activeDialog?.type === "prompt") {
       event.preventDefault();
