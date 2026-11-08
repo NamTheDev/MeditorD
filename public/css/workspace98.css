@@ -1957,3 +1957,10 @@ body.workspace98-editor .win98-select.form-control-unit::after {
         min-height: 44px;
     }
 }
+
+/* Consistent inner padding for all three shared workspace frames. */
+.workspace98-editor #fullscreenApp,
+.workspace98-archive #fullscreenApp,
+.workspace98-database .database-workspace-frame {
+    padding: 20px;
+}
