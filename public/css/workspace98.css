@@ -1291,6 +1291,21 @@ body.workspace98-archive .card-description .read-more-toggle:active {
     background: var(--ctp-surface1);
 }
 
+/* Editor and Archive already share a fullscreen wrapper around navigation and
+   content. Make that wrapper the single raised workspace frame, matching Database. */
+.workspace98-editor #fullscreenApp,
+.workspace98-archive #fullscreenApp {
+    padding: max(4px, var(--safe-top)) max(4px, var(--safe-right))
+        max(4px, var(--safe-bottom)) max(4px, var(--safe-left));
+    background: var(--w98-pane);
+    box-shadow: var(--w98-raised);
+}
+
+.workspace98-editor #fullscreenApp > header > nav,
+.workspace98-archive .menu-bar {
+    box-shadow: none;
+}
+
 /* ───────────────── DATABASE ───────────────── */
 body.workspace98-database {
     /* Database-only palette; Editor and Archive remain unchanged. */
