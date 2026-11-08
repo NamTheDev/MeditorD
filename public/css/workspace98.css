@@ -744,10 +744,13 @@ body.workspace98-archive {
 }
 
 .workspace98-archive .archive-explorer-layout {
+    flex: 1 1 0;
+    min-width: 0;
+    min-height: 0;
     grid-template-columns: clamp(205px, 21vw, 274px) minmax(0, 1fr);
     gap: 4px;
-    min-height: 0;
     padding-top: 0;
+    overflow: hidden;
 }
 
 .workspace98-archive .archive-explorer-sidebar {
@@ -1040,6 +1043,7 @@ body.workspace98-archive #archiveFolderTree .archive-folder-glyph::after {
     display: flex;
     flex-direction: column;
     gap: 4px;
+    overflow: hidden;
 }
 
 .workspace98-archive .archive-breadcrumbs {
@@ -1117,11 +1121,16 @@ body.workspace98-archive #archiveFolderTree .archive-folder-glyph::after {
 }
 
 .workspace98-archive .gallery-viewport {
+    box-sizing: border-box;
     flex: 1 1 auto;
+    min-width: 0;
     min-height: 0;
     margin: 0;
     padding: 13px;
     background: var(--w98-well);
+    border: 1px solid var(--ctp-overlay1);
+    border-top-color: var(--ctp-crust);
+    border-left-color: var(--ctp-crust);
     box-shadow: var(--w98-sunken);
     overflow: auto;
 }
@@ -2009,10 +2018,16 @@ body.workspace98-editor .win98-select.form-control-unit::after {
     .menu-bar, .gallery-title, .archive-explorer-layout,
     .archive-explorer-sidebar, .archive-explorer-main,
     .archive-explorer-heading, .archive-breadcrumbs,
-    .archive-search-toolbar, .gallery-viewport
+    .archive-search-toolbar
 ) {
     background: transparent;
     box-shadow: none;
+}
+
+/* Keep the Archive content inside its raised outer frame. */
+.workspace98-archive #fullscreenApp {
+    padding: 4px;
+    overflow: hidden;
 }
 
 /* Windows 95/98 scrollbar chrome, adapted to the Mocha palette.
