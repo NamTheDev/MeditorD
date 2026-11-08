@@ -555,13 +555,8 @@ input.form-control-unit:focus {
 }
 
 .mobile-view-switch,
-.mobile-markdown-toolbar,
-.mobile-editor-scrollbar {
+.mobile-markdown-toolbar {
     display: none;
-}
-
-.mobile-editor-scrollbar[hidden] {
-    display: none !important;
 }
 
 /* Keep the desktop toolbar in narrow tiled windows.
@@ -682,13 +677,9 @@ input.form-control-unit:focus {
         overscroll-behavior-y: contain;
         -webkit-overflow-scrolling: touch;
         touch-action: pan-y;
-        scrollbar-width: none;
-        padding-right: 32px;
+        /* Use native scrolling, including the browser's scrollbar. */
+        scrollbar-width: auto;
         padding-bottom: var(--safe-bottom);
-    }
-
-    .editor-layout::-webkit-scrollbar {
-        display: none;
     }
 
     .editor-left-pane,
@@ -875,96 +866,6 @@ input.form-control-unit:focus {
         min-height: 44px;
         padding: 6px 10px;
         font-family: "Courier New", Courier, monospace;
-    }
-
-    .mobile-editor-scrollbar {
-        position: absolute;
-        top: 2px;
-        right: max(2px, var(--safe-right));
-        bottom: 2px;
-        z-index: 55;
-        width: 28px;
-        display: grid;
-        grid-template-rows: 40px minmax(0, 1fr) 40px;
-        background: var(--win98-surface);
-        box-shadow:
-            inset 1px 1px 0 var(--win98-border-lightest),
-            inset -1px -1px 0 var(--win98-border-darkest),
-            inset 2px 2px 0 var(--win98-border-light),
-            inset -2px -2px 0 var(--win98-border-dark);
-        user-select: none;
-        -webkit-user-select: none;
-        touch-action: none;
-    }
-
-    .mobile-scrollbar-arrow {
-        width: 100%;
-        min-width: 0;
-        min-height: 40px;
-        padding: 0;
-        border: 0;
-        background: var(--win98-surface);
-        color: var(--win98-text);
-        font-size: 11px;
-        line-height: 1;
-        box-shadow:
-            inset -1px -1px 0 var(--win98-border-darkest),
-            inset 1px 1px 0 var(--win98-border-lightest),
-            inset -2px -2px 0 var(--win98-border-dark),
-            inset 2px 2px 0 var(--win98-border-light);
-        touch-action: none;
-    }
-
-    .mobile-scrollbar-arrow:active {
-        padding: 1px 0 0 1px;
-        box-shadow:
-            inset -1px -1px 0 var(--win98-border-lightest),
-            inset 1px 1px 0 var(--win98-border-darkest),
-            inset -2px -2px 0 var(--win98-border-light),
-            inset 2px 2px 0 var(--win98-border-dark);
-    }
-
-    .mobile-scrollbar-track {
-        position: relative;
-        min-height: 0;
-        margin: 1px 2px;
-        background: var(--ctp-mantle);
-        box-shadow:
-            inset 1px 1px 0 var(--win98-border-darkest),
-            inset -1px -1px 0 var(--win98-border-lightest),
-            inset 2px 2px 0 var(--win98-border-dark),
-            inset -2px -2px 0 var(--win98-border-light);
-        touch-action: none;
-    }
-
-    .mobile-scrollbar-track:focus-visible {
-        outline: 1px dotted var(--win98-accent);
-        outline-offset: -3px;
-    }
-
-    .mobile-scrollbar-thumb {
-        position: absolute;
-        top: 0;
-        right: 2px;
-        left: 2px;
-        min-height: 44px;
-        background: var(--win98-surface);
-        box-shadow:
-            inset -1px -1px 0 var(--win98-border-darkest),
-            inset 1px 1px 0 var(--win98-border-lightest),
-            inset -2px -2px 0 var(--win98-border-dark),
-            inset 2px 2px 0 var(--win98-border-light);
-        cursor: ns-resize;
-        touch-action: none;
-    }
-
-    .mobile-scrollbar-thumb.dragging {
-        background: var(--ctp-surface1);
-        box-shadow:
-            inset -1px -1px 0 var(--win98-border-lightest),
-            inset 1px 1px 0 var(--win98-border-darkest),
-            inset -2px -2px 0 var(--win98-border-light),
-            inset 2px 2px 0 var(--win98-border-dark);
     }
 
     .win98-modal-backdrop {
