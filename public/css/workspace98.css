@@ -1316,11 +1316,23 @@ body.workspace98-database {
     background: var(--w98-shell);
 }
 
+.workspace98-database .database-workspace-frame {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    gap: 4px;
+    min-height: 0;
+    min-width: 0;
+    padding: 3px;
+    background: var(--w98-pane);
+    box-shadow: var(--w98-raised);
+}
+
 .workspace98-database .database-header {
     flex: 0 0 auto;
-    padding: 3px;
+    padding: 0;
     background: var(--w98-toolbar);
-    box-shadow: var(--w98-raised);
+    box-shadow: none;
 }
 
 .workspace98-database .database-titlebar {
@@ -1398,7 +1410,9 @@ body.workspace98-database {
 }
 
 .workspace98-database .database-main {
+    flex: 1 1 auto;
     min-height: 0;
+    min-width: 0;
     gap: 4px;
 }
 
