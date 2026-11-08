@@ -347,15 +347,28 @@ body.workspace98-editor {
     --preview-padding: 12px;
 }
 
-.workspace98-editor > header {
-    flex: 0 0 auto;
+/* Editor uses the same outer shell model as Archive:
+   one padding/gap owner for the menu and the content region. */
+.workspace98-editor #fullscreenApp {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    gap: 4px;
+    width: 100%;
+    min-height: 0;
     padding: max(4px, var(--safe-top)) max(4px, var(--safe-right))
-        3px max(4px, var(--safe-left));
+        max(4px, var(--safe-bottom)) max(4px, var(--safe-left));
+    background: var(--w98-shell);
+}
+
+.workspace98-editor #fullscreenApp > header {
+    flex: 0 0 auto;
+    padding: 0;
     background: var(--w98-pane);
 }
 
 /* Real Win98 title strip above a compact command toolbar, for every width. */
-.workspace98-editor > header > nav {
+.workspace98-editor #fullscreenApp > header > nav {
     position: relative;
     display: flex;
     flex-direction: column;
@@ -455,6 +468,7 @@ body.workspace98-editor {
 }
 
 .workspace98-editor .editor-container {
+    flex: 1 1 auto;
     min-height: 0;
     margin: 0;
     background: var(--w98-pane);
@@ -1646,11 +1660,15 @@ body.workspace98-archive .archive-folder-add-plus {
 /* Mobile spacing rhythm: 4px within controls, 8px between related groups,
    12px within major panels. Touch hit areas remain at least 44px. */
 @media (max-width: 700px) {
-    .workspace98-editor > header {
-        padding: max(5px, var(--safe-top)) max(6px, var(--safe-right))
-            4px max(6px, var(--safe-left));
+    .workspace98-editor #fullscreenApp {
+        gap: 6px;
+        padding: max(6px, var(--safe-top)) max(6px, var(--safe-right))
+            max(6px, var(--safe-bottom)) max(6px, var(--safe-left));
     }
-    .workspace98-editor > header > nav,
+    .workspace98-editor #fullscreenApp > header {
+        padding: 0;
+    }
+    .workspace98-editor #fullscreenApp > header > nav,
     .workspace98-editor .editor-nav-actions {
         gap: 4px;
     }
