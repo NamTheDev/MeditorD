@@ -1043,6 +1043,7 @@ body.workspace98-archive #archiveFolderTree .archive-folder-glyph::after {
     display: flex;
     flex-direction: column;
     gap: 4px;
+    padding: 3px;
     overflow: hidden;
 }
 
