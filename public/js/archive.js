@@ -1,3 +1,5 @@
+const { parentPath: archiveParent, isValidFolderSegment: validateFolderSegment } = window.MeditorDPathUtils;
+
 let postsData = [];
 const initialPostsEl = document.getElementById("initialPosts");
 if (initialPostsEl) {
@@ -64,10 +66,6 @@ function archiveFolderFromUrl() {
 }
 let activeArchiveFolder = archiveFolderFromUrl();
 const openArchiveFolders = new Set();
-function archiveParent(path) {
-  const index = path.lastIndexOf("/");
-  return index < 0 ? "" : path.slice(0, index);
-}
 function archiveFolders(rows) {
   const paths = new Set(
     rows.filter((row) => row.isDirectory).map((row) => row.title),
@@ -273,16 +271,6 @@ async function archiveDocumentRequest(path, options = {}) {
   const body = await response.json().catch(() => null);
   if (!response.ok) throw new Error(body?.error || "Folder operation failed.");
   return body;
-}
-function validateFolderSegment(name) {
-  return (
-    name &&
-    name !== "." &&
-    name !== ".." &&
-    !name.includes("/") &&
-    !name.includes(String.fromCharCode(92)) &&
-    !/[\u0000-\u001f]/.test(name)
-  );
 }
 async function createArchiveFolder(parent = "") {
   const name = await window.showAppPrompt(

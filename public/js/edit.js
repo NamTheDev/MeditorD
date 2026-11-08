@@ -1,14 +1,11 @@
+const { isValidFolderSegment } = window.MeditorDPathUtils;
+
 const titleInput = document.getElementById("doc-title");
 const usernameInput = document.getElementById("doc-username");
 const folderSelect = document.getElementById("doc-folder");
 const createFolderValue = "__meditord_create_folder__";
 let pendingFolder = "";
 let selectedFolder = "";
-
-function isValidFolderSegment(value) {
-  return Boolean(value && value !== "." && value !== ".." &&
-    !/[\\/\u0000-\u001f]/.test(value));
-}
 
 function appendFolderOption(value, label = value) {
   const option = document.createElement("option");

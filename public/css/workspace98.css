@@ -658,8 +658,6 @@ body.workspace98-archive {
     display: flex;
     flex-direction: column;
     gap: 4px;
-    padding: max(4px, var(--safe-top)) max(4px, var(--safe-right))
-        max(4px, var(--safe-bottom)) max(4px, var(--safe-left));
     color: var(--w98-text);
     background: var(--w98-shell);
 }
@@ -1307,8 +1305,6 @@ body.workspace98-archive .card-description .read-more-toggle:active {
 .workspace98-archive #fullscreenApp {
     padding: max(4px, var(--safe-top)) max(4px, var(--safe-right))
         max(4px, var(--safe-bottom)) max(4px, var(--safe-left));
-    background: var(--w98-pane);
-    box-shadow: var(--w98-raised);
 }
 
 .workspace98-editor #fullscreenApp > header > nav,
@@ -1335,10 +1331,6 @@ body.workspace98-database {
     max-width: none;
     height: 100dvh;
     min-height: 0;
-    padding: max(4px, var(--safe-top)) max(4px, var(--safe-right))
-        max(4px, var(--safe-bottom)) max(4px, var(--safe-left));
-    gap: 4px;
-    background: var(--w98-shell);
 }
 
 .workspace98-database .database-header {

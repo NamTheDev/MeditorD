@@ -1,3 +1,5 @@
+const { parentPath: folderOf, leafName } = window.MeditorDPathUtils;
+
 const state = {
   items: [],
   filter: "",
@@ -59,13 +61,6 @@ function renderMessage(message, className = "empty-state") {
   tableBody.append(row);
 }
 
-function folderOf(title) {
-  const index = title.lastIndexOf("/");
-  return index < 0 ? "" : title.slice(0, index);
-}
-function leafName(title) {
-  return title.slice(title.lastIndexOf("/") + 1);
-}
 function allFolders() {
   const paths = new Set(
     state.items.filter((i) => i.isDirectory).map((i) => i.title),
