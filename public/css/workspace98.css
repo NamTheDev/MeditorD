@@ -696,12 +696,12 @@ body.workspace98-archive {
 }
 
 .workspace98-archive .menu-bar > #backButton {
-    grid-column: 1;
+    grid-column: 2;
     grid-row: 2;
 }
 
 .workspace98-archive .menu-bar > #newPostButton {
-    grid-column: 2;
+    grid-column: 1;
     grid-row: 2;
 }
 
