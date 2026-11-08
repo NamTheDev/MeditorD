@@ -85,33 +85,3 @@
     }
 }
 
-/* Existing editor mobile scrollbar: only its visuals change.
-   The drag/track/keyboard logic remains in edit.js. */
-@container editor-shell (max-width: 839px) {
-    .mobile-editor-scrollbar {
-        width: 22px;
-        grid-template-rows: 28px minmax(0, 1fr) 28px;
-        background: var(--scroll98-face);
-    }
-
-    .mobile-scrollbar-arrow {
-        min-height: 28px;
-        height: 28px;
-        font-size: 10px;
-        background: var(--scroll98-face);
-        color: var(--ctp-text);
-    }
-
-    .mobile-scrollbar-track {
-        margin: 1px;
-        background: var(--scroll98-track);
-    }
-
-    .mobile-scrollbar-thumb,
-    .mobile-scrollbar-thumb.dragging {
-        left: 1px;
-        right: 1px;
-        min-height: 44px;
-        background: var(--scroll98-face);
-    }
-}
