@@ -1331,18 +1331,6 @@ body.workspace98-database {
     background: var(--w98-shell);
 }
 
-.workspace98-database .database-workspace-frame {
-    display: flex;
-    flex: 1 1 auto;
-    flex-direction: column;
-    gap: 4px;
-    min-height: 0;
-    min-width: 0;
-    padding: 3px;
-    background: var(--w98-pane);
-    box-shadow: var(--w98-raised);
-}
-
 .workspace98-database .database-header {
     flex: 0 0 auto;
     padding: 0;
@@ -1958,9 +1946,19 @@ body.workspace98-editor .win98-select.form-control-unit::after {
     }
 }
 
-/* Consistent inner padding for all three shared workspace frames. */
+/* Consistent 20px outer spacing; no 20px inner padding. */
 .workspace98-editor #fullscreenApp,
 .workspace98-archive #fullscreenApp,
-.workspace98-database .database-workspace-frame {
-    padding: 20px;
+.workspace98-database #databaseApp {
+    box-sizing: border-box;
+    width: calc(100% - 40px);
+    height: calc(100dvh - 40px);
+    margin: 20px;
+    padding: 0;
+}
+
+/* Database no longer has a shared frame; restore its header's own bevel. */
+.workspace98-database .database-header {
+    padding: 3px;
+    box-shadow: var(--w98-raised);
 }
