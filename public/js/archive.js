@@ -584,7 +584,8 @@ function openPostModal(post, opener = null) {
   );
   modal.classList.add("active");
   modal.setAttribute("aria-hidden", "false");
-  modal.querySelector(".global-modal-close-button")?.focus({ preventScroll: true });
+  // Focus the dialog itself so opening it never highlights the close button.
+  modal.focus({ preventScroll: true });
 }
 
 function closeModal({ keepShareUrl = false } = {}) {

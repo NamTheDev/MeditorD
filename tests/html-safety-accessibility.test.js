@@ -33,6 +33,17 @@ test("all dialogs use keyboard focus management", () => {
   expect(read("public/database.html")).toContain('aria-labelledby="editModalTitle"');
 });
 
+test("archive inspector opens with focus on the dialog, not its close button", () => {
+  const markup = read("public/archive.html");
+  const script = read("public/js/archive.js");
+  expect(markup).toMatch(/id="postModal"[^>]*tabindex="-1"/);
+  expect(script).toContain("modal.focus({ preventScroll: true });");
+  expect(script).not.toContain('modal.querySelector(".global-modal-close-button")?.focus(');
+  expect(script).toContain("window.meditordDialogFocus.trap(event, modal)");
+  expect(script).toContain("window.meditordDialogFocus.restore(returnFocus)");
+  expect(read("public/css/global/dialogs.css")).toContain("#postModal:focus");
+});
+
 test("archive post cards and editor media upload have native keyboard buttons", () => {
   expect(read("functions/render.ts")).toContain('type="button" class="archive-card-open-button"');
   expect(read("public/css/pages/archive.css")).toContain(".archive-card-open-button:focus-visible");

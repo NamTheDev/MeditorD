@@ -74,6 +74,11 @@
     display: flex;
 }
 
+/* Programmatic focus belongs to the dialog; leave its visible chrome unchanged. */
+#postModal:focus {
+    outline: none;
+}
+
 .global-modal-window {
     width: 90%;
     max-width: 760px;
