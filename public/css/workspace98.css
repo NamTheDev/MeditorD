@@ -717,22 +717,21 @@ body.workspace98-archive {
     height: 30px;
     margin: 0;
     padding: 4px 10px;
+    background: var(--w98-face);
+    color: var(--w98-text);
+    border: 0;
     box-shadow: var(--w98-raised);
     font: 400 12px "Courier New", Courier, monospace;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    cursor: pointer;
 }
 
 .workspace98-archive .menu-bar > #databaseButton {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--win98-surface);
-    color: var(--win98-text);
-    border: 0;
-    font-weight: 400;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
     text-decoration: none;
-    cursor: pointer;
 }
 
 .workspace98-archive .menu-bar > #databaseButton:active {
