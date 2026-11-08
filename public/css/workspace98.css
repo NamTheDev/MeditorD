@@ -1311,11 +1311,13 @@ body.workspace98-database {
 .workspace98-database .database-header {
     flex: 0 0 auto;
     padding: 3px;
-    background: var(--w98-pane);
+    background: var(--w98-toolbar);
     box-shadow: var(--w98-raised);
 }
 
 .workspace98-database .database-titlebar {
+    position: relative;
+    justify-content: center;
     min-height: 29px;
     height: 29px;
     padding: 3px 9px;
@@ -1330,39 +1332,61 @@ body.workspace98-database {
 }
 
 .workspace98-database .database-title-caption {
+    position: absolute;
+    right: 9px;
     color: var(--ctp-subtext1);
     font: 400 10px "Courier New", Courier, monospace;
 }
 
 .workspace98-database .database-actions {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 4px 12px;
-    padding: 5px 2px 1px;
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+    align-items: stretch;
+    gap: 3px;
+    padding: 3px 0 0;
     background: var(--w98-toolbar);
 }
 
 .workspace98-database :is(.database-actions-left, .database-actions-right) {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 4px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: stretch;
+    gap: 3px;
+    min-width: 0;
+}
+
+.workspace98-database .database-actions-right {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .workspace98-database .database-actions button {
-    min-width: 80px;
-    min-height: 29px;
-    padding: 4px 12px;
+    width: 100%;
+    min-width: 0;
+    min-height: 30px;
+    height: 30px;
+    margin: 0;
+    padding: 4px 8px;
     color: var(--w98-text);
     background: var(--w98-face);
+    border: 0;
     box-shadow: var(--w98-raised);
     font: 400 12px "Courier New", Courier, monospace;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
 }
 
 .workspace98-database .database-actions button:active {
     padding: 4px 12px;
+}
+
+/* Keep Database's five navigation actions readable on narrow screens. */
+@media (max-width: 700px) {
+    .workspace98-database .database-actions {
+        grid-template-columns: minmax(0, 1fr);
+    }
+    .workspace98-database .database-title-caption {
+        display: none;
+    }
 }
 
 .workspace98-database .database-main {
