@@ -1957,8 +1957,37 @@ body.workspace98-editor .win98-select.form-control-unit::after {
     padding: 0;
 }
 
-/* Database no longer has a shared frame; restore its header's own bevel. */
-.workspace98-database .database-header {
-    padding: 3px;
+/* Database: one raised #45475a wrapper; inner structural panels stay transparent. */
+.workspace98-database #databaseApp {
+    background: var(--w98-pane);
     box-shadow: var(--w98-raised);
+    gap: 4px;
+    padding: 4px;
+}
+
+.workspace98-database :is(
+    .database-header,
+    .database-titlebar,
+    .database-actions,
+    .database-main,
+    .database-searchbar,
+    .table-wrap,
+    .table-wrap table,
+    .table-wrap th
+) {
+    background: transparent;
+    box-shadow: none;
+}
+
+/* Inputs remain recessed; buttons retain the raised interactive surface. */
+.workspace98-database :is(.database-search-line input, .database-filter-control select,
+    .edit-modal-box input:not([type="checkbox"]), .edit-modal-box select,
+    .edit-modal-box textarea) {
+    background: var(--w98-well);
+    box-shadow: var(--w98-sunken);
+}
+
+.workspace98-database :is(.database-actions button, .row-actions button,
+    .edit-modal-actions button, .modal-close) {
+    background: var(--w98-face);
 }
