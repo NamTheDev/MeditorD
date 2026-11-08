@@ -70,9 +70,9 @@
                 <div class="editor-form-row">
                     <label class="editor-field-label" for="doc-media">Media:</label>
                     <input type="file" id="doc-media" class="global-hidden" />
-                    <label for="doc-media" class="editor-upload-button editor-form-control"
-                        >Upload File</label
-                    >
+                    <button type="button" id="doc-media-trigger"
+                        class="editor-upload-button editor-form-control"
+                        aria-controls="doc-media">Upload File</button>
                 </div>
 
                 <div class="editor-form-row editor-preview-row">
@@ -87,18 +87,17 @@
         <div class="editor-right-pane">
             <div class="editor-textarea-wrapper">
                 <div class="editor-description-toolbar">
-                    <span class="editor-description-label">Description:</span>
+                    <span class="editor-description-label" id="editor-description-label">Description:</span>
                     <div
                         class="editor-mobile-view-switch"
-                        role="tablist"
+                        role="group"
                         aria-label="Description view"
                     >
                         <button
                             type="button"
                             class="editor-mobile-view-tab active"
                             id="write-view-button"
-                            role="tab"
-                            aria-selected="true"
+                            aria-pressed="true"
                         >
                             Write
                         </button>
@@ -106,8 +105,7 @@
                             type="button"
                             class="editor-mobile-view-tab"
                             id="preview-view-button"
-                            role="tab"
-                            aria-selected="false"
+                            aria-pressed="false"
                         >
                             Preview
                         </button>
@@ -122,6 +120,7 @@
                 </div>
                 <textarea
                     class="editor-textarea"
+                    aria-labelledby="editor-description-label"
                     placeholder="Start typing..."
                 ></textarea>
                 <div class="editor-markdown-preview global-hidden" aria-live="polite"></div>
@@ -155,6 +154,7 @@
     id="feature-modal"
     role="dialog"
     aria-modal="true"
+    aria-hidden="true"
     aria-labelledby="feature-modal-title"
 >
     <section class="editor-dialog">

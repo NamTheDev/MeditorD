@@ -1,4 +1,5 @@
 let postsData = [];
+let postModalReturnFocus = null;
 const initialPostsEl = document.getElementById("initialPosts");
 if (initialPostsEl) {
   try {
@@ -522,7 +523,13 @@ function historyBack() {
   window.meditordNavigate("/home.html");
 }
 
-function openPostModal(post) {
+function openPostModal(post, opener = null) {
+  const modal = document.getElementById("postModal");
+  if (!modal.classList.contains("active")) {
+    postModalReturnFocus = opener ||
+      (document.activeElement !== document.body ? document.activeElement : null) ||
+      document.getElementById("backButton");
+  }
   document.getElementById("modalTitle").textContent = archiveDisplayTitle(post.title);
   const body = document.getElementById("modalBody");
   stopModalMedia(body);
@@ -571,13 +578,13 @@ function openPostModal(post) {
     }
     body.prepend(media);
   }
-  const modal = document.getElementById("postModal");
   modal.dataset.shareId = post.shareId || "";
   modal.dataset.sharedLink = String(
     window.meditordPostSharing.getShareId() === post.shareId,
   );
   modal.classList.add("active");
   modal.setAttribute("aria-hidden", "false");
+  modal.querySelector(".global-modal-close-button")?.focus({ preventScroll: true });
 }
 
 function closeModal({ keepShareUrl = false } = {}) {
@@ -586,6 +593,9 @@ function closeModal({ keepShareUrl = false } = {}) {
   document.getElementById("modalBody").replaceChildren();
   modal.classList.remove("active");
   modal.setAttribute("aria-hidden", "true");
+  const returnFocus = postModalReturnFocus;
+  postModalReturnFocus = null;
+  window.meditordDialogFocus.restore(returnFocus);
   delete modal.dataset.shareId;
   delete modal.dataset.sharedLink;
 
@@ -1125,6 +1135,7 @@ function showArchiveFolderPicker(post) {
     pendingFolder = folder;
     select.value = folder;
   });
+  const returnFocus = document.activeElement;
   const actions = document.createElement("div");
   actions.className = "archive-folder-picker-actions";
   const cancel = document.createElement("button");
@@ -1136,9 +1147,16 @@ function showArchiveFolderPicker(post) {
   const close = () => {
     overlay.remove();
     document.removeEventListener("keydown", onKey);
+    window.meditordDialogFocus.restore(returnFocus);
   };
   const onKey = (event) => {
-    if (event.key === "Escape") close();
+    if (document.getElementById("appDialog")?.hidden === false) return;
+    if (event.key === "Escape") {
+      event.preventDefault();
+      close();
+    } else {
+      window.meditordDialogFocus.trap(event, panel);
+    }
   };
   cancel.addEventListener("click", close);
   move.addEventListener("click", () => {
@@ -1360,13 +1378,20 @@ postsContainer.addEventListener("click", async (event) => {
   if (!card) return;
   const title = card.dataset.title;
   const post = postsData.find((p) => p.title === title);
-  if (post) openPostModal(post);
+  if (post) openPostModal(post, card.querySelector(".archive-card-open-button"));
 });
 
 document.addEventListener("keydown", (event) => {
+  if (document.getElementById("appDialog")?.hidden === false) return;
+  const modal = document.getElementById("postModal");
+  if (event.key === "Tab" && modal.classList.contains("active")) {
+    window.meditordDialogFocus.trap(event, modal);
+    return;
+  }
   if (event.key !== "Escape") return;
   closeAllMenus();
-  if (document.getElementById("postModal").classList.contains("active")) {
+  if (modal.classList.contains("active")) {
+    event.preventDefault();
     closeModal();
   }
 });

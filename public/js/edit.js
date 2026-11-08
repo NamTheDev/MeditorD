@@ -98,6 +98,7 @@ const mobileMarkdownToolbar = document.querySelector(
 const editorContainer = document.querySelector(".editor-container");
 const editorLayout = document.getElementById("editor-layout");
 const mediaInput = document.getElementById("doc-media");
+const mediaUploadButton = document.getElementById("doc-media-trigger");
 const previewBox = document.querySelector(".editor-preview-box");
 const saveButton = document.getElementById("save-button");
 const archiveButton = document.getElementById("archive-button");
@@ -148,8 +149,8 @@ function setDescriptionView(view) {
 
   writeViewButton.classList.toggle("active", !previewing);
   previewViewButton.classList.toggle("active", previewing);
-  writeViewButton.setAttribute("aria-selected", String(!previewing));
-  previewViewButton.setAttribute("aria-selected", String(previewing));
+  writeViewButton.setAttribute("aria-pressed", String(!previewing));
+  previewViewButton.setAttribute("aria-pressed", String(previewing));
 
   resizeMobileTextarea();
 }
@@ -312,17 +313,20 @@ function resetEditor() {
 function showFeatureNotice(title, message, returnFocus = null) {
   featureModalTitle.textContent = title;
   featureModalMessage.textContent = message;
-  modalReturnFocus = returnFocus;
+  modalReturnFocus = returnFocus || document.activeElement;
+  featureModal.setAttribute("aria-hidden", "false");
   featureModal.classList.remove("global-hidden");
   featureModalOk.focus();
 }
 
 function closeFeatureNotice() {
   featureModal.classList.add("global-hidden");
-  modalReturnFocus?.focus();
+  featureModal.setAttribute("aria-hidden", "true");
+  window.meditordDialogFocus.restore(modalReturnFocus);
   modalReturnFocus = null;
 }
 
+mediaUploadButton.addEventListener("click", () => mediaInput.click());
 mediaInput.addEventListener("change", () => {
   renderMediaPreview(mediaInput.files?.[0]);
 });
@@ -370,8 +374,13 @@ featureModal.addEventListener("click", (event) => {
 });
 
 window.addEventListener("keydown", (event) => {
-  if (event.key === "Escape" && !featureModal.classList.contains("global-hidden")) {
+  if (featureModal.classList.contains("global-hidden") ||
+      document.getElementById("appDialog")?.hidden === false) return;
+  if (event.key === "Escape") {
+    event.preventDefault();
     closeFeatureNotice();
+  } else {
+    window.meditordDialogFocus.trap(event, featureModal);
   }
 });
 

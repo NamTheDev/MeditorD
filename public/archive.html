@@ -92,7 +92,8 @@
   <button type="button" role="menuitem" data-folder-action="new-post">New post here</button>
   <button type="button" role="menuitem" data-folder-action="delete-folder">Delete folder</button>
 </div>
-<div class="global-modal-overlay" id="postModal">
+<div class="global-modal-overlay" id="postModal" role="dialog" aria-modal="true"
+     aria-labelledby="modalTitle" aria-hidden="true">
     <div class="global-modal-window global-raised">
         <div class="global-title-bar">
             <span id="modalTitle">POST INSPECTOR</span>

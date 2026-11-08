@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { gzipSync } from "node:zlib";
 import MarkdownIt from "markdown-it";
+import { serializeJsonForHtml } from "./html";
 import { ROOT } from "../config";
 import { imageDimensions } from "./image-dimensions";
 import {
@@ -348,6 +349,7 @@ function renderCard(
   const downloadActions = renderDownloadActions(post);
 
   return `<article class="archive-gallery-card global-raised" data-title="${escapeHtml(post.title)}">
+    <button type="button" class="archive-card-open-button" aria-label="Open post ${escapeHtml(displayTitle)}"></button>
     <div class="archive-card-actions">
       <button type="button" class="archive-card-menu-button" aria-label="Open actions for ${escapeHtml(post.title)}" data-action="toggle-menu">⋯</button>
       <div class="archive-card-menu global-hidden" role="menu" aria-label="Post actions">
@@ -428,7 +430,7 @@ async function renderPage(
       const cardsHtml = posts
         .map((post, index) => renderCard(post, index, priorityImageIndex))
         .join("\n");
-      const postsJson = JSON.stringify(posts);
+      const postsJson = serializeJsonForHtml(posts);
       content = content
         .replace("{{archive_posts}}", () => cardsHtml)
         .replace("{{archive_posts_json}}", () => postsJson);

@@ -9,6 +9,7 @@ const state = {
 };
 
 const tableBody = document.getElementById("databaseList");
+let databaseModalReturnFocus = null;
 
 async function request(path, options = {}) {
   const headers =
@@ -331,6 +332,7 @@ async function editItem(item) {
     }
   }
 
+  databaseModalReturnFocus = document.activeElement;
   state.editingTitle = item.title;
   document.getElementById("editModalTitle").textContent = `Edit ${item.title}`;
   document.getElementById("editTitle").value = leafName(item.title);
@@ -345,11 +347,13 @@ async function editItem(item) {
   document.getElementById("editMedia").value = "";
   document.getElementById("removeMedia").checked = false;
   document.getElementById("editError").textContent = "";
+  document.getElementById("editModal").setAttribute("aria-hidden", "false");
   document.getElementById("editModal").classList.remove("global-hidden");
   document.getElementById("editTitle").focus();
 }
 
 function createPost() {
+  databaseModalReturnFocus = document.activeElement;
   state.editingTitle = "";
   document.getElementById("editModalTitle").textContent = "New post";
   document.getElementById("editTitle").value = "";
@@ -365,13 +369,20 @@ function createPost() {
   document.getElementById("removeMedia").checked = false;
   document.getElementById("removeMedia").closest("label").hidden = true;
   document.getElementById("editError").textContent = "";
+  document.getElementById("editModal").setAttribute("aria-hidden", "false");
   document.getElementById("editModal").classList.remove("global-hidden");
   document.getElementById("editTitle").focus();
 }
 
 function closeEditModal() {
-  document.getElementById("editModal").classList.add("global-hidden");
+  const modal = document.getElementById("editModal");
+  modal.classList.add("global-hidden");
+  modal.setAttribute("aria-hidden", "true");
   document.getElementById("removeMedia").closest("label").hidden = false;
+  window.meditordDialogFocus.restore(databaseModalReturnFocus?.isConnected
+    ? databaseModalReturnFocus
+    : document.getElementById("newPostButton"));
+  databaseModalReturnFocus = null;
 }
 
 async function saveEdit(event) {
@@ -484,6 +495,17 @@ document
   .addEventListener("click", closeEditModal);
 document.getElementById("editModal").addEventListener("click", (event) => {
   if (event.target.id === "editModal") closeEditModal();
+});
+document.addEventListener("keydown", (event) => {
+  const modal = document.getElementById("editModal");
+  if (modal.classList.contains("global-hidden") ||
+      document.getElementById("appDialog")?.hidden === false) return;
+  if (event.key === "Escape") {
+    event.preventDefault();
+    closeEditModal();
+  } else {
+    window.meditordDialogFocus.trap(event, modal);
+  }
 });
 
 loadItems();

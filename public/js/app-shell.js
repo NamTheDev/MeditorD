@@ -4,7 +4,7 @@
   if (!overlay || !root.classList.contains("meditord-cold-shell")) return;
 
   const progress = overlay.querySelector("[role='progressbar']");
-  const fill = overlay.querySelector(".app-loading-fill");
+  const fill = overlay.querySelector(".global-loading-fill");
   const buildId = document.querySelector(
     'meta[name="meditord-build-id"]',
   )?.content;

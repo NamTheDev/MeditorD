@@ -135,6 +135,24 @@ html.meditord-js .archive-gallery-grid:not(.archive-masonry-ready) .archive-gall
     outline: 1px dotted var(--ctp-lavender);
 }
 
+/* Keyboard-operable opener without adding visible chrome to post cards. */
+.archive-card-open-button {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.archive-gallery-card:has(.archive-card-open-button:focus-visible) {
+    outline: 2px solid var(--ctp-lavender);
+    outline-offset: 2px;
+}
+
 .archive-gallery-media {
     width: 100%;
     height: auto;

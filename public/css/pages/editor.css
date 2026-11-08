@@ -787,7 +787,7 @@ input.editor-form-control:focus {
     }
 
     .editor-mobile-view-tab.active,
-    .editor-mobile-view-tab[aria-selected="true"],
+    .editor-mobile-view-tab[aria-pressed="true"],
     .editor-mobile-view-tab:active {
         /* Keep the text aligned with the inactive tab; border indicates press. */
         padding: 5px 12px;

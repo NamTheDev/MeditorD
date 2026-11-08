@@ -18,7 +18,7 @@
     activeDialog = null;
     overlay.hidden = true;
     resolve(value);
-    returnFocus?.focus();
+    window.meditordDialogFocus.restore(returnFocus);
   }
 
   function showDialog({
@@ -72,7 +72,9 @@
   });
   document.addEventListener("keydown", (event) => {
     if (!activeDialog) return;
-    if (event.key === "Escape") {
+    if (event.key === "Tab") {
+      window.meditordDialogFocus.trap(event, dialogWindow);
+    } else if (event.key === "Escape") {
       event.preventDefault();
       cancelDialog();
     } else if (event.key === "Enter" && activeDialog?.type === "prompt") {
