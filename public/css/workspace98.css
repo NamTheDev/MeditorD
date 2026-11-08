@@ -334,9 +334,7 @@ body.workspace98-editor {
     min-height: 100dvh;
     overflow: hidden;
     background: var(--w98-shell);
-    --pane-padding: 6px;
     --input-height: 32px;
-    --preview-padding: 12px;
 }
 
 .workspace98-editor > header {
@@ -1630,16 +1628,9 @@ body.workspace98-archive .archive-folder-add-plus {
 /* Mobile spacing rhythm: 4px within controls, 8px between related groups,
    12px within major panels. Touch hit areas remain at least 44px. */
 @media (max-width: 700px) {
-    .workspace98-editor > header {
-        padding: max(2px, var(--safe-top)) max(2px, var(--safe-right))
-            2px max(2px, var(--safe-left));
-    }
     .workspace98-editor > header > nav,
     .workspace98-editor .editor-nav-actions {
         gap: 4px;
-    }
-    .workspace98-editor .editor-container {
-        margin: 0 2px 2px;
     }
 
     .workspace98-archive .menu-bar {
@@ -1705,33 +1696,12 @@ body.workspace98-archive .archive-folder-add-plus {
         font-family: "Courier New", Courier, monospace;
     }
 
-    .workspace98-editor .editor-right-pane {
-        min-height: 0;
-        height: auto;
-        overflow: visible;
-        padding-bottom: calc(72px + var(--safe-bottom));
-    }
     .workspace98-editor .textarea-wrapper {
         height: auto;
         min-height: 420px;
         overflow: visible;
     }
 
-    .workspace98-editor .editor-textarea {
-        flex: none;
-        min-height: 320px;
-        height: auto;
-        overflow-y: hidden;
-        padding: 14px 14px calc(68px + var(--safe-bottom));
-        font-size: 16px;
-    }
-    .workspace98-editor .markdown-preview {
-        flex: none;
-        min-height: 320px;
-        overflow: visible;
-        padding: 14px;
-        font-size: 16px;
-    }
 
     .workspace98-editor .editor-layout {
         display: block;
@@ -1743,6 +1713,10 @@ body.workspace98-archive .archive-folder-add-plus {
         height: auto;
         padding: 6px;
         margin-bottom: 3px;
+    }
+    /* Keep keyboard/formatting toolbar clearance below the writing pane. */
+    .workspace98-editor .editor-right-pane {
+        padding-bottom: calc(72px + var(--safe-bottom));
     }
     .workspace98-editor .editor-form {
         height: auto;
@@ -1758,8 +1732,16 @@ body.workspace98-archive .archive-folder-add-plus {
         min-height: 42px;
         padding: 6px 8px;
     }
+    /* Horizontal insets match; preserve textarea bottom clearance for the toolbar. */
     .workspace98-editor :is(.editor-textarea, .markdown-preview) {
-        padding: 12px;
+        padding-inline: 12px;
+    }
+    .workspace98-editor .editor-textarea {
+        padding-top: 12px;
+        padding-bottom: calc(68px + var(--safe-bottom));
+    }
+    .workspace98-editor .markdown-preview {
+        padding-block: 12px;
     }
 }
 
