@@ -154,7 +154,7 @@
     outline: 1px dotted var(--ctp-lavender);
     outline-offset: -1px;
 }
-.archive-folder-row.context-target {
+.archive-folder-row.archive-context-target {
     background: var(--ctp-surface2);
     outline: 1px dashed var(--ctp-lavender);
     outline-offset: -1px;
@@ -208,9 +208,9 @@
     color: var(--ctp-overlay1);
     cursor: not-allowed;
 }
-.gallery-card img,
-.gallery-card video,
-.gallery-card a {
+.archive-gallery-card img,
+.archive-gallery-card video,
+.archive-gallery-card a {
     -webkit-user-drag: none;
 }
 .archive-folder-picker {
@@ -237,11 +237,11 @@
     font: 400 1.1rem "Courier New", Courier, monospace;
     color: var(--ctp-lavender);
 }
-.archive-folder-picker .win98-select {
+.archive-folder-picker .global-select {
     width: 100%;
     margin-bottom: 16px;
 }
-.archive-folder-picker .win98-select > select {
+.archive-folder-picker .global-select > select {
     min-height: 37px;
 }
 .archive-folder-picker-actions {
@@ -301,10 +301,10 @@
     background: var(--ctp-mantle);
     font: inherit;
     box-shadow:
-        inset -1px -1px 0 var(--win98-border-lightest),
-        inset 1px 1px 0 var(--win98-border-darkest),
-        inset -2px -2px 0 var(--win98-border-light),
-        inset 2px 2px 0 var(--win98-border-dark);
+        inset -1px -1px 0 var(--global-border-lightest),
+        inset 1px 1px 0 var(--global-border-darkest),
+        inset -2px -2px 0 var(--global-border-light),
+        inset 2px 2px 0 var(--global-border-dark);
 }
 .archive-search-select {
     display: flex;
@@ -313,7 +313,7 @@
     color: var(--ctp-subtext1);
     font-size: 0.9rem;
 }
-.archive-search-select .win98-select {
+.archive-search-select .global-select {
     width: 205px;
     max-width: 100%;
 }
@@ -331,7 +331,7 @@
     .archive-search-select {
         flex: 1 1 160px;
     }
-    .archive-search-select .win98-select {
+    .archive-search-select .global-select {
         width: 100%;
         max-width: none;
         flex: 1;

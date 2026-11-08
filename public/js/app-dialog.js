@@ -8,7 +8,7 @@
   const cancelButton = document.getElementById("appDialogCancel");
   const confirmButton = document.getElementById("appDialogConfirm");
   const closeButton = document.getElementById("appDialogClose");
-  const dialogWindow = overlay.querySelector(".app-dialog-window");
+  const dialogWindow = overlay.querySelector(".global-dialog-window");
 
   let activeDialog = null;
 

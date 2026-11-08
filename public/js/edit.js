@@ -90,23 +90,23 @@ const contentInput = document.querySelector(".editor-textarea");
 const previewButton = document.getElementById("preview-button");
 const writeViewButton = document.getElementById("write-view-button");
 const previewViewButton = document.getElementById("preview-view-button");
-const markdownPreview = document.querySelector(".markdown-preview");
-const textareaWrapper = document.querySelector(".textarea-wrapper");
+const markdownPreview = document.querySelector(".editor-markdown-preview");
+const textareaWrapper = document.querySelector(".editor-textarea-wrapper");
 const mobileMarkdownToolbar = document.querySelector(
-  ".mobile-markdown-toolbar",
+  ".editor-mobile-markdown-toolbar",
 );
 const editorContainer = document.querySelector(".editor-container");
 const editorLayout = document.getElementById("editor-layout");
 const mediaInput = document.getElementById("doc-media");
-const previewBox = document.querySelector(".preview-box");
+const previewBox = document.querySelector(".editor-preview-box");
 const saveButton = document.getElementById("save-button");
 const archiveButton = document.getElementById("archive-button");
 const resetButton = document.getElementById("reset-button");
 const featureModal = document.getElementById("feature-modal");
 const featureModalTitle = document.getElementById("feature-modal-title");
 const featureModalMessage = document.getElementById("feature-modal-message");
-const featureModalClose = featureModal.querySelector(".win98-modal-close");
-const featureModalOk = featureModal.querySelector(".win98-button");
+const featureModalClose = featureModal.querySelector(".editor-dialog-close");
+const featureModalOk = featureModal.querySelector(".global-button");
 let modalReturnFocus = null;
 let previewUrl = null;
 let narrowEditorLayout = false;
@@ -141,8 +141,8 @@ function setDescriptionView(view) {
   const previewing = view === "preview";
   if (previewing) updateMarkdownPreview();
 
-  contentInput.classList.toggle("hidden", previewing);
-  markdownPreview.classList.toggle("hidden", !previewing);
+  contentInput.classList.toggle("global-hidden", previewing);
+  markdownPreview.classList.toggle("global-hidden", !previewing);
   textareaWrapper.dataset.view = previewing ? "preview" : "write";
   previewButton.textContent = previewing ? "Edit" : "Preview";
 
@@ -216,7 +216,7 @@ function renderMediaPreview(file) {
   const media = document.createElement(
     file.type.startsWith("video/") ? "video" : "img",
   );
-  media.className = "media-preview";
+  media.className = "editor-media-preview";
   media.src = previewUrl;
   media.setAttribute("aria-label", file.name);
   if (media instanceof HTMLVideoElement) {
@@ -313,12 +313,12 @@ function showFeatureNotice(title, message, returnFocus = null) {
   featureModalTitle.textContent = title;
   featureModalMessage.textContent = message;
   modalReturnFocus = returnFocus;
-  featureModal.classList.remove("hidden");
+  featureModal.classList.remove("global-hidden");
   featureModalOk.focus();
 }
 
 function closeFeatureNotice() {
-  featureModal.classList.add("hidden");
+  featureModal.classList.add("global-hidden");
   modalReturnFocus?.focus();
   modalReturnFocus = null;
 }
@@ -333,7 +333,7 @@ archiveButton.addEventListener("click", () => {
 });
 resetButton.addEventListener("click", resetEditor);
 previewButton.addEventListener("click", () => {
-  const isPreviewing = !markdownPreview.classList.contains("hidden");
+  const isPreviewing = !markdownPreview.classList.contains("global-hidden");
   setDescriptionView(isPreviewing ? "write" : "preview");
 });
 writeViewButton.addEventListener("click", () => setDescriptionView("write"));
@@ -370,7 +370,7 @@ featureModal.addEventListener("click", (event) => {
 });
 
 window.addEventListener("keydown", (event) => {
-  if (event.key === "Escape" && !featureModal.classList.contains("hidden")) {
+  if (event.key === "Escape" && !featureModal.classList.contains("global-hidden")) {
     closeFeatureNotice();
   }
 });

@@ -23,13 +23,13 @@ body {
     font-size: var(--font-base);
 }
 
-.title-bar-left {
+.archive-title-bar-left {
     display: flex;
     align-items: center;
     gap: 6px;
 }
 
-.menu-bar {
+.archive-menu-bar {
     position: relative;
     height: var(--nav-height);
     display: flex;
@@ -45,7 +45,7 @@ body {
     gap: 0;
 }
 
-.gallery-title {
+.archive-gallery-title {
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
@@ -62,7 +62,7 @@ body {
     user-select: none;
 }
 
-.menu-bar .win-btn {
+.archive-menu-bar .global-button {
     flex-shrink: 0;
 }
 
@@ -74,7 +74,7 @@ body {
     margin-left: auto;
 }
 
-.gallery-viewport {
+.archive-gallery-viewport {
     flex: 1;
     background: var(--ctp-mantle);
     overflow-y: auto;
@@ -86,7 +86,7 @@ body {
     min-height: 0;
 }
 
-.reddit-gallery {
+.archive-gallery-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
     grid-auto-flow: row;
@@ -98,20 +98,20 @@ body {
     direction: ltr;
 }
 
-.reddit-gallery.single-post {
+.archive-gallery-grid.archive-single-post {
     grid-template-columns: minmax(0, min(100%, 420px));
     justify-content: center;
 }
 
-html.meditord-js .reddit-gallery:not(.masonry-ready) .gallery-card {
+html.meditord-js .archive-gallery-grid:not(.archive-masonry-ready) .archive-gallery-card {
     visibility: hidden;
 }
 
-.reddit-gallery.compact {
+.archive-gallery-grid.archive-compact {
     grid-template-columns: 1fr;
 }
 
-.gallery-card {
+.archive-gallery-card {
     display: block;
     width: 100%;
     min-width: 0;
@@ -127,15 +127,15 @@ html.meditord-js .reddit-gallery:not(.masonry-ready) .gallery-card {
     align-self: start;
 }
 
-.gallery-card:has(.card-menu:not(.hidden)) {
+.archive-gallery-card:has(.archive-card-menu:not(.global-hidden)) {
     z-index: 100;
 }
 
-.gallery-card:hover {
+.archive-gallery-card:hover {
     outline: 1px dotted var(--ctp-lavender);
 }
 
-.gallery-media {
+.archive-gallery-media {
     width: 100%;
     height: auto;
     flex: none;
@@ -148,42 +148,42 @@ html.meditord-js .reddit-gallery:not(.masonry-ready) .gallery-card {
     justify-content: center;
 }
 
-.gallery-media svg {
+.archive-gallery-media svg {
     width: 100%;
     height: auto;
     object-fit: contain;
     image-rendering: pixelated;
 }
 
-.gallery-media img,
-.gallery-media video {
+.archive-gallery-media img,
+.archive-gallery-media video {
     display: block;
     width: 100%;
     height: auto;
     object-fit: contain;
 }
 
-.gallery-media video {
+.archive-gallery-media video {
     background: var(--ctp-crust);
     aspect-ratio: 16 / 9;
 }
 
-.gallery-media.embed-thumbnail {
+.archive-gallery-media.archive-embed-thumbnail {
     padding: 0;
 }
 
-.gallery-media.youtube-thumbnail img {
+.archive-gallery-media.archive-youtube-thumbnail img {
     object-fit: cover;
 }
 
-.card-actions {
+.archive-card-actions {
     position: absolute;
     top: 8px;
     right: 8px;
     z-index: 10;
 }
 
-.card-menu-button {
+.archive-card-menu-button {
     border: 1px solid var(--bevel-darkest);
     border-top-color: var(--bevel-lightest);
     border-left-color: var(--bevel-lightest);
@@ -197,7 +197,7 @@ html.meditord-js .reddit-gallery:not(.masonry-ready) .gallery-card {
     padding: 0;
 }
 
-.card-menu {
+.archive-card-menu {
     position: absolute;
     top: 100%;
     right: 0;
@@ -212,12 +212,12 @@ html.meditord-js .reddit-gallery:not(.masonry-ready) .gallery-card {
     z-index: 1000;
 }
 
-.card-menu.hidden,
-.card-submenu.hidden {
+.archive-card-menu.global-hidden,
+.archive-card-submenu.global-hidden {
     display: none;
 }
 
-.card-menu button {
+.archive-card-menu button {
     appearance: none;
     background: transparent;
     border: 0;
@@ -229,17 +229,17 @@ html.meditord-js .reddit-gallery:not(.masonry-ready) .gallery-card {
     font: inherit;
 }
 
-.card-menu button:last-child {
+.archive-card-menu button:last-child {
     border-bottom: 0;
 }
 
-.card-menu-item {
+.archive-card-menu-item {
     position: relative;
     width: 100%;
 }
 
-.card-menu > button,
-.card-menu-item > button {
+.archive-card-menu > button,
+.archive-card-menu-item > button {
     width: 100%;
     min-height: 0;
     padding: 8px 10px;
@@ -247,11 +247,11 @@ html.meditord-js .reddit-gallery:not(.masonry-ready) .gallery-card {
     text-align: left;
 }
 
-.card-menu-item > button {
+.archive-card-menu-item > button {
     justify-content: space-between;
 }
 
-.card-submenu {
+.archive-card-submenu {
     position: absolute;
     top: 0;
     right: auto;
@@ -267,14 +267,14 @@ html.meditord-js .reddit-gallery:not(.masonry-ready) .gallery-card {
     margin-left: 4px;
 }
 
-.card-submenu.open-left {
+.archive-card-submenu.archive-open-left {
     left: auto;
     right: 100%;
     margin-left: 0;
     margin-right: 4px;
 }
 
-.card-info {
+.archive-card-info {
     /* Preserve the original post typography, independent of archive UI. */
     font-family: "IBM Plex Sans", "Tahoma", sans-serif;
     min-height: 0;
@@ -284,7 +284,7 @@ html.meditord-js .reddit-gallery:not(.masonry-ready) .gallery-card {
     gap: 6px;
 }
 
-.card-title {
+.archive-card-title {
     font-size: var(--font-base);
     font-weight: bold;
     line-height: 1.35;
@@ -296,7 +296,7 @@ html.meditord-js .reddit-gallery:not(.masonry-ready) .gallery-card {
     overflow: hidden;
 }
 
-.card-meta {
+.archive-card-meta {
     font-size: calc(var(--font-base) * 0.9);
     color: var(--ctp-lavender);
     display: flex;
@@ -306,12 +306,12 @@ html.meditord-js .reddit-gallery:not(.masonry-ready) .gallery-card {
     padding-top: clamp(4px, 0.4vw, 8px);
 }
 
-.card-date {
+.archive-card-date {
     font-size: calc(var(--font-base) * 0.85);
     color: var(--ctp-subtext0);
 }
 
-.card-description {
+.archive-card-description {
     min-height: 0;
     color: var(--ctp-subtext1);
     font-size: calc(var(--font-base) * 0.9);
@@ -321,44 +321,44 @@ html.meditord-js .reddit-gallery:not(.masonry-ready) .gallery-card {
     overflow-wrap: anywhere;
 }
 
-.card-description p {
+.archive-card-description p {
     margin: 0 0 0.8em;
 }
 
-.card-description p:last-child {
+.archive-card-description p:last-child {
     margin-bottom: 0;
 }
 
-.card-description h1,
-.card-description h2,
-.card-description h3,
-.card-description h4,
-.card-description h5,
-.card-description h6 {
+.archive-card-description h1,
+.archive-card-description h2,
+.archive-card-description h3,
+.archive-card-description h4,
+.archive-card-description h5,
+.archive-card-description h6 {
     margin: 0 0 0.6em;
     color: var(--ctp-text);
     font-size: 1em;
     line-height: 1.3;
 }
 
-.card-description ul,
-.card-description ol {
+.archive-card-description ul,
+.archive-card-description ol {
     margin: 0 0 0.8em;
     padding-left: 1.4em;
 }
 
-.card-description a {
+.archive-card-description a {
     color: var(--ctp-lavender);
     word-break: break-word;
 }
 
-.card-description strong {
+.archive-card-description strong {
     color: var(--ctp-lavender);
     white-space: nowrap;
 }
 
-.card-description .read-more-toggle,
-.card-description .read-more-toggle:active {
+.archive-card-description .archive-read-more-toggle,
+.archive-card-description .archive-read-more-toggle:active {
     display: inline;
     position: static;
     min-width: 0;
@@ -381,27 +381,27 @@ html.meditord-js .reddit-gallery:not(.masonry-ready) .gallery-card {
     text-underline-offset: 2px;
 }
 
-.card-description .read-more-toggle:hover {
+.archive-card-description .archive-read-more-toggle:hover {
     color: var(--ctp-text);
 }
 
-.card-description .read-more-toggle:focus-visible {
+.archive-card-description .archive-read-more-toggle:focus-visible {
     outline: 1px dotted var(--ctp-lavender);
     outline-offset: 2px;
 }
 
-.description-notice {
+.archive-description-notice {
     flex: 0 0 auto;
     color: var(--ctp-lavender);
     font-size: calc(var(--font-base) * 0.82);
 }
 
-.card-time {
+.archive-card-time {
     font-size: calc(var(--font-base) * 0.8);
     color: var(--ctp-subtext0);
 }
 
-.modal-large-img {
+.archive-modal-large-image {
     width: 100%;
     height: 400px;
     min-height: 400px;
@@ -415,7 +415,7 @@ html.meditord-js .reddit-gallery:not(.masonry-ready) .gallery-card {
     margin-bottom: 12px;
 }
 
-.modal-large-img svg {
+.archive-modal-large-image svg {
     display: block;
     width: min(100%, 420px);
     height: auto;
@@ -423,7 +423,7 @@ html.meditord-js .reddit-gallery:not(.masonry-ready) .gallery-card {
     max-height: 300px;
 }
 
-.modal-media {
+.archive-modal-media {
     width: 100%;
     max-width: 100%;
     max-height: 320px;
@@ -434,7 +434,7 @@ html.meditord-js .reddit-gallery:not(.masonry-ready) .gallery-card {
     margin-bottom: 12px;
 }
 
-.modal-embed {
+.archive-modal-embed {
     display: block;
     width: 100%;
     height: 400px;
@@ -443,18 +443,18 @@ html.meditord-js .reddit-gallery:not(.masonry-ready) .gallery-card {
     margin-bottom: 12px;
 }
 
-.modal-post-title {
+.archive-modal-post-title {
     font-size: 15px;
     margin-bottom: 6px;
     color: var(--ctp-text);
 }
 
-.modal-post-meta {
+.archive-modal-post-meta {
     font-size: 12px;
     color: var(--ctp-subtext0);
 }
 
-.modal-post-description {
+.archive-modal-post-description {
     font-family: "IBM Plex Sans", "Tahoma", sans-serif;
     color: var(--ctp-text);
     font-size: var(--font-base);
@@ -462,39 +462,39 @@ html.meditord-js .reddit-gallery:not(.masonry-ready) .gallery-card {
     padding: clamp(8px, 1vw, 16px);
 }
 
-.modal-post-description p {
+.archive-modal-post-description p {
     margin: 0 0 1.1em;
 }
 
-.modal-post-description h1,
-.modal-post-description h2,
-.modal-post-description h3,
-.modal-post-description h4,
-.modal-post-description h5,
-.modal-post-description h6 {
+.archive-modal-post-description h1,
+.archive-modal-post-description h2,
+.archive-modal-post-description h3,
+.archive-modal-post-description h4,
+.archive-modal-post-description h5,
+.archive-modal-post-description h6 {
     line-height: 1.3;
     margin: 1.1em 0 0.55em;
 }
 
-.modal-post-description ul,
-.modal-post-description ol {
+.archive-modal-post-description ul,
+.archive-modal-post-description ol {
     margin: 0 0 1.1em;
     padding-left: 1.5em;
 }
 
-.modal-post-description li + li {
+.archive-modal-post-description li + li {
     margin-top: 0.4em;
 }
 
-.modal-post-description :first-child {
+.archive-modal-post-description :first-child {
     margin-top: 0;
 }
 
-.modal-post-description :last-child {
+.archive-modal-post-description :last-child {
     margin-bottom: 0;
 }
 
-.modal-post-description a {
+.archive-modal-post-description a {
     color: var(--ctp-lavender);
 }
 
@@ -512,11 +512,11 @@ select:focus {
     outline: 1px dotted var(--ctp-lavender);
 }
 
-.skeleton-card {
+.archive-skeleton-card {
     pointer-events: none;
 }
 
-.skeleton-box {
+.archive-skeleton-box {
     background: linear-gradient(
         90deg,
         var(--ctp-surface1) 25%,
@@ -526,34 +526,34 @@ select:focus {
     background-size: 200% 100%;
 }
 
-.skeleton-media {
+.archive-skeleton-media {
     width: 100%;
     height: 200px;
     flex: 0 0 200px;
 }
 
-.skeleton-line {
+.archive-skeleton-line {
     border-radius: 2px;
 }
 
-.skeleton-title {
+.archive-skeleton-title {
     width: 75%;
     height: 18px;
 }
 
-.skeleton-desc {
+.archive-skeleton-desc {
     width: 100%;
     height: 48px;
 }
 
-.skeleton-meta {
+.archive-skeleton-meta {
     width: 45%;
     height: 12px;
     margin-top: auto;
 }
 
 @media (max-width: 600px) {
-    .menu-bar {
+    .archive-menu-bar {
         height: auto;
         min-height: 92px;
         display: grid;
@@ -563,7 +563,7 @@ select:focus {
         padding: 2px;
     }
 
-    .gallery-title {
+    .archive-gallery-title {
         position: static;
         grid-column: 1 / -1;
         grid-row: 1;
@@ -591,37 +591,37 @@ select:focus {
         grid-row: 2;
     }
 
-    .gallery-viewport {
+    .archive-gallery-viewport {
         padding: clamp(10px, 3vw, 16px);
     }
 
-    .reddit-gallery {
+    .archive-gallery-grid {
         display: block;
         direction: ltr;
     }
 
-    .gallery-card {
+    .archive-gallery-card {
         margin-bottom: 14px;
     }
 
-    .card-menu-button {
+    .archive-card-menu-button {
         width: 44px;
         height: 44px;
     }
 
-    .card-menu {
+    .archive-card-menu {
         min-width: min(72vw, 240px);
     }
 
-    .card-menu > button,
-    .card-menu-item > button,
-    .card-submenu button {
+    .archive-card-menu > button,
+    .archive-card-menu-item > button,
+    .archive-card-submenu button {
         min-height: 44px;
         padding: 10px 12px;
     }
 
-    .card-submenu,
-    .card-submenu.open-left {
+    .archive-card-submenu,
+    .archive-card-submenu.archive-open-left {
         position: static;
         left: auto;
         right: auto;
@@ -632,34 +632,34 @@ select:focus {
         border-left: 0;
     }
 
-    .modal-overlay {
+    .global-modal-overlay {
         padding: max(12px, var(--safe-top)) max(12px, var(--safe-right))
             max(12px, var(--safe-bottom)) max(12px, var(--safe-left));
     }
 
-    .modal-window {
+    .global-modal-window {
         width: 100%;
         max-height: min(92dvh, var(--visual-viewport-height));
     }
 
-    .modal-content-area {
+    .global-modal-content-area {
         overscroll-behavior-y: contain;
         -webkit-overflow-scrolling: touch;
     }
 
-    .modal-embed {
+    .archive-modal-embed {
         height: auto;
         aspect-ratio: 16 / 9;
     }
 
-    .modal-media {
+    .archive-modal-media {
         max-height: 46dvh;
         padding: 8px;
     }
 }
 
 @media (pointer: coarse) {
-    .modal-close-button {
+    .global-modal-close-button {
         width: 44px;
         height: 44px;
         min-width: 44px;
@@ -668,25 +668,25 @@ select:focus {
 }
 
 @media (hover: none) {
-    .gallery-card:hover {
+    .archive-gallery-card:hover {
         outline: none;
     }
 }
 
 /* Interface chrome is regular-weight Courier; post content keeps its own style. */
-.modal-window .title-bar,
-.modal-close-button,
-body .app-dialog-titlebar h2,
-body .app-dialog-close {
+.global-modal-window .global-title-bar,
+.global-modal-close-button,
+body .global-dialog-titlebar h2,
+body .global-dialog-close {
     font-weight: 400;
 }
 
-body .app-dialog-window {
+body .global-dialog-window {
     font-family: "Courier New", Courier, monospace;
 }
 
 /* Manual-copy fallback stays inside the existing menu, never in a popup. */
-.card-menu .share-link-fallback {
+.archive-card-menu .archive-share-link-fallback {
     display: block;
     width: min(280px, 100%);
     min-height: 54px;
@@ -702,8 +702,8 @@ body .app-dialog-window {
     -webkit-user-select: text;
     user-select: text;
     box-shadow:
-        inset -1px -1px 0 var(--win98-border-lightest),
-        inset 1px 1px 0 var(--win98-border-darkest),
-        inset -2px -2px 0 var(--win98-border-light),
-        inset 2px 2px 0 var(--win98-border-dark);
+        inset -1px -1px 0 var(--global-border-lightest),
+        inset 1px 1px 0 var(--global-border-darkest),
+        inset -2px -2px 0 var(--global-border-light),
+        inset 2px 2px 0 var(--global-border-dark);
 }

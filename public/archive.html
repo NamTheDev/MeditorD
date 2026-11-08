@@ -1,9 +1,9 @@
 <div id="fullscreenApp">
-    <div class="menu-bar">
-        <button class="action-btn" id="backButton">HOME</button>
-        <div class="gallery-title">GALLERY</div>
-        <a class="action-btn" id="databaseButton" href="/database.html">DATABASE</a>
-        <button class="action-btn" id="newPostButton">NEW SUBMISSION</button>
+    <div class="archive-menu-bar">
+        <button class="global-action-button" id="backButton">HOME</button>
+        <div class="archive-gallery-title">GALLERY</div>
+        <a class="global-action-button" id="databaseButton" href="/database.html">DATABASE</a>
+        <button class="global-action-button" id="newPostButton">NEW SUBMISSION</button>
     </div>
     <div class="archive-explorer-layout">
       <aside class="archive-explorer-sidebar" aria-label="Archive folders">
@@ -20,7 +20,7 @@
         <nav id="archiveFolderTree" aria-label="Archive folder navigation"></nav>
       </aside>
       <div class="archive-explorer-main">
-        <nav id="archiveBreadcrumbs" class="archive-breadcrumbs raised" aria-label="Folder location" data-current-folder="">
+        <nav id="archiveBreadcrumbs" class="archive-breadcrumbs global-raised" aria-label="Folder location" data-current-folder="">
           <button type="button" data-archive-path="">All posts</button>
         </nav>
         <script>
@@ -50,14 +50,14 @@
             nav.dataset.currentFolder = folder;
           })();
         </script>
-    <div class="archive-search-toolbar raised" role="search" aria-label="Search and sort posts">
+    <div class="archive-search-toolbar global-raised" role="search" aria-label="Search and sort posts">
       <label class="archive-search-input">
         <span>Search:</span>
         <input id="archiveSearchInput" type="search" placeholder="Search..." autocomplete="off" />
       </label>
       <label class="archive-search-select">
         <span>Match:</span>
-        <span class="win98-select">
+        <span class="global-select">
         <select id="archiveSearchMode">
           <option value="includes">Contains</option>
           <option value="starts">Starts with</option>
@@ -67,7 +67,7 @@
       </label>
       <label class="archive-search-select">
         <span>Sort:</span>
-        <span class="win98-select">
+        <span class="global-select">
         <select id="archiveSortOrder">
           <option value="newest">Date: Newest first</option>
           <option value="oldest">Date: Oldest first</option>
@@ -77,8 +77,8 @@
         </span>
       </label>
     </div>
-    <div class="gallery-viewport sunken" id="galleryViewport">
-        <div class="reddit-gallery" id="postsContainer">{{archive_posts}}</div>
+    <div class="archive-gallery-viewport global-sunken" id="galleryViewport">
+        <div class="archive-gallery-grid" id="postsContainer">{{archive_posts}}</div>
         <script id="initialPosts" type="application/json">
             {{archive_posts_json}}
         </script>
@@ -86,18 +86,18 @@
       </div>
     </div>
 </div>
-<div id="archiveFolderContextMenu" class="card-menu archive-folder-context-menu" role="menu" aria-label="Folder actions" hidden>
+<div id="archiveFolderContextMenu" class="archive-card-menu archive-folder-context-menu" role="menu" aria-label="Folder actions" hidden>
   <button type="button" role="menuitem" data-folder-action="new-folder">New folder</button>
   <button type="button" role="menuitem" data-folder-action="new-subfolder">New subfolder</button>
   <button type="button" role="menuitem" data-folder-action="new-post">New post here</button>
   <button type="button" role="menuitem" data-folder-action="delete-folder">Delete folder</button>
 </div>
-<div class="modal-overlay" id="postModal">
-    <div class="modal-window raised">
-        <div class="title-bar">
+<div class="global-modal-overlay" id="postModal">
+    <div class="global-modal-window global-raised">
+        <div class="global-title-bar">
             <span id="modalTitle">POST INSPECTOR</span>
             <button
-                class="modal-close-button"
+                class="global-modal-close-button"
                 type="button"
                 aria-label="Close post inspector"
                 title="Close"
@@ -105,7 +105,7 @@
                 ✕
             </button>
         </div>
-        <div class="modal-content-area sunken" id="modalBody"></div>
+        <div class="global-modal-content-area global-sunken" id="modalBody"></div>
     </div>
 </div>
 <script src="/js/media-thumbnail.js" defer></script>

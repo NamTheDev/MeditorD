@@ -1,0 +1,69 @@
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    border-radius: 0 !important;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+::selection {
+    background-color: var(--selection-bg);
+    color: var(--selection-fg);
+}
+
+
+/* Text remains selectable where users compose or edit multiline content. */
+textarea {
+    -webkit-user-select: text;
+    user-select: text;
+}
+
+html,
+body {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    background-color: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-ui);
+    overscroll-behavior: none;
+}
+
+body {
+    min-height: 100dvh;
+}
+
+.global-hidden {
+    display: none;
+}
+
+.global-raised {
+    box-shadow:
+        inset 1px 1px 0 var(--bevel-lightest),
+        inset -1px -1px 0 var(--bevel-darkest),
+        inset 2px 2px 0 var(--bevel-light),
+        inset -2px -2px 0 var(--bevel-dark);
+}
+
+.global-sunken {
+    box-shadow:
+        inset 1px 1px 0 var(--bevel-darkest),
+        inset -1px -1px 0 var(--bevel-lightest),
+        inset 2px 2px 0 var(--bevel-dark),
+        inset -2px -2px 0 var(--bevel-light);
+}
+
+.global-thin-sunken {
+    box-shadow:
+        inset 1px 1px 0 var(--bevel-dark),
+        inset -1px -1px 0 var(--bevel-lightest);
+}
+
+.global-thin-raised {
+    box-shadow:
+        inset 1px 1px 0 var(--bevel-lightest),
+        inset -1px -1px 0 var(--bevel-dark);
+}

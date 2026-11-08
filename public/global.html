@@ -11,7 +11,7 @@
         <link rel="icon" type="image/webp" href="/media/icon.webp" />
         <meta name="color-scheme" content="dark" />
         <meta name="darkreader-lock" />
-        <link rel="stylesheet" href="/css/fonts.css" />
+        <link rel="stylesheet" href="/css/features/fonts.css" />
         <style>
             html.meditord-js.meditord-cold-shell #appLoadingOverlay {
                 display: grid;
@@ -50,14 +50,14 @@
                 opacity: 1;
                 pointer-events: auto;
             }
-            .app-loading-track {
+            .global-loading-track {
                 width: min(300px, 76vw);
                 height: 16px;
                 border: 2px solid #585b70;
                 background: #11111b;
                 padding: 2px;
             }
-            .app-loading-fill {
+            .global-loading-fill {
                 display: block;
                 height: 100%;
                 width: 0%;
@@ -65,7 +65,7 @@
                 transition: width 160ms linear;
             }
             @media (prefers-reduced-motion: reduce) {
-                .app-loading-fill { transition: none; }
+                .global-loading-fill { transition: none; }
                 #pageTransitionOverlay { transition: none; }
             }
         </style>
@@ -80,48 +80,53 @@
         </script>
         <script src="/js/app-shell.js" defer></script>
         <script src="/js/page-transition.js" defer></script>
-        <link rel="stylesheet" href="/css/global.css" />
+        <link rel="stylesheet" href="/css/global/variables.css" />
+        <link rel="stylesheet" href="/css/global/base.css" />
+        <link rel="stylesheet" href="/css/global/forms.css" />
+        <link rel="stylesheet" href="/css/global/buttons.css" />
+        <link rel="stylesheet" href="/css/global/dialogs.css" />
+        <link rel="stylesheet" href="/css/global/responsive.css" />
         {{page_stylesheet}}
     </head>
     <body>
         <div id="appLoadingOverlay" role="status" aria-live="polite" aria-label="Loading application">
             <span>Loading...</span>
-            <div class="app-loading-track" role="progressbar" aria-label="Application loading progress"
+            <div class="global-loading-track" role="progressbar" aria-label="Application loading progress"
                  aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
-                <span class="app-loading-fill"></span>
+                <span class="global-loading-fill"></span>
             </div>
         </div>
         <div id="pageTransitionOverlay" aria-hidden="true"></div>
         {{body}}
         <div
-            class="app-dialog-overlay"
+            class="global-dialog-overlay"
             id="appDialog"
             role="presentation"
             hidden
         >
             <section
-                class="app-dialog-window raised"
+                class="global-dialog-window global-raised"
                 role="alertdialog"
                 aria-modal="true"
                 aria-labelledby="appDialogTitle"
                 aria-describedby="appDialogMessage"
             >
-                <header class="app-dialog-titlebar">
+                <header class="global-dialog-titlebar">
                     <h2 id="appDialogTitle">Message</h2>
                     <button
-                        class="app-dialog-close"
+                        class="global-dialog-close"
                         id="appDialogClose"
                         type="button"
                         aria-label="Close dialog"
                     >×</button>
                 </header>
-                <div class="app-dialog-content">
+                <div class="global-dialog-content">
                     <p id="appDialogMessage"></p>
-                    <label class="app-dialog-input-wrap" id="appDialogInputWrap" hidden>
-                        <span class="app-dialog-visually-hidden" id="appDialogInputLabel">Value</span>
+                    <label class="global-dialog-input-wrap" id="appDialogInputWrap" hidden>
+                        <span class="global-dialog-visually-hidden" id="appDialogInputLabel">Value</span>
                         <input id="appDialogInput" type="text" />
                     </label>
-                    <div class="app-dialog-actions">
+                    <div class="global-dialog-actions">
                         <button id="appDialogCancel" type="button">Cancel</button>
                         <button id="appDialogConfirm" type="button">OK</button>
                     </div>

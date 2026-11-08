@@ -83,7 +83,7 @@ function archiveFolders(rows) {
 }
 function refreshArchiveFolderView() {
   archivePostsByTitle = new Map(postsData.map((post) => [post.title, post]));
-  const cards = [...postsContainer.querySelectorAll(".gallery-card")];
+  const cards = [...postsContainer.querySelectorAll(".archive-gallery-card")];
   cards.sort(compareArchiveCards);
   // Preserve the existing cards and delegated handlers while changing grid order.
   postsContainer.append(...cards);
@@ -177,13 +177,13 @@ function renderArchiveFolders() {
       // A continuing ancestor draws a dotted vertical guide through this row.
       for (const continues of ancestors) {
         const guide = document.createElement("span");
-        guide.className = "archive-tree-guide" + (continues ? " continuing" : "");
+        guide.className = "archive-tree-guide" + (continues ? " archive-tree-continuing" : "");
         guide.setAttribute("aria-hidden", "true");
         row.append(guide);
       }
 
       const branch = document.createElement("span");
-      branch.className = "archive-tree-branch" + (isLast ? " last" : "");
+      branch.className = "archive-tree-branch" + (isLast ? " archive-tree-last" : "");
       branch.setAttribute("aria-hidden", "true");
       row.append(branch);
 
@@ -362,8 +362,8 @@ let folderMenuPath = null;
 function closeFolderContextMenu() {
   folderMenu.hidden = true;
   archiveTree
-    .querySelectorAll(".context-target")
-    .forEach((row) => row.classList.remove("context-target"));
+    .querySelectorAll(".archive-context-target")
+    .forEach((row) => row.classList.remove("archive-context-target"));
   folderMenuPath = null;
 }
 function openFolderContextMenu(event, row) {
@@ -371,13 +371,13 @@ function openFolderContextMenu(event, row) {
   closeAllMenus();
   closeFolderContextMenu();
   folderMenuPath = row ? (row.dataset.folder ?? "") : null;
-  row?.classList.add("context-target");
+  row?.classList.add("archive-context-target");
   const canUseFolder = Boolean(folderMenuPath ?? activeArchiveFolder);
   folderMenu.querySelector('[data-folder-action="new-subfolder"]').disabled =
     !canUseFolder;
   folderMenu.querySelector('[data-folder-action="delete-folder"]').disabled =
     !folderMenuPath;
-  folderMenu.classList.remove("hidden");
+  folderMenu.classList.remove("global-hidden");
   folderMenu.hidden = false;
   const width = folderMenu.offsetWidth,
     height = folderMenu.offsetHeight;
@@ -528,7 +528,7 @@ function openPostModal(post) {
   stopModalMedia(body);
   body.replaceChildren();
   const description = document.createElement("div");
-  description.className = "modal-post-description";
+  description.className = "archive-modal-post-description";
   description.textContent = post.content || "This post has no description.";
   body.append(description);
 
@@ -543,7 +543,7 @@ function openPostModal(post) {
   const youtubeEmbedUrl = getYouTubeEmbedUrl(post.url);
   if (youtubeEmbedUrl) {
     const embed = document.createElement("iframe");
-    embed.className = "modal-embed";
+    embed.className = "archive-modal-embed";
     embed.src = youtubeEmbedUrl;
     embed.title = post.title;
     embed.loading = "lazy";
@@ -556,7 +556,7 @@ function openPostModal(post) {
     const media = document.createElement(
       post.mediaType?.startsWith("video/") ? "video" : "img",
     );
-    media.className = "modal-media";
+    media.className = "archive-modal-media";
     media.src = getMediaUrl(post);
     media.setAttribute("aria-label", post.title);
     if (media instanceof HTMLVideoElement) {
@@ -664,20 +664,20 @@ document.getElementById("newPostButton").addEventListener("click", () => {
   openNewPostInFolder(activeArchiveFolder);
 });
 document
-  .querySelector(".modal-close-button")
+  .querySelector(".global-modal-close-button")
   .addEventListener("click", closeModal);
 document.getElementById("postModal").addEventListener("click", closeModalOnBg);
 
 function closeAllMenus() {
-  document.querySelectorAll(".gallery-card .card-menu").forEach((menu) => {
-    menu.classList.add("hidden");
+  document.querySelectorAll(".archive-gallery-card .archive-card-menu").forEach((menu) => {
+    menu.classList.add("global-hidden");
   });
 }
 
 function appendLessButton(description) {
   const less = document.createElement("button");
   less.type = "button";
-  less.className = "read-more-toggle";
+  less.className = "archive-read-more-toggle";
   less.dataset.action = "toggle-description";
   less.setAttribute("aria-label", "Show less of this post");
   less.textContent = "less";
@@ -793,7 +793,7 @@ let masonryResizeObserver = null;
 refreshArchiveFolderView();
 
 function visibleMasonryCards() {
-  return [...postsContainer.querySelectorAll(".gallery-card")].filter(
+  return [...postsContainer.querySelectorAll(".archive-gallery-card")].filter(
     (card) => !card.hidden && card.style.display !== "none",
   );
 }
@@ -806,7 +806,7 @@ function showMasonryDiagnostics(info) {
   if (!label) {
     label = document.createElement("div");
     label.id = "masonryDebug";
-    label.className = "masonry-debug";
+    label.className = "archive-masonry-debug";
     label.setAttribute("role", "status");
     document.body.append(label);
   }
@@ -821,12 +821,12 @@ function layoutMasonry() {
   masonryFrame = 0;
   if (!postsContainer) return;
 
-  const cards = [...postsContainer.querySelectorAll(".gallery-card")];
+  const cards = [...postsContainer.querySelectorAll(".archive-gallery-card")];
   const visible = visibleMasonryCards();
 
   const mobile = getComputedStyle(postsContainer).display !== "grid";
   postsContainer.classList.toggle(
-    "single-post",
+    "archive-single-post",
     !mobile && visible.length === 1,
   );
 
@@ -863,7 +863,7 @@ function layoutMasonry() {
     ? 1
     : getComputedStyle(postsContainer).gridTemplateColumns.trim().split(/\s+/)
         .length;
-  postsContainer.classList.add("masonry-ready");
+  postsContainer.classList.add("archive-masonry-ready");
   showMasonryDiagnostics({
     columns: visible.length ? tracks : 0,
     visiblePosts: visible.length,
@@ -878,7 +878,7 @@ function queueMasonryLayout() {
 }
 
 function initializeMasonry() {
-  const cards = postsContainer?.querySelectorAll(".gallery-card") ?? [];
+  const cards = postsContainer?.querySelectorAll(".archive-gallery-card") ?? [];
   masonryInitialized = true;
   if (masonryFrame) cancelAnimationFrame(masonryFrame);
   layoutMasonry();
@@ -920,7 +920,7 @@ function scheduleThumbnailBackfill(image) {
       return;
     }
 
-    const card = image.closest(".gallery-card");
+    const card = image.closest(".archive-gallery-card");
     const title = card?.dataset.title;
     const sourceHash = image.dataset.mediaHash;
     if (!title || !sourceHash) return;
@@ -973,20 +973,20 @@ function updateArchiveMovedPost(post, previousTitle, destination) {
   );
   if (row) row.title = destination;
 
-  const card = [...postsContainer.querySelectorAll(".gallery-card")].find(
+  const card = [...postsContainer.querySelectorAll(".archive-gallery-card")].find(
     (item) => item.dataset.title === previousTitle,
   );
   if (card) {
     card.dataset.title = destination;
-    const title = card.querySelector(".card-title");
+    const title = card.querySelector(".archive-card-title");
     if (title) title.textContent = archiveDisplayTitle(destination);
-    const description = card.querySelector(".card-description");
+    const description = card.querySelector(".archive-card-description");
     if (description) description.dataset.title = destination;
     card
-      .querySelector(".card-menu-button")
+      .querySelector(".archive-card-menu-button")
       ?.setAttribute("aria-label", "Open actions for " + destination);
 
-    const menu = card.querySelector(".card-menu");
+    const menu = card.querySelector(".archive-card-menu");
     const remove = menu?.querySelector('[data-action="remove-from-folder"]');
     if (!archiveParent(destination)) {
       remove?.remove();
@@ -1062,7 +1062,7 @@ function showArchiveFolderPicker(post) {
   const overlay = document.createElement("div");
   overlay.className = "archive-folder-picker";
   const panel = document.createElement("div");
-  panel.className = "archive-folder-picker-window raised";
+  panel.className = "archive-folder-picker-window global-raised";
   panel.setAttribute("role", "dialog");
   panel.setAttribute("aria-modal", "true");
   panel.setAttribute("aria-label", "Move post to folder");
@@ -1154,7 +1154,7 @@ function showArchiveFolderPicker(post) {
   document.addEventListener("keydown", onKey);
   actions.append(cancel, move);
   const selectWrapper = document.createElement("span");
-  selectWrapper.className = "win98-select";
+  selectWrapper.className = "global-select";
   selectWrapper.append(select);
   panel.append(heading, selectWrapper, actions);
   overlay.append(panel);
@@ -1163,38 +1163,38 @@ function showArchiveFolderPicker(post) {
 }
 postsContainer
   .querySelectorAll(
-    ".gallery-card, .gallery-card img, .gallery-card video, .gallery-card a",
+    ".archive-gallery-card, .archive-gallery-card img, .archive-gallery-card video, .archive-gallery-card a",
   )
   .forEach((element) => {
     element.draggable = false;
   });
 
 function toggleCardMenu(card) {
-  const menu = card.querySelector(".card-menu");
+  const menu = card.querySelector(".archive-card-menu");
   if (!menu) return;
-  const shouldOpen = menu.classList.contains("hidden");
+  const shouldOpen = menu.classList.contains("global-hidden");
   closeAllMenus();
-  menu.querySelector(".card-submenu")?.classList.add("hidden");
-  menu.querySelector(".card-submenu")?.classList.remove("open-left");
-  if (shouldOpen) menu.classList.remove("hidden");
+  menu.querySelector(".archive-card-submenu")?.classList.add("global-hidden");
+  menu.querySelector(".archive-card-submenu")?.classList.remove("archive-open-left");
+  if (shouldOpen) menu.classList.remove("global-hidden");
 }
 
 function toggleDownloadMenu(button) {
-  const wrapper = button.closest(".card-menu-item");
-  const submenu = wrapper?.querySelector(".card-submenu");
+  const wrapper = button.closest(".archive-card-menu-item");
+  const submenu = wrapper?.querySelector(".archive-card-submenu");
   if (!submenu) return;
 
-  const opening = submenu.classList.contains("hidden");
+  const opening = submenu.classList.contains("global-hidden");
   document
-    .querySelectorAll(".card-submenu")
-    .forEach((item) => item.classList.add("hidden"));
+    .querySelectorAll(".archive-card-submenu")
+    .forEach((item) => item.classList.add("global-hidden"));
   if (!opening) return;
 
-  submenu.classList.remove("hidden");
-  submenu.classList.remove("open-left");
+  submenu.classList.remove("global-hidden");
+  submenu.classList.remove("archive-open-left");
   const rect = submenu.getBoundingClientRect();
   if (rect.right > window.innerWidth - 8) {
-    submenu.classList.add("open-left");
+    submenu.classList.add("archive-open-left");
   }
 }
 
@@ -1221,16 +1221,16 @@ async function deletePost(post, card) {
 
 // Right-click a post to access the same menu as its three-dot button.
 postsContainer.addEventListener("contextmenu", (event) => {
-  const card = event.target.closest(".gallery-card");
-  if (!card || event.target.closest(".card-submenu")) return;
+  const card = event.target.closest(".archive-gallery-card");
+  if (!card || event.target.closest(".archive-card-submenu")) return;
   event.preventDefault();
   closeFolderContextMenu();
   closeAllMenus();
-  card.querySelector(".card-menu")?.classList.remove("hidden");
+  card.querySelector(".archive-card-menu")?.classList.remove("global-hidden");
 });
 
 postsContainer.addEventListener("click", async (event) => {
-  if (event.target.closest(".share-link-fallback")) {
+  if (event.target.closest(".archive-share-link-fallback")) {
     // Keep the inline fallback editable/selectable when clipboard access fails.
     event.stopPropagation();
     return;
@@ -1239,7 +1239,7 @@ postsContainer.addEventListener("click", async (event) => {
   if (actionButton) {
     event.preventDefault();
     event.stopPropagation();
-    const card = actionButton.closest(".gallery-card");
+    const card = actionButton.closest(".archive-gallery-card");
     if (!card) return;
     const post = postsData.find((item) => item.title === card.dataset.title);
     if (!post) return;
@@ -1256,7 +1256,7 @@ postsContainer.addEventListener("click", async (event) => {
     }
 
     if (action === "toggle-description") {
-      const description = event.target.closest(".card-description");
+      const description = event.target.closest(".archive-card-description");
       if (description) toggleDescription(card, description);
       return;
     }
@@ -1301,11 +1301,11 @@ postsContainer.addEventListener("click", async (event) => {
         window.setTimeout(resetLabel, 1600);
       } else {
         // No popup: keep the URL selectable inside the existing action menu.
-        const menu = actionButton.closest(".card-menu");
-        let field = menu.querySelector(".share-link-fallback");
+        const menu = actionButton.closest(".archive-card-menu");
+        let field = menu.querySelector(".archive-share-link-fallback");
         if (!field) {
           field = document.createElement("textarea");
-          field.className = "share-link-fallback";
+          field.className = "archive-share-link-fallback";
           field.setAttribute("aria-label", "Select and copy post link");
           field.readOnly = true;
           field.rows = 2;
@@ -1349,14 +1349,14 @@ postsContainer.addEventListener("click", async (event) => {
     return;
   }
 
-  if (event.target.closest(".card-actions")) {
+  if (event.target.closest(".archive-card-actions")) {
     event.preventDefault();
     event.stopPropagation();
     return;
   }
 
   closeAllMenus();
-  const card = event.target.closest(".gallery-card");
+  const card = event.target.closest(".archive-gallery-card");
   if (!card) return;
   const title = card.dataset.title;
   const post = postsData.find((p) => p.title === title);
@@ -1372,7 +1372,7 @@ document.addEventListener("keydown", (event) => {
 });
 
 document.addEventListener("click", (event) => {
-  if (!event.target.closest(".card-actions")) closeAllMenus();
+  if (!event.target.closest(".archive-card-actions")) closeAllMenus();
 });
 
 initializeMasonry();
@@ -1415,12 +1415,12 @@ async function refreshArchiveFromCacheUpdate() {
       postsData.map((post) => [post.title, JSON.stringify(post)]),
     );
     const oldCards = new Map(
-      [...postsContainer.querySelectorAll(".gallery-card")].map((card) => [
+      [...postsContainer.querySelectorAll(".archive-gallery-card")].map((card) => [
         card.dataset.title,
         card,
       ]),
     );
-    const newCards = [...newContainer.querySelectorAll(".gallery-card")];
+    const newCards = [...newContainer.querySelectorAll(".archive-gallery-card")];
     const newTitles = new Set(newCards.map((card) => card.dataset.title));
     const newPostData = new Map(
       updated.map((post) => [post.title, JSON.stringify(post)]),

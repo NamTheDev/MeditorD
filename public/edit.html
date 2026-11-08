@@ -3,21 +3,21 @@
     <nav aria-label="Editor navigation">
         <a
             href="/home.html"
-            class="compartment arrow-compartment"
+            class="editor-compartment editor-arrow-compartment"
             aria-label="Home"
         >
             Home
         </a>
-        <div class="title-compartment">EDITOR</div>
+        <div class="editor-title-compartment">EDITOR</div>
         <div class="editor-nav-actions">
-            <div class="compartment editor-save-compartment">
-                <button type="button" class="action-btn" id="save-button">Save</button>
+            <div class="editor-compartment editor-save-compartment">
+                <button type="button" class="global-action-button" id="save-button">Save</button>
             </div>
-            <div class="compartment editor-archive-compartment">
-                <button type="button" class="action-btn" id="archive-button">Archive</button>
+            <div class="editor-compartment editor-archive-compartment">
+                <button type="button" class="global-action-button" id="archive-button">Archive</button>
             </div>
-            <div class="compartment editor-reset-compartment">
-                <button type="button" class="action-btn" id="reset-button">Reset</button>
+            <div class="editor-compartment editor-reset-compartment">
+                <button type="button" class="global-action-button" id="reset-button">Reset</button>
             </div>
         </div>
     </nav>
@@ -26,58 +26,58 @@
     <div class="editor-layout" id="editor-layout">
         <div class="editor-left-pane">
             <form class="editor-form">
-                <div class="form-row">
-                    <label for="doc-title" class="field-label">Title:</label>
+                <div class="editor-form-row">
+                    <label for="doc-title" class="editor-field-label">Title:</label>
                     <input
                         type="text"
                         id="doc-title"
-                        class="form-control-unit"
+                        class="editor-form-control"
                         placeholder="Enter title..."
                     />
                 </div>
 
-                <div class="form-row">
-                    <label for="doc-folder" class="field-label">Folder:</label>
-                    <span class="win98-select form-control-unit">
+                <div class="editor-form-row">
+                    <label for="doc-folder" class="editor-field-label">Folder:</label>
+                    <span class="global-select editor-form-control">
                         <select id="doc-folder" aria-label="Post folder">
                             <option value="">(Unfiled)</option>
                         </select>
                     </span>
                 </div>
 
-                <div class="form-row">
-                    <label for="doc-username" class="field-label"
+                <div class="editor-form-row">
+                    <label for="doc-username" class="editor-field-label"
                         >Username:</label
                     >
                     <input
                         type="text"
                         id="doc-username"
-                        class="form-control-unit"
+                        class="editor-form-control"
                         placeholder="Enter username..."
                     />
                 </div>
 
-                <div class="form-row">
-                    <label for="doc-url" class="field-label">URL:</label>
+                <div class="editor-form-row">
+                    <label for="doc-url" class="editor-field-label">URL:</label>
                     <input
                         type="text"
                         id="doc-url"
-                        class="form-control-unit"
+                        class="editor-form-control"
                         placeholder="https://example.com"
                     />
                 </div>
 
-                <div class="form-row">
-                    <label class="field-label" for="doc-media">Media:</label>
-                    <input type="file" id="doc-media" class="hidden" />
-                    <label for="doc-media" class="upload-btn form-control-unit"
+                <div class="editor-form-row">
+                    <label class="editor-field-label" for="doc-media">Media:</label>
+                    <input type="file" id="doc-media" class="global-hidden" />
+                    <label for="doc-media" class="editor-upload-button editor-form-control"
                         >Upload File</label
                     >
                 </div>
 
-                <div class="form-row preview-row">
-                    <label class="field-label">Preview:</label>
-                    <div class="preview-box form-control-unit">
+                <div class="editor-form-row editor-preview-row">
+                    <label class="editor-field-label">Preview:</label>
+                    <div class="editor-preview-box editor-form-control">
                         No Media Selected
                     </div>
                 </div>
@@ -85,17 +85,17 @@
         </div>
 
         <div class="editor-right-pane">
-            <div class="textarea-wrapper">
-                <div class="description-toolbar">
-                    <span class="description-label">Description:</span>
+            <div class="editor-textarea-wrapper">
+                <div class="editor-description-toolbar">
+                    <span class="editor-description-label">Description:</span>
                     <div
-                        class="mobile-view-switch"
+                        class="editor-mobile-view-switch"
                         role="tablist"
                         aria-label="Description view"
                     >
                         <button
                             type="button"
-                            class="mobile-view-tab active"
+                            class="editor-mobile-view-tab active"
                             id="write-view-button"
                             role="tab"
                             aria-selected="true"
@@ -104,7 +104,7 @@
                         </button>
                         <button
                             type="button"
-                            class="mobile-view-tab"
+                            class="editor-mobile-view-tab"
                             id="preview-view-button"
                             role="tab"
                             aria-selected="false"
@@ -114,7 +114,7 @@
                     </div>
                     <button
                         type="button"
-                        class="action-btn"
+                        class="global-action-button"
                         id="preview-button"
                     >
                         Preview
@@ -124,9 +124,9 @@
                     class="editor-textarea"
                     placeholder="Start typing..."
                 ></textarea>
-                <div class="markdown-preview hidden" aria-live="polite"></div>
+                <div class="editor-markdown-preview global-hidden" aria-live="polite"></div>
                 <div
-                    class="mobile-markdown-toolbar"
+                    class="editor-mobile-markdown-toolbar"
                     role="toolbar"
                     aria-label="Markdown formatting"
                 >
@@ -151,31 +151,31 @@
 </div>
 
 <div
-    class="win98-modal-backdrop hidden"
+    class="editor-dialog-backdrop global-hidden"
     id="feature-modal"
     role="dialog"
     aria-modal="true"
     aria-labelledby="feature-modal-title"
 >
-    <section class="win98-modal">
-        <header class="win98-modal-titlebar">
+    <section class="editor-dialog">
+        <header class="editor-dialog-titlebar">
             <h2 id="feature-modal-title"></h2>
             <button
                 type="button"
-                class="win98-modal-close"
+                class="editor-dialog-close"
                 aria-label="Close dialog"
             >
                 X
             </button>
         </header>
 
-        <div class="win98-modal-content">
-            <div class="win98-info-icon" aria-hidden="true">i</div>
+        <div class="editor-dialog-content">
+            <div class="editor-dialog-info-icon" aria-hidden="true">i</div>
             <p id="feature-modal-message"></p>
         </div>
 
-        <footer class="win98-modal-actions">
-            <button type="button" class="win98-button win98-default">OK</button>
+        <footer class="editor-dialog-actions">
+            <button type="button" class="global-button editor-dialog-default">OK</button>
         </footer>
     </section>
 </div>

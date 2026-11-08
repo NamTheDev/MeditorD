@@ -63,7 +63,7 @@ const FONT_ASSETS = [
   "/fonts/f798d93bcc10a932.woff2",
 ];
 const SHELL_STATIC_ASSETS = [
-  "/css/fonts.css",
+  "/css/features/fonts.css",
   "/media/icon.webp",
   "/media/grass-background.webp",
   "/media/green-arrow.webp",

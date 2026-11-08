@@ -184,7 +184,7 @@ function getCollapsedDescriptionHtml(value: string): string {
   }
 
   const excerpt = words.slice(0, 200).join(" ");
-  return `<p>${escapeHtml(excerpt)} <button type="button" class="read-more-toggle" data-action="toggle-description" aria-label="Read more of this post">… more</button></p>`;
+  return `<p>${escapeHtml(excerpt)} <button type="button" class="archive-read-more-toggle" data-action="toggle-description" aria-label="Read more of this post">… more</button></p>`;
 }
 
 function renderDownloadActions(post: DocumentRecord): string {
@@ -197,9 +197,9 @@ function renderDownloadActions(post: DocumentRecord): string {
     ? "download-video"
     : "download-image";
   if (hasMedia && hasDescription) {
-    return `<div class="card-menu-item">
+    return `<div class="archive-card-menu-item">
         <button type="button" data-action="toggle-download-menu">Download ›</button>
-        <div class="card-submenu hidden" role="menu" aria-label="Download options">
+        <div class="archive-card-submenu global-hidden" role="menu" aria-label="Download options">
           <button type="button" data-action="${mediaAction}">${mediaLabel}</button>
           <button type="button" data-action="download-markdown">Download .md</button>
           <button type="button" data-action="download-both">Download both</button>
@@ -314,13 +314,13 @@ function renderCard(
         : index >= 3
           ? ' fetchpriority="low"'
           : "";
-    mediaHtml = `<div class="gallery-media thin-sunken embed-thumbnail youtube-thumbnail">
+    mediaHtml = `<div class="archive-gallery-media global-thin-sunken archive-embed-thumbnail archive-youtube-thumbnail">
       <img src="${youtubeThumbnailUrl}" alt="YouTube thumbnail for ${escapeHtml(post.title)}"${imageSize} loading="${loading}" decoding="async"${fetchPriority} />
     </div>`;
   } else if (post.hasMedia) {
     const mediaUrl = getMediaUrl(post);
     if (post.mediaType?.startsWith("video/")) {
-      mediaHtml = `<div class="gallery-media thin-sunken">
+      mediaHtml = `<div class="archive-gallery-media global-thin-sunken">
         <video src="${mediaUrl}" preload="metadata" muted playsinline aria-label="${escapeHtml(post.title)}"></video>
       </div>`;
     } else {
@@ -336,7 +336,7 @@ function renderCard(
         !post.hasThumbnail && post.mediaHash
           ? ` data-thumbnail-backfill="true" data-media-hash="${escapeHtml(post.mediaHash)}"`
           : "";
-      mediaHtml = `<div class="gallery-media thin-sunken">
+      mediaHtml = `<div class="archive-gallery-media global-thin-sunken">
         <img src="${displayUrl}" alt=""${imageSize} loading="${loading}" decoding="async" data-gallery-image="true"${backfillAttributes}${fetchPriority} />
       </div>`;
     }
@@ -347,10 +347,10 @@ function renderCard(
   const username = post.username ? `@${escapeHtml(post.username)}` : "";
   const downloadActions = renderDownloadActions(post);
 
-  return `<article class="gallery-card raised" data-title="${escapeHtml(post.title)}">
-    <div class="card-actions">
-      <button type="button" class="card-menu-button" aria-label="Open actions for ${escapeHtml(post.title)}" data-action="toggle-menu">⋯</button>
-      <div class="card-menu hidden" role="menu" aria-label="Post actions">
+  return `<article class="archive-gallery-card global-raised" data-title="${escapeHtml(post.title)}">
+    <div class="archive-card-actions">
+      <button type="button" class="archive-card-menu-button" aria-label="Open actions for ${escapeHtml(post.title)}" data-action="toggle-menu">⋯</button>
+      <div class="archive-card-menu global-hidden" role="menu" aria-label="Post actions">
         <button type="button" data-action="edit">Edit</button>
         <button type="button" data-action="add-to-folder">Add to folder...</button>
         <button type="button" data-action="copy-post-link">Copy post link</button>
@@ -360,12 +360,12 @@ function renderCard(
       </div>
     </div>
     ${mediaHtml}
-    <div class="card-info">
-      <div class="card-title">${escapeHtml(displayTitle)}</div>
-      <div class="card-description" data-title="${escapeHtml(post.title)}">${getCollapsedDescriptionHtml(post.content || "")}</div>
-      <div class="card-meta">
+    <div class="archive-card-info">
+      <div class="archive-card-title">${escapeHtml(displayTitle)}</div>
+      <div class="archive-card-description" data-title="${escapeHtml(post.title)}">${getCollapsedDescriptionHtml(post.content || "")}</div>
+      <div class="archive-card-meta">
         <span>${username}</span>
-        <span class="card-date">${formattedDate}</span>
+        <span class="archive-card-date">${formattedDate}</span>
       </div>
     </div>
   </article>`;
@@ -434,8 +434,9 @@ async function renderPage(
         .replace("{{archive_posts_json}}", () => postsJson);
     }
 
-    const pageStylesheetPath =
-      file === "404" ? "/css/not-found.css" : `/css/${file}.css`;
+    // Page-only styles follow shared defaults; theme overrides retain the original cascade.
+    const pageName = file === "404" ? "not-found" : file === "edit" ? "editor" : file;
+    const pageStylesheetPath = `/css/pages/${pageName}.css`;
     let html = layout
       .replaceAll("{{title}}", () => title)
       .replaceAll("{{build_id}}", () => escapeHtml(BUILD_ID))
@@ -443,21 +444,26 @@ async function renderPage(
         [
           `<link rel="stylesheet" href="${pageStylesheetPath}" />`,
           ...(isArchive
-            ? ['<link rel="stylesheet" href="/css/archive-explorer.css" />']
+            ? ['<link rel="stylesheet" href="/css/pages/archive-explorer.css" />']
             : []),
           ...(file === "archive" || file === "edit"
-            ? ['<link rel="stylesheet" href="/css/win98-scrollbars.css" />']
+            ? ['<link rel="stylesheet" href="/css/features/scrollbars.css" />']
             : []),
           ...(isWorkspace
-            ? ['<link rel="stylesheet" href="/css/workspace98.css" />']
+            ? ['<link rel="stylesheet" href="/css/global/chrome.css" />']
+            : []),
+          ...(isWorkspace && file !== "404"
+            ? [`<link rel="stylesheet" href="/css/pages/${pageName}-theme.css" />`]
+            : []),
+          ...(isWorkspace
+            ? ['<link rel="stylesheet" href="/css/features/chrome-scrollbars.css" />']
             : []),
         ].join("\n        "),
       )
       .replace("{{body}}", () => content);
-    // Apply the Win98 reference only to the four selected pages; Home and Exit are unchanged.
+    // Only the editor, archive, database and not-found pages use this chrome.
     if (isWorkspace) {
-      const workspaceClass = file === "edit" ? "editor" : file;
-      html = html.replace("<body>", `<body class="workspace98 workspace98-${workspaceClass}">`);
+      html = html.replace("<body>", `<body class="global-workspace ${pageName}-page">`);
     }
     if (pagePreloadHtml) {
       html = html.replace("</head>", `${pagePreloadHtml}\n    </head>`);

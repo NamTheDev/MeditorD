@@ -4,8 +4,8 @@ body {
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    background: var(--win98-surface);
-    color: var(--win98-text);
+    background: var(--global-surface);
+    color: var(--global-text);
     font-family: "Courier New", Courier, monospace;
     font-size: var(--font-base);
     line-height: 1.4;
@@ -18,7 +18,7 @@ header {
     padding-top: var(--safe-top);
     padding-left: var(--safe-left);
     padding-right: var(--safe-right);
-    background: var(--win98-surface);
+    background: var(--global-surface);
 }
 
 /* A dedicated second row keeps SAVE, ARCHIVE and RESET together at every width. */
@@ -35,37 +35,37 @@ nav {
     width: 100%;
     height: var(--nav-height);
     flex-shrink: 0;
-    background: var(--win98-surface);
-    border: 2px solid var(--win98-border-darkest);
-    border-top-color: var(--win98-border-lightest);
-    border-left-color: var(--win98-border-lightest);
+    background: var(--global-surface);
+    border: 2px solid var(--global-border-darkest);
+    border-top-color: var(--global-border-lightest);
+    border-left-color: var(--global-border-lightest);
     box-shadow:
-        inset 1px 1px 0 var(--win98-border-light),
-        inset -1px -1px 0 var(--win98-border-dark);
+        inset 1px 1px 0 var(--global-border-light),
+        inset -1px -1px 0 var(--global-border-dark);
 }
 
-.compartment {
+.editor-compartment {
     display: flex;
     align-items: center;
     justify-content: center;
     height: 100%;
     min-width: 0;
     padding: 0 clamp(4px, 0.8vw, 12px);
-    color: var(--win98-text);
+    color: var(--global-text);
     text-decoration: none;
-    border-right: 1px solid var(--win98-border-dark);
-    box-shadow: 1px 0 0 var(--win98-border-light);
+    border-right: 1px solid var(--global-border-dark);
+    box-shadow: 1px 0 0 var(--global-border-light);
 }
 
-.compartment:last-child {
+.editor-compartment:last-child {
     border-right: none;
     box-shadow: none;
 }
 
-.arrow-compartment {
+.editor-arrow-compartment {
     grid-area: back;
     cursor: pointer;
-    color: var(--win98-text);
+    color: var(--global-text);
 }
 
 /* Flatten the wrapper only on desktop to position buttons around EDITOR. */
@@ -76,30 +76,30 @@ nav {
 .editor-archive-compartment { grid-area: archive; }
 .editor-reset-compartment { grid-area: reset; border-right: 0; box-shadow: none; }
 
-.pixel-icon {
+.editor-pixel-icon {
     image-rendering: pixelated;
     image-rendering: crisp-edges;
     shape-rendering: crispEdges;
 }
 
-.arrow-icon {
+.editor-arrow-icon {
     width: var(--icon-size);
     height: var(--icon-size);
 }
 
-.arrow-compartment:hover,
-.action-btn:hover,
-.upload-btn:hover {
-    color: var(--win98-accent);
+.editor-arrow-compartment:hover,
+.global-action-button:hover,
+.editor-upload-button:hover {
+    color: var(--global-accent);
 }
 
-.arrow-compartment:active {
+.editor-arrow-compartment:active {
     transform: translate(1px, 1px);
 }
 
-.action-btn {
-    background: var(--win98-surface);
-    color: var(--win98-text);
+.global-action-button {
+    background: var(--global-surface);
+    color: var(--global-text);
     border: none;
     font-family: inherit;
     font-size: var(--font-base);
@@ -110,28 +110,28 @@ nav {
     padding: clamp(3px, 0.5vw, 8px) clamp(10px, 1.4vw, 24px);
     min-height: calc(var(--input-height) * 0.9);
     box-shadow:
-        inset -1px -1px 0 var(--win98-border-darkest),
-        inset 1px 1px 0 var(--win98-border-lightest),
-        inset -2px -2px 0 var(--win98-border-dark),
-        inset 2px 2px 0 var(--win98-border-light);
+        inset -1px -1px 0 var(--global-border-darkest),
+        inset 1px 1px 0 var(--global-border-lightest),
+        inset -2px -2px 0 var(--global-border-dark),
+        inset 2px 2px 0 var(--global-border-light);
 }
 
-.action-btn:active {
+.global-action-button:active {
     box-shadow:
-        inset -1px -1px 0 var(--win98-border-lightest),
-        inset 1px 1px 0 var(--win98-border-darkest),
-        inset -2px -2px 0 var(--win98-border-light),
-        inset 2px 2px 0 var(--win98-border-dark);
+        inset -1px -1px 0 var(--global-border-lightest),
+        inset 1px 1px 0 var(--global-border-darkest),
+        inset -2px -2px 0 var(--global-border-light),
+        inset 2px 2px 0 var(--global-border-dark);
     padding: clamp(4px, 0.6vw, 9px) clamp(9px, 1.3vw, 23px)
         clamp(2px, 0.4vw, 7px) clamp(11px, 1.5vw, 25px);
 }
 
-.action-btn:focus {
-    outline: 1px dotted var(--win98-accent);
+.global-action-button:focus {
+    outline: 1px dotted var(--global-accent);
     outline-offset: -4px;
 }
 
-.title-compartment {
+.editor-title-compartment {
     grid-area: title;
     display: flex;
     align-items: center;
@@ -139,19 +139,19 @@ nav {
     height: 100%;
     min-width: 0;
     overflow: hidden;
-    color: var(--win98-accent);
+    color: var(--global-accent);
     font-family: "Courier New", Courier, monospace;
     font-size: var(--font-title);
     font-weight: 400;
     text-transform: uppercase;
     letter-spacing: 0.35em;
     white-space: nowrap;
-    border-right: 1px solid var(--win98-border-dark);
-    box-shadow: 1px 0 0 var(--win98-border-light);
+    border-right: 1px solid var(--global-border-dark);
+    box-shadow: 1px 0 0 var(--global-border-light);
     user-select: none;
 }
 
-.editor-nav-actions .action-btn {
+.editor-nav-actions .global-action-button {
     min-width: 0;
     width: min(100%, 210px);
     min-height: calc(var(--input-height) * 0.9);
@@ -162,10 +162,10 @@ nav {
     width: 100%;
     height: auto;
     min-height: 0;
-    background: var(--win98-surface);
-    border-left: 2px solid var(--win98-border-lightest);
-    border-right: 2px solid var(--win98-border-darkest);
-    border-bottom: 2px solid var(--win98-border-darkest);
+    background: var(--global-surface);
+    border-left: 2px solid var(--global-border-lightest);
+    border-right: 2px solid var(--global-border-darkest);
+    border-bottom: 2px solid var(--global-border-darkest);
     overflow: hidden;
     position: relative;
     container: editor-shell / inline-size;
@@ -192,8 +192,8 @@ nav {
     overflow-y: auto;
     overscroll-behavior-y: contain;
     -webkit-overflow-scrolling: touch;
-    border-right: 1px solid var(--win98-border-dark);
-    box-shadow: 1px 0 0 var(--win98-border-light);
+    border-right: 1px solid var(--global-border-dark);
+    box-shadow: 1px 0 0 var(--global-border-light);
     display: flex;
     flex-direction: column;
 }
@@ -206,20 +206,20 @@ nav {
     height: 100%;
 }
 
-.form-row {
+.editor-form-row {
     display: flex;
     align-items: center;
     gap: clamp(12px, 2vw, 24px);
     width: 100%;
 }
 
-.form-row.preview-row {
+.editor-form-row.editor-preview-row {
     flex: 1;
     align-items: stretch;
     min-height: 120px;
 }
 
-.form-row label.field-label {
+.editor-form-row label.editor-field-label {
     /* Allow room for "Username:" at the more readable regular UI size. */
     width: 96px;
     flex-shrink: 0;
@@ -229,49 +229,49 @@ nav {
     white-space: nowrap;
 }
 
-.preview-row label.field-label {
+.editor-preview-row label.editor-field-label {
     padding-top: 4px;
 }
 
-.form-control-unit {
+.editor-form-control {
     flex: 1;
     width: auto;
 }
 
-input.form-control-unit {
+input.editor-form-control {
     height: var(--input-height);
     padding: 0 clamp(6px, 0.8vw, 12px);
     border: none;
     outline: none;
-    background: var(--win98-window-bg);
-    color: var(--win98-text);
+    background: var(--global-window-bg);
+    color: var(--global-text);
     font-family: inherit;
     font-size: var(--font-base);
     box-shadow:
-        inset -1px -1px 0 var(--win98-border-lightest),
-        inset 1px 1px 0 var(--win98-border-darkest),
-        inset -2px -2px 0 var(--win98-border-light),
-        inset 2px 2px 0 var(--win98-border-dark);
+        inset -1px -1px 0 var(--global-border-lightest),
+        inset 1px 1px 0 var(--global-border-darkest),
+        inset -2px -2px 0 var(--global-border-light),
+        inset 2px 2px 0 var(--global-border-dark);
 }
 
-input.form-control-unit::placeholder,
+input.editor-form-control::placeholder,
 .editor-textarea::placeholder {
     color: var(--ctp-overlay0);
 }
 
-input.form-control-unit:focus {
-    outline: 1px solid var(--win98-accent);
+input.editor-form-control:focus {
+    outline: 1px solid var(--global-accent);
     outline-offset: -1px;
 }
 
-.upload-btn {
+.editor-upload-button {
     height: var(--input-height);
     display: inline-flex;
     align-items: center;
     justify-content: center;
     border: none;
-    background: var(--win98-surface);
-    color: var(--win98-text);
+    background: var(--global-surface);
+    color: var(--global-text);
     font-family: inherit;
     font-size: var(--font-base);
     font-weight: 400;
@@ -279,33 +279,33 @@ input.form-control-unit:focus {
     text-transform: uppercase;
     cursor: pointer;
     box-shadow:
-        inset -1px -1px 0 var(--win98-border-darkest),
-        inset 1px 1px 0 var(--win98-border-lightest),
-        inset -2px -2px 0 var(--win98-border-dark),
-        inset 2px 2px 0 var(--win98-border-light);
+        inset -1px -1px 0 var(--global-border-darkest),
+        inset 1px 1px 0 var(--global-border-lightest),
+        inset -2px -2px 0 var(--global-border-dark),
+        inset 2px 2px 0 var(--global-border-light);
 }
 
-.upload-btn:active {
+.editor-upload-button:active {
     box-shadow:
-        inset -1px -1px 0 var(--win98-border-lightest),
-        inset 1px 1px 0 var(--win98-border-darkest),
-        inset -2px -2px 0 var(--win98-border-light),
-        inset 2px 2px 0 var(--win98-border-dark);
+        inset -1px -1px 0 var(--global-border-lightest),
+        inset 1px 1px 0 var(--global-border-darkest),
+        inset -2px -2px 0 var(--global-border-light),
+        inset 2px 2px 0 var(--global-border-dark);
     padding-top: 2px;
     padding-left: 2px;
 }
 
-.preview-box,
-.textarea-wrapper {
-    background: var(--win98-window-bg);
+.editor-preview-box,
+.editor-textarea-wrapper {
+    background: var(--global-window-bg);
     box-shadow:
-        inset -1px -1px 0 var(--win98-border-lightest),
-        inset 1px 1px 0 var(--win98-border-darkest),
-        inset -2px -2px 0 var(--win98-border-light),
-        inset 2px 2px 0 var(--win98-border-dark);
+        inset -1px -1px 0 var(--global-border-lightest),
+        inset 1px 1px 0 var(--global-border-darkest),
+        inset -2px -2px 0 var(--global-border-light),
+        inset 2px 2px 0 var(--global-border-dark);
 }
 
-.preview-box {
+.editor-preview-box {
     height: 100%;
     padding: var(--preview-padding);
     display: flex;
@@ -313,12 +313,12 @@ input.form-control-unit:focus {
     justify-content: center;
     font-size: calc(var(--font-base) * 0.9);
     font-family: "Courier New", Courier, monospace;
-    color: var(--win98-text-disabled);
+    color: var(--global-text-disabled);
     text-transform: uppercase;
     letter-spacing: 1px;
 }
 
-.media-preview {
+.editor-media-preview {
     width: 100%;
     height: 100%;
     object-fit: contain;
@@ -331,7 +331,7 @@ input.form-control-unit:focus {
     overflow: hidden;
 }
 
-.textarea-wrapper {
+.editor-textarea-wrapper {
     width: 100%;
     height: 100%;
     display: flex;
@@ -339,24 +339,24 @@ input.form-control-unit:focus {
     position: relative;
 }
 
-.description-toolbar {
+.editor-description-toolbar {
     flex: 0 0 auto;
     padding: 6px;
-    background: var(--win98-surface);
+    background: var(--global-surface);
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 12px;
 }
 
-.description-label {
+.editor-description-label {
     font-size: clamp(14px, 1.05vw, 16px);
     font-weight: 400;
     color: var(--ctp-subtext1);
     white-space: nowrap;
 }
 
-.description-toolbar .action-btn {
+.editor-description-toolbar .global-action-button {
     min-height: 24px;
     padding: 2px 10px;
     font-size: calc(var(--font-base) * 0.9);
@@ -374,34 +374,34 @@ input.form-control-unit:focus {
     font-size: calc(var(--font-base) * 1.05);
     line-height: 1.5;
     background: transparent;
-    color: var(--win98-text);
+    color: var(--global-text);
     -webkit-font-smoothing: none;
 }
 
-.markdown-preview {
+.editor-markdown-preview {
     flex: 1;
     min-height: 0;
     overflow-y: auto;
     overscroll-behavior-y: contain;
     -webkit-overflow-scrolling: touch;
     padding: clamp(10px, 1.5vw, 20px);
-    color: var(--win98-text);
+    color: var(--global-text);
     line-height: 1.5;
 }
 
-.markdown-preview a {
-    color: var(--win98-accent);
+.editor-markdown-preview a {
+    color: var(--global-accent);
 }
 
-.markdown-preview :first-child {
+.editor-markdown-preview :first-child {
     margin-top: 0;
 }
 
-.markdown-preview :last-child {
+.editor-markdown-preview :last-child {
     margin-bottom: 0;
 }
 
-.win98-modal-backdrop {
+.editor-dialog-backdrop {
     position: fixed;
     inset: 0;
     z-index: 100;
@@ -411,11 +411,11 @@ input.form-control-unit:focus {
     background: rgba(17, 17, 27, 0.72);
 }
 
-.win98-modal-backdrop.hidden {
+.editor-dialog-backdrop.global-hidden {
     display: none;
 }
 
-.win98-modal {
+.editor-dialog {
     box-sizing: border-box;
     width: min(420px, calc(100vw - 32px));
     max-height: calc(100vh - 32px);
@@ -432,7 +432,7 @@ input.form-control-unit:focus {
     font-family: "Courier New", Courier, monospace;
 }
 
-.win98-modal-titlebar {
+.editor-dialog-titlebar {
     min-height: 26px;
     display: flex;
     align-items: center;
@@ -444,7 +444,7 @@ input.form-control-unit:focus {
     box-sizing: border-box;
 }
 
-.win98-modal-titlebar h2 {
+.editor-dialog-titlebar h2 {
     overflow: hidden;
     margin: 0;
     font-size: 13px;
@@ -453,8 +453,8 @@ input.form-control-unit:focus {
     white-space: nowrap;
 }
 
-.win98-modal-close,
-.win98-button {
+.editor-dialog-close,
+.global-button {
     appearance: none;
     box-sizing: border-box;
     border-top: 2px solid var(--ctp-lavender);
@@ -469,7 +469,7 @@ input.form-control-unit:focus {
     cursor: pointer;
 }
 
-.win98-modal-close {
+.editor-dialog-close {
     width: 26px;
     height: 24px;
     min-width: 26px;
@@ -482,7 +482,7 @@ input.form-control-unit:focus {
     justify-content: center;
 }
 
-.win98-modal-content {
+.editor-dialog-content {
     box-sizing: border-box;
     width: calc(100% - 20px);
     min-height: 96px;
@@ -498,14 +498,14 @@ input.form-control-unit:focus {
     border-bottom: 2px solid var(--ctp-surface2);
 }
 
-.win98-modal-content p {
+.editor-dialog-content p {
     margin: 0;
     color: var(--ctp-text);
     font-size: 13px;
     line-height: 1.35;
 }
 
-.win98-info-icon {
+.editor-dialog-info-icon {
     width: 30px;
     height: 30px;
     flex: 0 0 30px;
@@ -522,27 +522,27 @@ input.form-control-unit:focus {
     line-height: 1;
 }
 
-.win98-modal-actions {
+.editor-dialog-actions {
     display: flex;
     justify-content: center;
     padding: 8px;
     gap: 8px;
 }
 
-.win98-button {
+.global-button {
     min-width: 78px;
     min-height: 28px;
     padding: 3px 16px;
     font-size: 12px;
 }
 
-.win98-button.win98-default {
+.global-button.editor-dialog-default {
     outline: 1px solid var(--ctp-text);
     outline-offset: -4px;
 }
 
-.win98-modal-close:active,
-.win98-button:active {
+.editor-dialog-close:active,
+.global-button:active {
     border-top-color: var(--ctp-crust);
     border-left-color: var(--ctp-crust);
     border-right-color: var(--ctp-lavender);
@@ -550,12 +550,12 @@ input.form-control-unit:focus {
     transform: translate(1px, 1px);
 }
 
-.win98-modal-close:active {
+.editor-dialog-close:active {
     padding: 0 5px;
 }
 
-.mobile-view-switch,
-.mobile-markdown-toolbar {
+.editor-mobile-view-switch,
+.editor-mobile-markdown-toolbar {
     display: none;
 }
 
@@ -572,14 +572,14 @@ input.form-control-unit:focus {
             "actions actions";
     }
 
-    .arrow-compartment {
+    .editor-arrow-compartment {
         min-width: 44px;
         min-height: 44px;
     }
 
     /* Fill the entire remaining header width: no empty right-side box.
        The right padding balances the 44px back control to center EDITOR. */
-    .title-compartment {
+    .editor-title-compartment {
         padding-right: 44px;
         border-right: 0;
         box-shadow: none;
@@ -592,16 +592,16 @@ input.form-control-unit:focus {
         display: grid;
         grid-template-columns: repeat(3, minmax(0, 1fr));
         min-height: 0;
-        border-top: 1px solid var(--win98-border-dark);
+        border-top: 1px solid var(--global-border-dark);
     }
 
-    .editor-nav-actions .compartment {
+    .editor-nav-actions .editor-compartment {
         grid-area: auto;
         min-width: 0;
         padding: 2px 3px;
     }
 
-    .editor-nav-actions .action-btn {
+    .editor-nav-actions .global-action-button {
         width: 100%;
         min-width: 0;
         min-height: 38px;
@@ -610,7 +610,7 @@ input.form-control-unit:focus {
         font-size: clamp(11px, 3.2vw, 14px);
     }
 
-    .editor-nav-actions .action-btn:active {
+    .editor-nav-actions .global-action-button:active {
         padding: 4px 6px;
     }
 }
@@ -620,29 +620,29 @@ input.form-control-unit:focus {
         grid-template-columns: minmax(300px, 0.75fr) minmax(760px, 2fr);
     }
 
-    .textarea-wrapper {
+    .editor-textarea-wrapper {
         display: grid;
         grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
         grid-template-rows: auto minmax(0, 1fr);
         column-gap: clamp(16px, 2vw, 28px);
         /* Surface-colored gutter replaces the line between Write and Preview. */
-        background: var(--win98-surface);
+        background: var(--global-surface);
         box-shadow: none;
     }
 
-    .description-toolbar {
+    .editor-description-toolbar {
         grid-column: 1 / -1;
         grid-row: 1;
     }
 
-    .description-toolbar > #preview-button {
+    .editor-description-toolbar > #preview-button {
         display: none;
     }
 
     .editor-textarea,
-    .markdown-preview,
-    .editor-textarea.hidden,
-    .markdown-preview.hidden {
+    .editor-markdown-preview,
+    .editor-textarea.global-hidden,
+    .editor-markdown-preview.global-hidden {
         display: block;
         grid-row: 2;
         min-width: 0;
@@ -651,20 +651,20 @@ input.form-control-unit:focus {
 
     /* Each side gets its own recessed field, not a shared divider. */
     .editor-textarea,
-    .markdown-preview {
-        background: var(--win98-window-bg);
+    .editor-markdown-preview {
+        background: var(--global-window-bg);
         box-shadow:
-            inset -1px -1px 0 var(--win98-border-lightest),
-            inset 1px 1px 0 var(--win98-border-darkest),
-            inset -2px -2px 0 var(--win98-border-light),
-            inset 2px 2px 0 var(--win98-border-dark);
+            inset -1px -1px 0 var(--global-border-lightest),
+            inset 1px 1px 0 var(--global-border-darkest),
+            inset -2px -2px 0 var(--global-border-light),
+            inset 2px 2px 0 var(--global-border-dark);
     }
 
     .editor-textarea {
         grid-column: 1;
     }
 
-    .markdown-preview {
+    .editor-markdown-preview {
         grid-column: 2;
     }
 }
@@ -694,34 +694,34 @@ input.form-control-unit:focus {
     .editor-left-pane {
         overflow: visible;
         border-right: 0;
-        border-bottom: 1px solid var(--win98-border-dark);
-        box-shadow: 0 1px 0 var(--win98-border-light);
+        border-bottom: 1px solid var(--global-border-dark);
+        box-shadow: 0 1px 0 var(--global-border-light);
     }
 
     .editor-form {
         height: auto;
     }
 
-    .form-row {
+    .editor-form-row {
         align-items: stretch;
         flex-direction: column;
         gap: 6px;
     }
 
-    .form-row label.field-label {
+    .editor-form-row label.editor-field-label {
         width: auto;
     }
 
-    .form-row.preview-row {
+    .editor-form-row.editor-preview-row {
         min-height: 220px;
     }
 
-    .preview-row label.field-label {
+    .editor-preview-row label.editor-field-label {
         padding-top: 0;
     }
 
-    input.form-control-unit,
-    .upload-btn {
+    input.editor-form-control,
+    .editor-upload-button {
         width: 100%;
         min-height: 44px;
         font-size: 16px;
@@ -733,13 +733,13 @@ input.form-control-unit:focus {
         padding-bottom: calc(72px + var(--safe-bottom));
     }
 
-    .textarea-wrapper {
+    .editor-textarea-wrapper {
         height: auto;
         min-height: 420px;
         overflow: visible;
     }
 
-    .description-toolbar {
+    .editor-description-toolbar {
         position: sticky;
         top: 0;
         z-index: 5;
@@ -747,32 +747,32 @@ input.form-control-unit:focus {
         padding: 4px 6px;
     }
 
-    .description-toolbar > #preview-button {
+    .editor-description-toolbar > #preview-button {
         display: none;
     }
 
-    .mobile-view-switch {
+    .editor-mobile-view-switch {
         display: flex;
         align-items: stretch;
         margin-left: auto;
         gap: 2px;
         padding: 2px;
         border: 0;
-        background: var(--win98-surface);
+        background: var(--global-surface);
         box-shadow:
-            inset 1px 1px 0 var(--win98-border-darkest),
-            inset -1px -1px 0 var(--win98-border-lightest),
-            inset 2px 2px 0 var(--win98-border-dark),
-            inset -2px -2px 0 var(--win98-border-light);
+            inset 1px 1px 0 var(--global-border-darkest),
+            inset -1px -1px 0 var(--global-border-lightest),
+            inset 2px 2px 0 var(--global-border-dark),
+            inset -2px -2px 0 var(--global-border-light);
     }
 
-    .mobile-view-tab {
+    .editor-mobile-view-tab {
         min-width: 84px;
         min-height: 44px;
         padding: 5px 12px;
         border: 0;
-        background: var(--win98-surface);
-        color: var(--win98-text);
+        background: var(--global-surface);
+        color: var(--global-text);
         font-family: "Courier New", Courier, monospace;
         font-size: 14px;
         font-weight: 400;
@@ -780,28 +780,28 @@ input.form-control-unit:focus {
         line-height: 1;
         text-transform: uppercase;
         box-shadow:
-            inset -1px -1px 0 var(--win98-border-darkest),
-            inset 1px 1px 0 var(--win98-border-lightest),
-            inset -2px -2px 0 var(--win98-border-dark),
-            inset 2px 2px 0 var(--win98-border-light);
+            inset -1px -1px 0 var(--global-border-darkest),
+            inset 1px 1px 0 var(--global-border-lightest),
+            inset -2px -2px 0 var(--global-border-dark),
+            inset 2px 2px 0 var(--global-border-light);
     }
 
-    .mobile-view-tab.active,
-    .mobile-view-tab[aria-selected="true"],
-    .mobile-view-tab:active {
+    .editor-mobile-view-tab.active,
+    .editor-mobile-view-tab[aria-selected="true"],
+    .editor-mobile-view-tab:active {
         /* Keep the text aligned with the inactive tab; border indicates press. */
         padding: 5px 12px;
         background: var(--ctp-surface1);
-        color: var(--win98-accent);
+        color: var(--global-accent);
         box-shadow:
-            inset -1px -1px 0 var(--win98-border-lightest),
-            inset 1px 1px 0 var(--win98-border-darkest),
-            inset -2px -2px 0 var(--win98-border-light),
-            inset 2px 2px 0 var(--win98-border-dark);
+            inset -1px -1px 0 var(--global-border-lightest),
+            inset 1px 1px 0 var(--global-border-darkest),
+            inset -2px -2px 0 var(--global-border-light),
+            inset 2px 2px 0 var(--global-border-dark);
     }
 
-    .mobile-view-tab:focus-visible {
-        outline: 1px dotted var(--win98-accent);
+    .editor-mobile-view-tab:focus-visible {
+        outline: 1px dotted var(--global-accent);
         outline-offset: -5px;
     }
 
@@ -816,7 +816,7 @@ input.form-control-unit:focus {
         padding-bottom: calc(68px + var(--safe-bottom));
     }
 
-    .markdown-preview {
+    .editor-markdown-preview {
         flex: none;
         min-height: 320px;
         overflow: visible;
@@ -828,21 +828,21 @@ input.form-control-unit:focus {
     .editor-layout button,
     .editor-layout input,
     .editor-layout label,
-    .preview-box,
-    .description-toolbar,
-    .textarea-wrapper {
+    .editor-preview-box,
+    .editor-description-toolbar,
+    .editor-textarea-wrapper {
         touch-action: pan-y;
     }
 
-    .editor-right-pane:focus-within .mobile-markdown-toolbar {
+    .editor-right-pane:focus-within .editor-mobile-markdown-toolbar {
         display: flex;
     }
 
-    .textarea-wrapper[data-view="preview"] .mobile-markdown-toolbar {
+    .editor-textarea-wrapper[data-view="preview"] .editor-mobile-markdown-toolbar {
         display: none;
     }
 
-    .mobile-markdown-toolbar {
+    .editor-mobile-markdown-toolbar {
         position: fixed;
         left: 0;
         right: 0;
@@ -855,12 +855,12 @@ input.form-control-unit:focus {
         touch-action: pan-x;
         padding: 6px max(8px, var(--safe-right)) max(6px, var(--safe-bottom))
             max(8px, var(--safe-left));
-        background: var(--win98-surface);
-        border-top: 2px solid var(--win98-border-lightest);
-        box-shadow: 0 -1px 0 var(--win98-border-dark);
+        background: var(--global-surface);
+        border-top: 2px solid var(--global-border-lightest);
+        box-shadow: 0 -1px 0 var(--global-border-dark);
     }
 
-    .mobile-markdown-toolbar button {
+    .editor-mobile-markdown-toolbar button {
         flex: 0 0 auto;
         min-width: 44px;
         min-height: 44px;
@@ -868,40 +868,40 @@ input.form-control-unit:focus {
         font-family: "Courier New", Courier, monospace;
     }
 
-    .win98-modal-backdrop {
+    .editor-dialog-backdrop {
         padding: max(16px, var(--safe-top)) max(16px, var(--safe-right))
             max(16px, calc(var(--safe-bottom) + var(--keyboard-offset)))
             max(16px, var(--safe-left));
     }
 
-    .win98-modal {
+    .editor-dialog {
         width: 100%;
         max-height: min(88dvh, var(--visual-viewport-height));
     }
 }
 
 @media (pointer: coarse) {
-    .win98-modal-close,
-    .win98-button {
+    .editor-dialog-close,
+    .global-button {
         min-width: 44px;
         min-height: 44px;
     }
 }
 
 @media (hover: none) {
-    .arrow-compartment:hover,
-    .action-btn:hover,
-    .upload-btn:hover {
+    .editor-arrow-compartment:hover,
+    .global-action-button:hover,
+    .editor-upload-button:hover {
         color: inherit;
     }
 }
 
 /* Apply Courier New to shared dialogs only when the editor is open. */
-body .app-dialog-window {
+body .global-dialog-window {
     font-family: "Courier New", Courier, monospace;
 }
 
-body .app-dialog-titlebar h2,
-body .app-dialog-close {
+body .global-dialog-titlebar h2,
+body .global-dialog-close {
     font-weight: 400;
 }
