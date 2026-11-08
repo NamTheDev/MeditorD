@@ -1412,6 +1412,31 @@ body.workspace98-database {
     font: 400 12px "Courier New", Courier, monospace;
 }
 
+/* Match Archive's Mocha depth: raised panels, recessed controls and content. */
+.workspace98-database :is(.database-header, .database-searchbar) {
+    background: var(--w98-toolbar);
+}
+
+.workspace98-database .database-main {
+    background: var(--w98-pane);
+}
+
+.workspace98-database :is(.database-search-line input, .database-filter-control select) {
+    background: var(--w98-well);
+    color: var(--w98-text);
+    border-color: var(--w98-divider);
+    box-shadow: var(--w98-sunken);
+}
+
+.workspace98-database .database-actions button:hover {
+    background: var(--w98-face-hover);
+}
+
+.workspace98-database .database-actions button:active {
+    background: var(--w98-face);
+    box-shadow: var(--w98-sunken);
+}
+
 .workspace98-database .database-search-line input {
     height: 31px;
     min-height: 31px;
