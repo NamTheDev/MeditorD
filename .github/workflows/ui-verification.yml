@@ -17,7 +17,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v2
       - run: bun install --frozen-lockfile
-      - run: bun test
+      - run: bun test tests/*.test.js
 
   browser-tests:
     name: Chromium and Firefox layout tests
