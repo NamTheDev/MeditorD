@@ -448,9 +448,6 @@ async function renderPage(
           ...(isArchive
             ? ['<link rel="stylesheet" href="/css/pages/archive-explorer.css" />']
             : []),
-          ...(file === "archive" || file === "edit"
-            ? ['<link rel="stylesheet" href="/css/features/scrollbars.css" />']
-            : []),
           ...(isWorkspace
             ? ['<link rel="stylesheet" href="/css/global/chrome.css" />']
             : []),

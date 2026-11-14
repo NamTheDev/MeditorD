@@ -8,7 +8,7 @@ const files = [
   "pages/archive.css", "pages/archive-explorer.css", "pages/archive-theme.css",
   "pages/database.css", "pages/database-theme.css", "pages/home.css",
   "pages/exit.css", "pages/not-found.css", "features/fonts.css",
-  "features/scrollbars.css", "features/chrome-scrollbars.css",
+  "features/chrome-scrollbars.css",
 ];
 const at = (p) => readFileSync(p, "utf8");
 

@@ -481,7 +481,8 @@ body.editor-page input.editor-form-control {
     width: calc(100% - 40px);
     height: calc(100dvh - 40px);
     margin: 20px;
-    padding: 0;
+    padding: max(8px, var(--safe-top)) max(8px, var(--safe-right))
+        max(8px, var(--safe-bottom)) max(8px, var(--safe-left));
 }
 .editor-page #fullscreenApp {
     background: #45475a;

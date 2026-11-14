@@ -1,5 +1,7 @@
-/* classic scrollbar chrome, adapted to the Mocha palette.
-   Use a raised four-edge thumb and square beveled arrow buttons. */
+/* Single native scrollbar styling source for workspace panels and dialogs.
+   Preserve the Archive Gallery's classic 17px beveled Chrome/Vivaldi chrome,
+   including track inset, gutter and square arrow buttons. Firefox retains its
+   native scrollbar behavior where these WebKit pseudo-elements are unavailable. */
 body.global-workspace :is(*, *::before, *::after) {
     scrollbar-color: auto;
 }
@@ -7,11 +9,17 @@ body.global-workspace :is(*, *::before, *::after) {
 body.global-workspace ::-webkit-scrollbar {
     width: 17px;
     height: 17px;
+    /* Retain the original Gallery scrollbar gutter when removing the
+       overlapping general scrollbar stylesheet. */
+    background: var(--ctp-mantle);
 }
 
 body.global-workspace ::-webkit-scrollbar-track {
     background: #313244;
     border-radius: 0;
+    box-shadow:
+        inset 1px 1px 0 var(--global-border-darkest),
+        inset -1px -1px 0 var(--global-border-lightest);
 }
 
 body.global-workspace ::-webkit-scrollbar-thumb,
@@ -58,4 +66,5 @@ body.global-workspace ::-webkit-scrollbar-button:single-button:horizontal:increm
 
 body.global-workspace ::-webkit-scrollbar-corner {
     background: #313244;
+    box-shadow: inset 1px 1px var(--global-border-lightest);
 }

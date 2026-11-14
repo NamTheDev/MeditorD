@@ -679,8 +679,8 @@ body.archive-page .archive-card-description .archive-read-more-toggle:active {
 }
 @media (max-width: 450px) {
 .archive-page .archive-menu-bar > :is(#backButton, #databaseButton, #newPostButton) {
-        min-height: 36px;
-        height: 36px;
+        min-height: 30px;
+        height: 30px;
     }
 }
 body.archive-page .archive-folder-add-icon {
@@ -727,7 +727,7 @@ body.archive-page .archive-folder-add-plus {
     font: 400 13px/1 "Courier New", Courier, monospace;
 }
 @media (pointer: coarse) and (max-width: 700px) {
-.archive-page .archive-menu-bar > :is(#backButton, #newPostButton),
+.archive-page .archive-menu-bar > :is(#backButton, #databaseButton, #newPostButton),
 .archive-page .archive-new-folder-button,
 .archive-page .archive-card-menu-button {
         height: 44px;
@@ -768,7 +768,7 @@ body.archive-page #archiveFolderTree .archive-folder-spacer {
 }
 @media (max-width: 450px) {
 .archive-page .archive-menu-bar {
-        grid-template-rows: 29px 38px;
+        grid-template-rows: 29px 32px;
     }
 }
 @media (max-width: 700px) {
@@ -828,6 +828,19 @@ body.archive-page #archiveFolderTree .archive-folder-spacer {
     box-shadow: none;
 }
 .archive-page #fullscreenApp {
-    padding: 4px;
+    padding: max(8px, var(--safe-top)) max(8px, var(--safe-right))
+        max(8px, var(--safe-bottom)) max(8px, var(--safe-left));
     overflow: hidden;
+}
+
+/* All three navigation controls, including the DATABASE link, share touch sizing.
+   Keep the command row tall enough at every touch viewport width. */
+@media (pointer: coarse) {
+    .archive-page .archive-menu-bar > :is(#backButton, #databaseButton, #newPostButton) {
+        min-height: 44px;
+        height: 44px;
+    }
+    .archive-page .archive-menu-bar {
+        grid-template-rows: 29px 46px;
+    }
 }

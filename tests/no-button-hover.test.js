@@ -34,7 +34,7 @@ test("pressed and keyboard focus styling are retained", () => {
   const chrome = readFileSync("public/css/global/chrome.css", "utf8");
   expect(chrome).toContain(":focus-visible");
   expect(chrome).toContain(":active:not(:disabled)");
-  expect(chrome).toContain("outline: 1px dotted var(--ctp-red)");
+  expect(chrome).toContain("outline: 1px solid var(--ctp-red)");
   expect(readFileSync("public/css/pages/editor.css", "utf8"))
     .toContain(".editor-upload-button:active");
 });
