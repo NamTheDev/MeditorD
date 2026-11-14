@@ -8,7 +8,7 @@ CSS is split by ownership, not by visual era.
 
 ## Cascade
 
-`global.html` loads shared defaults first. `render.ts` then loads the selected page, optional Archive explorer styles, shared chrome, and page theme overrides. `features/chrome-scrollbars.css` is loaded once at the end of every workspace page's head. It retains the Archive posts scrollbar's existing 17px bevel and native scrolling behavior without a competing global scrollbar layer.
+`global.html` loads shared defaults first. `render.ts` then loads the selected page, optional Archive explorer styles, shared chrome, and page theme overrides. `features/chrome-scrollbars.css` is loaded once at the end of every workspace page's head. It retains the Archive posts scrollbar's existing 17px beveled track/thumb and native scrolling behavior without a competing global scrollbar layer. Arrow buttons are hidden on all workspace scrollbars, including Archive Gallery, Explorer, Database, Editor, and dialogs.
 
 The large prior workspace stylesheet was split along component and page boundaries. Existing structural selectors, pseudo-elements, interaction states, responsive breakpoints and Catppuccin Mocha values are preserved.
 

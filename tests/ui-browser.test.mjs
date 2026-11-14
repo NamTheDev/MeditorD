@@ -73,6 +73,19 @@ async function assertNativeWheel(page, scrollSelector) {
   await locator.evaluate(node => { node.scrollTop = 0; });
 }
 
+// Chromium exposes the rendered native scrollbar pseudo-element's computed
+// style. Assert that arrow buttons are gone, rather than merely testing wheel
+// scrolling, which previously missed duplicate buttons at both ends.
+async function assertNoNativeArrowButtons(page, scrollSelector) {
+  const button = await page.locator(scrollSelector).evaluate((node) => {
+    const style = getComputedStyle(node, "::-webkit-scrollbar-button");
+    return { display: style.display, width: style.width, height: style.height };
+  });
+  assert.equal(button.display, "none", `${scrollSelector} native scrollbar button must be hidden`);
+  assert.equal(button.width, "0px", `${scrollSelector} scrollbar button width must be zero`);
+  assert.equal(button.height, "0px", `${scrollSelector} scrollbar button height must be zero`);
+}
+
 async function checkNavigation(page, expectedHeight) {
   const nav = await page.locator("#backButton, #databaseButton, #newPostButton").evaluateAll(nodes =>
     nodes.map(node => ({
@@ -120,6 +133,10 @@ async function runBrowser(browserType, name, mobile) {
     await pageHasNoDocumentScroll(page);
     await assertInsideFrame(page, "#fullscreenApp", "#archiveFolderTree");
     await assertInsideFrame(page, "#fullscreenApp", "#galleryViewport");
+    if (name === "chromium") {
+      await assertNoNativeArrowButtons(page, "#archiveFolderTree");
+      await assertNoNativeArrowButtons(page, "#galleryViewport");
+    }
     if (!mobile) {
       await assertNativeWheel(page, "#archiveFolderTree");
       await assertNativeWheel(page, "#galleryViewport");
@@ -130,6 +147,7 @@ async function runBrowser(browserType, name, mobile) {
     await frameGeometry(page, "#databaseApp");
     await pageHasNoDocumentScroll(page);
     await assertInsideFrame(page, "#databaseApp", ".database-table-wrap");
+    if (name === "chromium") await assertNoNativeArrowButtons(page, ".database-table-wrap");
     const actions = await page.locator(".database-actions button").evaluateAll(nodes =>
       nodes.map(node => node.getBoundingClientRect().height)
     );
@@ -142,6 +160,7 @@ async function runBrowser(browserType, name, mobile) {
     await frameGeometry(page, "#fullscreenApp");
     await pageHasNoDocumentScroll(page);
     await assertInsideFrame(page, "#fullscreenApp", ".editor-layout");
+    if (name === "chromium") await assertNoNativeArrowButtons(page, ".editor-textarea");
     if (!mobile) {
       await assertInsideFrame(page, "#fullscreenApp", ".editor-left-pane");
       await assertInsideFrame(page, "#fullscreenApp", ".editor-textarea");
