@@ -38,8 +38,10 @@ test("master frames preserve external margins and at least 8px internal clearanc
   ];
   for (const [path, selector] of frames) {
     const css = read(path);
-    const last = css.slice(css.lastIndexOf(selector));
-    const rule = last.slice(0, last.indexOf("}"));
+    const rule = css.split(selector).slice(1)
+      .map((block) => block.slice(0, block.indexOf("}")))
+      .find((block) => block.includes("max(8px, var(--safe-top))"));
+    expect(rule).toBeDefined();
     expect(css).toContain("width: calc(100% - 40px);");
     expect(css).toContain("height: calc(100dvh - 40px);");
     expect(css).toContain("margin: 20px;");
