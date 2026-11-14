@@ -14,7 +14,7 @@ test("one native scrollbar stylesheet owns workspace chrome", () => {
   expect(chrome).toContain("width: 17px;");
   expect(chrome).toContain("height: 17px;");
   expect(chrome).toContain("::-webkit-scrollbar-thumb");
-  expect(chrome).toMatch(/::-webkit-scrollbar-button\\s*\\{\\s*display:\\s*none;\\s*width:\\s*0;\\s*height:\\s*0;/);
+  expect(chrome).toContain("body.global-workspace ::-webkit-scrollbar-button {\n    display: none;\n    width: 0;\n    height: 0;");
   expect(chrome).not.toContain("::-webkit-scrollbar-button:single-button");
   expect(chrome).not.toContain("background-image: url(");
 });
