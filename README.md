@@ -4,6 +4,8 @@
 
 Built from human ideas with Generative AI supporting in design, research, implementation, testing, and documentation throughout development.
 
+See [AI_DISCLAIMER.md](AI_DISCLAIMER.md) for the full disclosure.
+
 ## Introduction
 
 MeditorD provides nostalgic, self-hosted Markdown editing and folder-based media archiving.
