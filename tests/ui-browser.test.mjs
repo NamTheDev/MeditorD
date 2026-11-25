@@ -117,6 +117,10 @@ async function openApp(page, route) {
   const response = await page.goto(BASE + route, { waitUntil: "domcontentloaded", timeout: 30000 });
   assert.equal(response?.status(), 200, `HTTP response for ${route}`);
   await page.waitForTimeout(400);
+  assert.equal(await page.locator('head meta[name="color-scheme"]').count(), 1);
+  assert.equal(await page.locator('head meta[name="color-scheme"]').getAttribute("content"), "dark");
+  assert.equal(await page.locator("html").evaluate(el => getComputedStyle(el).colorScheme), "dark");
+  assert.equal(await page.locator('meta[name="darkreader-lock"]').count(), 0);
 }
 
 async function runBrowser(browserType, name, mobile) {

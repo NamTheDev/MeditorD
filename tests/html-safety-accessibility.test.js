@@ -58,3 +58,10 @@ test("mobile view buttons form a named toggle group rather than incomplete ARIA 
   expect(html).not.toContain('role="tablist"');
   expect(read("public/js/edit.js")).toContain('setAttribute("aria-pressed"');
 });
+
+test("shared document head advertises the native dark scheme without an extension lock", () => {
+  const html = read("public/global.html");
+  expect(html.match(/<meta name="color-scheme" content="dark"\s*\/>/g)).toHaveLength(1);
+  expect(html).not.toContain('name="darkreader-lock"');
+  expect(read("public/css/global/variables.css")).toContain("color-scheme: dark;");
+});
