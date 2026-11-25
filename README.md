@@ -12,7 +12,7 @@ MeditorD provides nostalgic, self-hosted Markdown editing and folder-based media
 
 ## Resources
 
-Project design references and development resources are documented in [`RESOURCES.md`](RESOURCES.md). See [deployment and security guidance](docs/DEPLOYMENT.md) before exposing the editor to a network.
+Project design references and development resources are documented in [`RESOURCES.md`](RESOURCES.md).
 
 ## License
 
