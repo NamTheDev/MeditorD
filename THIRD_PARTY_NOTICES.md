@@ -38,7 +38,7 @@ MeditorD self-hosts optimized WOFF2 files for IBM Plex Mono, IBM Plex Sans, Mont
 
 - Font source: https://fonts.google.com/
 - Original font repository and licensing: https://github.com/google/fonts
-- Local usage: `public/css/fonts.css` and `public/fonts/`
+- Local usage: `public/css/features/fonts.css` and `public/fonts/`
 
 ## Canva and Project Media
 
