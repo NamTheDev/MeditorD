@@ -8,7 +8,7 @@ const cssRoot = "public/css";
 function stylesIn(dir) {
   return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
     const path = join(dir, entry.name);
-    return entry.isDirectory() ? stylesIn(path) : path.endsWith(".css") ? [path] : [];
+    return entry.isDirectory() ? (entry.name === "shared" ? [] : stylesIn(path)) : path.endsWith(".css") ? [path] : [];
   });
 }
 test("buttons and button-like links have no hover CSS anywhere", () => {

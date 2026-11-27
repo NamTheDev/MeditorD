@@ -19,3 +19,7 @@ For any new reusable control, prefer a `global-*` base class alongside a page-sp
 ## Scrollbar and frame geometry
 
 All Editor, Archive, and Database master frames retain a 20px exterior margin and at least 8px interior clearance (with safe-area allowances). The Archive posts, Explorer tree, Database table, Editor panes and dialogs remain native scrollports inside their respective frames. Responsive Gallery navigation is 30px high on fine-pointer devices and 44px high on coarse-pointer devices, including its link-based Database control.
+
+## Shared functional minimalist shell
+
+The header, marquee, palette and Bootstrap distribution are vendored from the NamTheDev design system. Editor, archive and database retain their specialized pane geometry and action identifiers; the global adapter removes bevel tokens, restores keyboard focus and highlights primary commands. The home screen uses direct text actions. Local deployment and persistence remain unchanged.
