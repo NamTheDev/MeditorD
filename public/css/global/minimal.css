@@ -3,7 +3,6 @@ body.global-workspace{--font-ui:"Source Sans 3",system-ui,sans-serif;--global-ch
 body.global-workspace .site-header{background:var(--base);padding:0 8px}
 body.global-workspace .site-header .header-inner{display:flex;align-items:center;gap:16px;min-height:var(--header-height)}
 body.global-workspace .site-header .header-links{display:flex;align-items:center;gap:16px;overflow:auto hidden}
-body.global-workspace .site-header .marquee-toggle{padding:6px 10px;background:transparent;border:1px solid var(--surface-1);color:var(--subtext-1);font-family:var(--font-ui)}
 body.global-workspace :is(#save-button,#newPostButton,#appDialogConfirm){background:var(--accent);color:var(--accent-ink)}
 body.global-workspace :is(input,textarea,select):focus-visible{outline:2px solid var(--accent);outline-offset:0}
 body.global-workspace :is(.editor-container,.archive-explorer-layout,.database-main){min-height:0}
