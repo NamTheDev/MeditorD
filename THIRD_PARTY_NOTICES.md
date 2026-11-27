@@ -44,3 +44,7 @@ MeditorD self-hosts optimized WOFF2 files for IBM Plex Mono, IBM Plex Sans, Mont
 
 Files under `design/canva/` and image assets under `public/media/` are not automatically relicensed merely because the repository uses the MIT license. Before redistributing third-party imagery, templates, stock content, or other externally sourced material, verify that the relevant source license or service terms permit that redistribution.
 
+
+## Bootstrap
+
+The unmodified Bootstrap 6 stylesheet is vendored at `public/vendor/bootstrap.min.css`. Its MIT license is included in `LICENSE.bootstrap`.
